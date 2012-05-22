@@ -1,0 +1,19 @@
+{
+    "name": "beberlei/metrics",
+    "description": "Simple library to talk to metrics collector services.",
+    "keywords": ["metrics", "logging"],
+    "authors": [
+        {"name": "Benjamin Eberlei", "email": "kontakt@beberlei.de"}
+    ],
+    "license": "MIT",
+    "suggest": {
+        "okitsu/zabbix-sender": "For zabbix integration",
+        "kriswallsmith/buzz": "For Librato integration"
+    },
+    "autoload": {
+        "psr-0": {
+            "Beberlei\\Metrics": "src/",
+            "Beberlei\\Bundle\\MetricsBundle": "src/"
+        }
+    }
+}

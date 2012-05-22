@@ -1,0 +1,137 @@
+# Beberlei Metrics
+
+Simple library that abstracts different metrics providers. I find this necessary
+to have a consistent and simple metrics API that doesn't cause vendor lock-in.
+
+It also ships with a Symfony Bundle. This is not a library for displaying metrics.
+
+Currently supported backends:
+
+* StatsD
+* Zabbix
+* Librato
+
+## Installation
+
+Using Composer:
+
+    {
+        "require": {
+            "beberlei/metrics": "*"
+        }
+    }
+
+## API
+
+You can instantiate clients:
+
+    <?php
+    $metrics = \Beberlei\Metrics\Factory::create('statsd');
+    \Beberlei\Metrics\Registry::set('name', $metrics);
+    \Beberlei\Metrics\Registry::setDefaultName('name');
+
+    $metrics = \Beberlei\Metrics\Registry::get('name');
+    $metrics = \Beberlei\Metrics\Registry::get();
+
+You can measure stats:
+
+    <?php
+
+    $metrics = \Beberlei\Metrics\Registry::get('name');
+    $metrics->increment('foo.bar');
+    $metrics->decrement('foo.bar');
+
+    $start = microtime(true);
+    $diff = microtime(true) - $start;
+    $metrics->timing('foo.bar', $diff);
+
+    $value = 1234;
+    $metrics->measure('foo.bar', $value);
+
+Some backends defer sending and aggregate all information, make sure
+to call flush:
+
+    <?php
+
+    $metrics = \Beberlei\Metrics\Registry::get('name');
+    $metrics->flush();
+
+There is a convenience functional API. It works with
+the registry names. If null is provided, the default registry entry is used.
+
+    <?php
+    require_once 'vendor/beberlei/metrics/src/Beberlei/Metrics/functions.php';
+
+    $registryName = 'name';
+
+    bmetrics_increment('foo.bar', $registryName);
+    bmetrics_decrement('foo.bar', null);
+    bmetrics_measure('foo.bar', $value, $registryName);
+    bmetrics_timing('foo.bar', $diff, null);
+
+## Configuration
+
+    <?php
+    $statsd = \Beberlei\Metrics\Factory::create('statsd');
+
+    $zabbix = \Beberlei\Metrics\Factory::create('zabbix', array(
+        'hostname' => 'foo.beberlei.de',
+        'server'   => 'localhost',
+        'port'     => 10051,
+    ));
+
+    $zabbixConfig = \Beberlei\Metrics\Factory::create('zabbix_file', array(
+        'hostname' => 'foo.beberlei.de',
+        'file'     => '/etc/zabbix/zabbix_agentd.conf'
+    ));
+
+    $librato = \Beberlei\Metrics\Factory::create('librato', array(
+        'hostname' => 'foo.beberlei.de',
+        'username' => 'foo',
+        'password' => 'bar',
+    ));
+
+## Symfony Bundle Integration
+
+Activate Bundle into Kernel:
+
+    <?php
+
+    class AppKernel extends Kernel
+    {
+        public function registerBundles()
+        {
+            //..
+            $bundles[] = new \Beberlei\Bundle\MetricsBundle\BeberleiMetricsBundle();
+            //..
+        }
+    }
+
+Do Configuration:
+
+    # app/config/config.yml
+    beberlei_metrics:
+        default: foo
+        providers:
+            foo:
+                type: statsd
+            bar:
+                type: zabbix
+                hostname: foo.beberlei.de
+                server: localhost
+                port: 10051
+            baz:
+                type: zabbix_file
+                hostname: foo.beberlei.de
+                file: /etc/zabbix/zabbix_agentd.conf
+            librato:
+                type: librato
+                username: foo
+                password: bar
+
+This adds providers to the Metrics registry. The functions are automatically included
+in the Bundle class so that in your code you can just start using the convenience functions.
+Metrics are also added as services:
+
+    <?php
+    $metrics = $container->get('beberlei_metrics.foo');
