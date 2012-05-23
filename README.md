@@ -137,4 +137,5 @@ in the Bundle class so that in your code you can just start using the convenienc
 Metrics are also added as services:
 
     <?php
-    $metrics = $container->get('beberlei_metrics.foo');
+    $metrics = $container->get('beberlei_metrics.collector.foo');
+
