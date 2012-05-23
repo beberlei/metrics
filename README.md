@@ -10,6 +10,7 @@ Currently supported backends:
 * StatsD
 * Zabbix
 * Librato
+* Null (Dummy that does nothing)
 
 ## Installation
 
@@ -90,6 +91,8 @@ the registry names. If null is provided, the default registry entry is used.
         'username' => 'foo',
         'password' => 'bar',
     ));
+
+    $null = \Beberlei\Metrics\Factory::create('null');
 
 ## Symfony Bundle Integration
 
