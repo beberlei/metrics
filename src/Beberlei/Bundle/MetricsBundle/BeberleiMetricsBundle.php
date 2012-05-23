@@ -37,6 +37,8 @@ class BeberleiMetricsBundle extends Bundle
             try {
                 $collector->flush();
             } catch(\Exception $e) {
+                $logger = $this->container->get('logger');
+                $logger->debug("Flushing metrics failed: " . $e->getMessage());
             }
         }
         $registry->clear();
