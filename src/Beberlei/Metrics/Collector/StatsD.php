@@ -65,11 +65,11 @@ class StatsD implements Collector
      * Updates one or more stats counters by arbitrary amounts.
      *
      * @param string $stats The metric to update.
-     * @param int|1 $delta The amount to increment/decrement each metric by.
+     * @param int $value
      **/
     public function measure($variable, $value)
     {
-        $this->data[] = "$variable:$delta|c";
+        $this->data[] = "$variable:$value|c";
     }
 
     /**
