@@ -1,6 +1,6 @@
 # Beberlei Metrics
 
-Simple library that abstracts different metrics providers. I find this necessary
+Simple library that abstracts different metrics collectors. I find this necessary
 to have a consistent and simple metrics API that doesn't cause vendor lock-in.
 
 It also ships with a Symfony Bundle. This is not a library for displaying metrics.
@@ -42,7 +42,7 @@ You can measure stats:
     $metrics->decrement('foo.bar');
 
     $start = microtime(true);
-    $diff = microtime(true) - $start;
+    $diff  = microtime(true) - $start;
     $metrics->timing('foo.bar', $diff);
 
     $value = 1234;
@@ -112,7 +112,7 @@ Do Configuration:
     # app/config/config.yml
     beberlei_metrics:
         default: foo
-        providers:
+        collectors:
             foo:
                 type: statsd
             bar:
@@ -129,7 +129,7 @@ Do Configuration:
                 username: foo
                 password: bar
 
-This adds providers to the Metrics registry. The functions are automatically included
+This adds collectors to the Metrics registry. The functions are automatically included
 in the Bundle class so that in your code you can just start using the convenience functions.
 Metrics are also added as services:
 

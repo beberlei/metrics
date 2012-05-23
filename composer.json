@@ -10,6 +10,14 @@
         "okitsu/zabbix-sender": "For zabbix integration",
         "kriswallsmith/buzz": "For Librato integration"
     },
+    "require-dev": {
+        "symfony/http-kernel": "*",
+        "symfony/config": "*",
+        "symfony/dependency-injection": "*",
+        "mockery/mockery": "*",
+        "okitsu/zabbix-sender": "*",
+        "kriswallsmith/buzz": "*"
+    },
     "autoload": {
         "psr-0": {
             "Beberlei\\Metrics": "src/",

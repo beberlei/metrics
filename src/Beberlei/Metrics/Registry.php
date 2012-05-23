@@ -22,6 +22,11 @@ class Registry
 
     static private $collectors = array();
 
+    static public function clear()
+    {
+        self::$collectors = array();
+    }
+
     static public function setDefaultName($defaultCollector)
     {
         self::$defaultCollector = $defaultCollector;
@@ -45,6 +50,11 @@ class Registry
         }
 
         return self::$collectors[$name];
+    }
+
+    static public function all()
+    {
+        return self::$collectors;
     }
 }
 

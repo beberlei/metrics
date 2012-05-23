@@ -25,7 +25,7 @@ abstract class Factory
     /**
      * @var Buzz\Browser
      */
-    private $httpClient;
+    private static $httpClient;
 
     /**
      * Create Metrics Collector Instance
@@ -41,7 +41,7 @@ abstract class Factory
                 $host = isset($options['host']) ? $options['host'] : 'localhost';
                 $port = isset($options['port']) ? $options['port'] : 8125;
 
-                return new Collector\Statsd($host, $port);
+                return new Collector\StatsD($host, $port);
 
             case 'zabbix':
                 if ( ! isset($options['hostname'])) {
@@ -84,6 +84,9 @@ abstract class Factory
                     $options['username'],
                     $options['password']
                 );
+
+            case 'null':
+                return new Collector\Null();
 
             default:
                 throw new MetricsException('Unknown metrics collector given.');
