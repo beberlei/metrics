@@ -47,7 +47,7 @@ class StatsD implements Collector
      **/
     public function increment($stats)
     {
-        $this->data[] = "$stats:1c";
+        $this->data[] = "$stats:1|c";
     }
 
     /**
@@ -58,7 +58,7 @@ class StatsD implements Collector
      **/
     public function decrement($stats)
     {
-        $this->data[] = "$stats:-1c";
+        $this->data[] = "$stats:-1|c";
     }
 
     /**
