@@ -46,7 +46,7 @@ class Registry
         $name = $name ?: self::$defaultCollector;
 
         if ( ! isset(self::$collectors[$name])) {
-            throw new MetricsException('No collector in registry with name ' . $name);
+            self::$collectors[$name] = Collector\Null();
         }
 
         return self::$collectors[$name];

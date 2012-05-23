@@ -34,7 +34,10 @@ class BeberleiMetricsBundle extends Bundle
         $registry = $this->container->get('beberlei_metrics.registry');
 
         foreach ($registry->all() as $collector) {
-            $collector->flush();
+            try {
+                $collector->flush();
+            } catch(\Exception $e) {
+            }
         }
         $registry->clear();
     }
