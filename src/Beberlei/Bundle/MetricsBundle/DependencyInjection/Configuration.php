@@ -28,6 +28,7 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('type')->isRequired()->end()
                             ->scalarNode('hostname')->end()
                             ->scalarNode('server')->end()
+                            ->scalarNode('host')->end()
                             ->scalarNode('port')->end()
                             ->scalarNode('file')->end()
                             ->scalarNode('username')->end()
