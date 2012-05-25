@@ -38,7 +38,7 @@ abstract class Factory
     {
         switch($type) {
             case 'statsd':
-                $host = isset($options['hostname']) ? $options['hostname'] : 'localhost';
+                $host = isset($options['host']) ? $options['host'] : 'localhost';
                 $port = isset($options['port']) ? $options['port'] : 8125;
 
                 return new Collector\StatsD($host, $port);
@@ -48,7 +48,7 @@ abstract class Factory
                     throw new MetricsException('Hostname is required for zabbix collector.');
                 }
 
-                $host = isset($options['hostname']) ? $options['hostname'] : null;
+                $host = isset($options['host']) ? $options['host'] : null;
                 $port = isset($options['port']) ? $options['port'] : null;
                 $sender = new Sender($host, $port);
 
