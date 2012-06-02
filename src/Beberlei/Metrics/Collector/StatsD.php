@@ -96,5 +96,7 @@ class StatsD implements Collector
             fclose($fp);
         } catch (Exception $e) {
         }
+
+        $this->data = array();
     }
 }
