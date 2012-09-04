@@ -24,5 +24,6 @@
             "Beberlei\\Bundle\\MetricsBundle": "src/"
         },
         "files": ["src/Beberlei/Metrics/functions.php"]
-    }
+    },
+    "minimum-stability": "dev"
 }
