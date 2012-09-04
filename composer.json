@@ -22,6 +22,7 @@
         "psr-0": {
             "Beberlei\\Metrics": "src/",
             "Beberlei\\Bundle\\MetricsBundle": "src/"
-        }
+        },
+        "files": ["src/Beberlei/Metrics/functions.php"]
     }
 }
