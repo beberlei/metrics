@@ -69,8 +69,6 @@ the registry names. If null is provided, the default registry entry is used.
 
 ```php
 <?php
-require_once 'vendor/beberlei/metrics/src/Beberlei/Metrics/functions.php';
-
 $registryName = 'name';
 
 bmetrics_increment('foo.bar', $registryName);
@@ -78,6 +76,8 @@ bmetrics_decrement('foo.bar', null);
 bmetrics_measure('foo.bar', $value, $registryName);
 bmetrics_timing('foo.bar', $diff, null);
 ```
+
+The functions are automatically available through the Composer autoload files mechanism.
 
 ## Configuration
 
