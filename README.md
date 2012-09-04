@@ -11,6 +11,7 @@ Currently supported backends:
 * Zabbix
 * Librato
 * Doctrine DBAL
+* Monolog
 * Null (Dummy that does nothing)
 
 ## Installation
@@ -147,6 +148,8 @@ Do Configuration:
             dbal:
                 type: doctrine_dbal
                 connection: metrics # using the connection named "metrics"
+            monolog:
+                type: monolog
 
 This adds collectors to the Metrics registry. The functions are automatically included
 in the Bundle class so that in your code you can just start using the convenience functions.
