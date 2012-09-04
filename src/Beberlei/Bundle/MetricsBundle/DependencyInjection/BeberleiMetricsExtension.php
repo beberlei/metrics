@@ -30,6 +30,10 @@ class BeberleiMetricsExtension extends Extension
                 ));
             }
 
+            if ($collector['type'] === "monolog") {
+                $collector['logger'] = new Reference('logger');
+            }
+
             $def = new Definition('Beberlei\Metrics\Collector\Collector');
             $def->setFactoryMethod('create');
             $def->setFactoryClass('%beberlei_metrics.factory.class%');
