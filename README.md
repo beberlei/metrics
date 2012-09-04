@@ -146,7 +146,7 @@ Do Configuration:
                 password: bar
             dbal:
                 type: doctrine_dbal
-                connection: doctrine.dbal.metrics_connection
+                connection: metrics # using the connection named "metrics"
 
 This adds collectors to the Metrics registry. The functions are automatically included
 in the Bundle class so that in your code you can just start using the convenience functions.

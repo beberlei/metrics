@@ -25,7 +25,9 @@ class BeberleiMetricsExtension extends Extension
 
         foreach ($config['collectors'] as $name => $collector) {
             if (isset($collector['connection'])) {
-                $collector['connection'] = new Reference($collector['connection']);
+                $collector['connection'] = new Reference(sprintf(
+                    'doctrine.dbal.%s_connection', $collector['connection']
+                ));
             }
 
             $def = new Definition('Beberlei\Metrics\Collector\Collector');
