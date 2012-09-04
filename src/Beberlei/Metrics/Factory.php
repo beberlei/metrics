@@ -85,6 +85,13 @@ abstract class Factory
                     $options['password']
                 );
 
+            case 'doctrine_dbal':
+                if ( ! isset($options['connection'])) {
+                    throw new MetricsException('connection is required for Doctrine DBAL collector.');
+                }
+
+                return new Collector\DoctrineDBAL($options['connection']);
+
             case 'null':
                 return new Collector\Null();
 

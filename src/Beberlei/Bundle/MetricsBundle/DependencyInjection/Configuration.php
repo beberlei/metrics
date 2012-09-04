@@ -15,7 +15,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('');
+        $rootNode = $treeBuilder->root('beberlei_metrics');
 
         $rootNode
             ->children()
@@ -33,6 +33,7 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('file')->end()
                             ->scalarNode('username')->end()
                             ->scalarNode('password')->end()
+                            ->scalarNode('connection')->end()
                         ->end()
                     ->end()
                 ->end()
