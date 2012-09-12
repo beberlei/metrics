@@ -16,6 +16,7 @@ namespace Beberlei\Metrics;
 use Net\Zabbix\Sender;
 use Net\Zabbix\Agent\Config;
 use Buzz\Browser;
+use Buzz\Client\Curl;
 
 /**
  * Static factory for Metrics Collectors.
@@ -110,7 +111,7 @@ abstract class Factory
     static public function getHttpClient()
     {
         if (self::$httpClient === null) {
-            self::$httpClient = new Browser;
+            self::$httpClient = new Browser(new Curl);
         }
 
         return self::$httpClient;
