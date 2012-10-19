@@ -30,9 +30,10 @@ class Zabbix implements Collector
      */
     private $hostname;
 
-    public function __construct(Sender $sender)
+    public function __construct(Sender $sender, $hostname = null)
     {
-        $this->sender = $sender;
+        $this->sender   = $sender;
+        $this->hostname = $hostname ?: gethostname();
     }
 
     public function increment($variable)
