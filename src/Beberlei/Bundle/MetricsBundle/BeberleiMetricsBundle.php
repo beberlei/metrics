@@ -31,17 +31,8 @@ class BeberleiMetricsBundle extends Bundle
 
     public function shutdown()
     {
-        $registry = $this->container->get('beberlei_metrics.registry');
-
-        foreach ($registry->all() as $collector) {
-            try {
-                $collector->flush();
-            } catch(\Exception $e) {
-                $logger = $this->container->get('logger');
-                $logger->debug("Flushing metrics failed: " . $e->getMessage());
-            }
-        }
-        $registry->clear();
+        $flush = $this->container->get('beberlei_metrics.flush_service');
+        $flush->onTerminate();
     }
 }
 

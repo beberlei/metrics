@@ -13,6 +13,8 @@
 
 namespace Beberlei\Metrics\Collector;
 
+use Exception;
+
 /**
  * Sends statistics to the stats daemon over UDP
  */

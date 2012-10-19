@@ -24,6 +24,16 @@ class BeberleiMetricsExtension extends Extension
         $registry->addMethodCall('setDefaultName', array($config['default']));
 
         foreach ($config['collectors'] as $name => $collector) {
+            if (isset($collector['connection'])) {
+                $collector['connection'] = new Reference(sprintf(
+                    'doctrine.dbal.%s_connection', $collector['connection']
+                ));
+            }
+
+            if ($collector['type'] === "monolog") {
+                $collector['logger'] = new Reference('logger');
+            }
+
             $def = new Definition('Beberlei\Metrics\Collector\Collector');
             $def->setFactoryMethod('create');
             $def->setFactoryClass('%beberlei_metrics.factory.class%');

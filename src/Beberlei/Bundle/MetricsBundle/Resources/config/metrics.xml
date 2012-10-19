@@ -7,10 +7,18 @@
     <parameters>
         <parameter key="beberlei_metrics.registry.class">Beberlei\Metrics\Registry</parameter>
         <parameter key="beberlei_metrics.factory.class">Beberlei\Metrics\Factory</parameter>
+        <parameter key="beberlei_metrics.flush_service.class">Beberlei\Bundle\MetricsBundle\FlushMetrics</parameter>
     </parameters>
 
     <services>
         <service id="beberlei_metrics.registry" class="%beberlei_metrics.registry.class%" />
+
+        <service id="beberlei_metrics.flush_service" class="%beberlei_metrics.flush_service.class%">
+            <argument type="service" id="beberlei_metrics.registry" />
+            <argument type="service" id="logger" />
+
+            <tag name="kernel.event_listener" event="kernel.terminate" method="onTerminate" priority="100" />
+        </service>
     </services>
 
 </container>

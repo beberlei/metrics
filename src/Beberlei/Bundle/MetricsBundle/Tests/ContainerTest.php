@@ -14,6 +14,7 @@
 namespace Beberlei\Bundle\MetricsBundle\Tests;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\DependencyInjection\Compiler\ResolveDefinitionTemplatesPass;
 
@@ -69,6 +70,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $loader = new BeberleiMetricsExtension();
         $container->registerExtension($loader);
         $loader->load($configs, $container);
+        $container->setDefinition('logger', new Definition('stdClass'));
 
         $container->getCompilerPassConfig()->setOptimizationPasses(array(new ResolveDefinitionTemplatesPass()));
         $container->getCompilerPassConfig()->setRemovingPasses(array());

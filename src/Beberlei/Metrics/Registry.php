@@ -46,7 +46,7 @@ class Registry
         $name = $name ?: self::$defaultCollector;
 
         if ( ! isset(self::$collectors[$name])) {
-            self::$collectors[$name] = Collector\Null();
+            self::$collectors[$name] = new Collector\Null();
         }
 
         return self::$collectors[$name];
