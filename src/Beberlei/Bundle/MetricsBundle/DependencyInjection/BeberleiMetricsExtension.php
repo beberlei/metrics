@@ -23,21 +23,24 @@ class BeberleiMetricsExtension extends Extension
         $registry = $container->getDefinition('beberlei_metrics.registry');
         $registry->addMethodCall('setDefaultName', array($config['default']));
 
-        foreach ($config['collectors'] as $name => $collector) {
-            if (isset($collector['connection'])) {
-                $collector['connection'] = new Reference(sprintf(
-                    'doctrine.dbal.%s_connection', $collector['connection']
+        foreach ($config['collectors'] as $name => $options) {
+            $type = $options['type'];
+            unset($options['type']);
+
+            if ('doctrine_dbal' == $type) {
+                $options['connection'] = new Reference(sprintf(
+                    'doctrine.dbal.%s_connection', $options['connection']
                 ));
             }
 
-            if ($collector['type'] === "monolog") {
-                $collector['logger'] = new Reference('logger');
+            if ('monolog' == $type) {
+                $options['logger'] = new Reference('logger');
             }
 
             $def = new Definition('Beberlei\Metrics\Collector\Collector');
             $def->setFactoryMethod('create');
             $def->setFactoryClass('%beberlei_metrics.factory.class%');
-            $def->setArguments(array($collector['type'], $collector));
+            $def->setArguments(array($type, $options));
 
             $container->setDefinition('beberlei_metrics.collector.' . $name, $def);
 
@@ -47,4 +50,3 @@ class BeberleiMetricsExtension extends Extension
         }
     }
 }
-
