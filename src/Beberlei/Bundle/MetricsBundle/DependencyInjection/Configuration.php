@@ -21,7 +21,6 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode('default')->defaultValue('default')->end()
                 ->arrayNode('collectors')
-                    ->isRequired()
                     ->useAttributeAsKey('name')
                     ->prototype('array')
                         ->children()
