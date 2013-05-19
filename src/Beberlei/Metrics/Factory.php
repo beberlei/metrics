@@ -39,10 +39,13 @@ abstract class Factory
     {
         switch($type) {
             case 'statsd':
-                $host = isset($options['host']) ? $options['host'] : 'localhost';
-                $port = isset($options['port']) ? $options['port'] : 8125;
-
-                return new Collector\StatsD($host, $port);
+                if ( ! isset($options['host']) && ! isset($options['port'])) {
+                    return new Collector\StatsD();
+                } elseif ( isset($options['host']) && ! isset($options['port'])) {
+                    return new Collector\StatsD($options['host']);
+                } elseif ( ! isset($options['host']) && isset($options['port'])) {
+                    throw new MetricsException('You should specified a host if you specified a port');
+                }
 
             case 'graphite':
                 if ( ! isset($options['host']) && ! isset($options['port'])) {
@@ -60,9 +63,16 @@ abstract class Factory
                     throw new MetricsException('Hostname is required for zabbix collector.');
                 }
 
-                $host = isset($options['host']) ? $options['host'] : null;
-                $port = isset($options['port']) ? $options['port'] : null;
-                $sender = new Sender($host, $port);
+                if ( ! isset($options['server']) && ! isset($options['port'])) {
+                    $sender = new Sender();
+                } elseif ( isset($options['server']) && ! isset($options['port'])) {
+                    $sender = new Sender($options['server']);
+                } elseif ( ! isset($options['server']) && isset($options['port'])) {
+                    die(var_dump($options));
+                    throw new MetricsException('You should specified a server if you specified a port');
+                } else {
+                    $sender = new Sender($options['server'], $options['port']);
+                }
 
                 return new Collector\Zabbix($sender, $options['hostname']);
 
