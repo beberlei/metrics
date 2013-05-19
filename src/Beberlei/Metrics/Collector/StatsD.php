@@ -33,41 +33,39 @@ class StatsD implements Collector
     /**
      * Log timing information
      *
-     * @param string $stats The metric to in log timing info for.
-     * @param float $time The ellapsed time (ms) to log
+     * @param string $variable The metric to in log timing info for.
+     * @param float  $time     The ellapsed time (ms) to log
      **/
-    public function timing($stat, $time)
+    public function timing($variable, $time)
     {
-        $this->data[] = "$stat:$time|ms";
+        $this->data[] = "$variable:$time|ms";
     }
 
     /**
-     * Increments one or more stats counters
+     * Increments one or more variable counters
      *
-     * @param string $stats The metric to increment.
-     * @return boolean
+     * @param string $variable The metric to increment.
      **/
-    public function increment($stats)
+    public function increment($variable)
     {
-        $this->data[] = "$stats:1|c";
+        $this->data[] = "$variable:1|c";
     }
 
     /**
-     * Decrements one or more stats counters.
+     * Decrements one or more variable counters.
      *
-     * @param string $stats The metric to increment.
-     * @return boolean
+     * @param string $variable The metric to increment.
      **/
-    public function decrement($stats)
+    public function decrement($variable)
     {
-        $this->data[] = "$stats:-1|c";
+        $this->data[] = "$variable:-1|c";
     }
 
     /**
-     * Updates one or more stats counters by arbitrary amounts.
+     * Updates one or more variable counters by arbitrary amounts.
      *
-     * @param string $stats The metric to update.
-     * @param int $value
+     * @param string $variable The metric to update.
+     * @param int    $value    The value to set
      **/
     public function measure($variable, $value)
     {
