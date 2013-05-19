@@ -44,6 +44,17 @@ abstract class Factory
 
                 return new Collector\StatsD($host, $port);
 
+            case 'graphite':
+                if ( ! isset($options['host']) && ! isset($options['port'])) {
+                    return new Collector\Graphite();
+                } elseif ( isset($options['host']) && ! isset($options['port'])) {
+                    return new Collector\Graphite($options['host']);
+                } elseif ( ! isset($options['host']) && isset($options['port'])) {
+                    throw new MetricsException('You should specified a host if you specified a port');
+                }
+
+                return new Collector\Graphite($options['host'], $options['port']);
+
             case 'zabbix':
                 if ( ! isset($options['hostname'])) {
                     throw new MetricsException('Hostname is required for zabbix collector.');

@@ -8,6 +8,7 @@ It also ships with a Symfony Bundle. This is not a library for displaying metric
 Currently supported backends:
 
 * StatsD
+* Graphite
 * Zabbix
 * Librato
 * Doctrine DBAL
