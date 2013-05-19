@@ -30,8 +30,8 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
             'default' => 'foo',
             'collectors' => array(
                 'foo'     => array('type' => 'statsd'),
-                'bar'     => array('type' => 'zabbix', 'hostname' => 'foo.beberlei.de', 'server' => 'localhost', 'port' => 10051),
-                'baz'     => array('type' => 'zabbix', 'hostname' => 'foo.beberlei.de', 'file' => '/etc/zabbix/zabbix_agentd.conf'),
+                'bar'     => array('type' => 'zabbix', 'hostname' => 'foo.beberlei.de', 'server' => 'localhost', 'port' => 10051, 'host' => 'localhost'),
+                'baz'     => array('type' => 'zabbix_file', 'hostname' => 'foo.beberlei.de', 'file' => '/etc/zabbix/zabbix_agentd.conf'),
                 'librato' => array('type' => 'librato', 'username' => 'foo', 'password' => 'bar', 'hostname' => 'foo.beberlei.de'),
             )
         )));
@@ -41,20 +41,11 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Beberlei\Metrics\Collector\Zabbix', $container->get('beberlei_metrics.collector.baz'));
         $this->assertInstanceOf('Beberlei\Metrics\Collector\Librato', $container->get('beberlei_metrics.collector.librato'));
         $this->assertInstanceOf('Beberlei\Metrics\Registry', $container->get('beberlei_metrics.registry'));
-    }
 
-    public function testBootShutdownBundle()
-    {
-        $container = $this->createContainer(array(array(
-            'collectors' => array(
-                'default' => array('type' => 'null'),
-            )
-        )));
+        $this->assertSame($container->get('beberlei_metrics.registry')->get(), $container->get('beberlei_metrics.collector.foo'));
+        $this->assertCount(4, $container->get('beberlei_metrics.registry')->all());
 
-        $bundle = new BeberleiMetricsBundle();
-        $bundle->setContainer($container);
-        $bundle->boot();
-        $bundle->shutdown();
+        $this->assertTrue(function_exists('bmetrics_measure'));
     }
 
     private function createContainer($configs)
