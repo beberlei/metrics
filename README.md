@@ -161,3 +161,12 @@ Metrics are also added as services:
 $metrics = $container->get('beberlei_metrics.collector.foo');
 ```
 
+Some backends defer sending and aggregate all information, make sure
+to call flush. But if symfony handle a request, the framework do it for you.
+But if symfony handle a cli task, or if symfony is run as a deamon, you have to
+flush by yourself:
+
+```php
+<?php
+$container->get('beberlei_metrics.flush_service')->onTerminate();
+```
