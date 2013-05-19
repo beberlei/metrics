@@ -17,14 +17,6 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class BeberleiMetricsBundle extends Bundle
 {
-    public function boot()
-    {
-        parent::boot();
-
-        // initialize all collectors
-        $this->container->get('beberlei_metrics.registry');
-    }
-
     public function shutdown()
     {
         $flush = $this->container->get('beberlei_metrics.flush_service');
