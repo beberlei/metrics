@@ -24,8 +24,6 @@ class FlushMetrics
                 $this->logger->err("Flushing metrics failed: " . $e->getMessage());
             }
         }
-
-        $this->registry->clear();
     }
 }
 
