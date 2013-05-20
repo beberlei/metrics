@@ -133,6 +133,7 @@ Do Configuration:
     # app/config/config.yml
     beberlei_metrics:
         default: foo
+        enable_static_api: true # true by default
         collectors:
             foo:
                 type: statsd
@@ -173,3 +174,7 @@ flush by yourself:
 <?php
 $container->get('beberlei_metrics.flush_service')->onTerminate();
 ```
+
+If you plan to always use symfony services, and so never use the static api or
+the functions, you can disable it in the `config.yml` with
+`enable_static_api: false`. It is just a matter of performance.

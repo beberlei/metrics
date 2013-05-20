@@ -20,6 +20,8 @@ class BeberleiMetricsExtension extends Extension
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('metrics.xml');
 
+        $container->setParameter('beberlei_metrics.enable_static_api', $config['enable_static_api']);
+
         $registry = $container->getDefinition('beberlei_metrics.registry');
         $registry->addMethodCall('setDefaultName', array($config['default']));
 

@@ -17,5 +17,11 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class BeberleiMetricsBundle extends Bundle
 {
+    public function boot()
+    {
+        if ($this->container->getParameter('beberlei_metrics.enable_static_api')) {
+            $this->container->get('beberlei_metrics.registry');
+        }
+    }
 }
 

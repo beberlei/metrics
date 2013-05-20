@@ -20,6 +20,7 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->scalarNode('default')->defaultValue('default')->end()
+                ->booleanNode('enable_static_api')->defaultValue(true)->end()
                 ->arrayNode('collectors')
                     ->useAttributeAsKey('name')
                     ->prototype('array')
