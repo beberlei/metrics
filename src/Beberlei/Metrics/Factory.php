@@ -41,18 +41,22 @@ abstract class Factory
             case 'statsd':
                 if ( ! isset($options['host']) && ! isset($options['port'])) {
                     return new Collector\StatsD();
-                } elseif ( isset($options['host']) && ! isset($options['port'])) {
+                }
+                if ( isset($options['host']) && ! isset($options['port'])) {
                     return new Collector\StatsD($options['host']);
-                } elseif ( ! isset($options['host']) && isset($options['port'])) {
+                }
+                if ( ! isset($options['host']) && isset($options['port'])) {
                     throw new MetricsException('You should specified a host if you specified a port');
                 }
 
             case 'graphite':
                 if ( ! isset($options['host']) && ! isset($options['port'])) {
                     return new Collector\Graphite();
-                } elseif ( isset($options['host']) && ! isset($options['port'])) {
+                }
+                if ( isset($options['host']) && ! isset($options['port'])) {
                     return new Collector\Graphite($options['host']);
-                } elseif ( ! isset($options['host']) && isset($options['port'])) {
+                }
+                if ( ! isset($options['host']) && isset($options['port'])) {
                     throw new MetricsException('You should specified a host if you specified a port');
                 }
 
@@ -68,7 +72,6 @@ abstract class Factory
                 } elseif ( isset($options['server']) && ! isset($options['port'])) {
                     $sender = new Sender($options['server']);
                 } elseif ( ! isset($options['server']) && isset($options['port'])) {
-                    die(var_dump($options));
                     throw new MetricsException('You should specified a server if you specified a port');
                 } else {
                     $sender = new Sender($options['server'], $options['port']);
