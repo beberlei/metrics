@@ -87,9 +87,11 @@ class StatsD implements Collector
             return;
         }
 
+        $level = error_reporting(0);
         foreach ($this->data as $line) {
-            @fwrite($fp, $line);
+            fwrite($fp, $line);
         }
+        error_reporting($level);
 
         fclose($fp);
 
