@@ -13,8 +13,6 @@
 
 namespace Beberlei\Metrics\Collector;
 
-use Exception;
-
 /**
  * Sends statistics to the stats daemon over UDP
  */
@@ -79,25 +77,21 @@ class StatsD implements Collector
      */
     public function flush()
     {
-        if ( ! $this->data) {
+        if (!$this->data) {
             return;
         }
 
-        try {
+        $fp = fsockopen("udp://" . $this->host, $this->port, $errno, $errstr, 1.0);
 
-            $fp = fsockopen("udp://" . $this->host, $this->port, $errno, $errstr);
-
-            if (! $fp) {
-                return;
-            }
-
-            foreach ($this->data as $line) {
-                fwrite($fp, $line);
-            }
-
-            fclose($fp);
-        } catch (Exception $e) {
+        if (!$fp) {
+            return;
         }
+
+        foreach ($this->data as $line) {
+            @fwrite($fp, $line);
+        }
+
+        fclose($fp);
 
         $this->data = array();
     }
