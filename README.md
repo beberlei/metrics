@@ -20,7 +20,7 @@ Using Composer:
 
     {
         "require": {
-            "beberlei/metrics": "*"
+            "beberlei/metrics": "~1.0"
         }
     }
 
@@ -35,7 +35,7 @@ $metrics = \Beberlei\Metrics\Factory::create('statsd');
 \Beberlei\Metrics\Registry::setDefaultName('name');
 
 $metrics = \Beberlei\Metrics\Registry::get('name');
-$metrics = \Beberlei\Metrics\Registry::get();
+$metrics = \Beberlei\Metrics\Registry::get(); // Will returns the default metrics
 ```
 
 You can measure stats:
