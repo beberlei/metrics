@@ -19,20 +19,9 @@ class BeberleiMetricsBundle extends Bundle
 {
     public function boot()
     {
-        if ( ! function_exists('bmetrics_increment')) {
-            require_once __DIR__ . "/../../Metrics/functions.php";
+        if ($this->container->getParameter('beberlei_metrics.enable_static_api')) {
+            $this->container->get('beberlei_metrics.registry');
         }
-
-        parent::boot();
-
-        // initialize all collectors
-        $this->container->get('beberlei_metrics.registry');
-    }
-
-    public function shutdown()
-    {
-        $flush = $this->container->get('beberlei_metrics.flush_service');
-        $flush->onTerminate();
     }
 }
 

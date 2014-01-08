@@ -1,9 +1,11 @@
 # Metrics
 
-Simple library that abstracts different metrics collectors. I find this necessary
-to have a consistent and simple metrics API that doesn't cause vendor lock-in.
+Simple library that abstracts different metrics collectors. I find this
+necessary to have a consistent and simple metrics API that doesn't cause vendor
+lock-in.
 
-It also ships with a Symfony Bundle. This is not a library for displaying metrics.
+It also ships with a Symfony Bundle. This is not a library for displaying
+metrics.
 
 Currently supported backends:
 
@@ -56,8 +58,8 @@ $value = 1234;
 $metrics->measure('foo.bar', $value);
 ```
 
-Some backends defer sending and aggregate all information, make sure
-to call flush:
+Some backends defer sending and aggregate all information, make sure to call
+flush:
 
 ```php
 <?php
@@ -66,8 +68,8 @@ $metrics = \Beberlei\Metrics\Registry::get('name');
 $metrics->flush();
 ```
 
-There is a convenience functional API. It works with
-the registry names. If null is provided, the default registry entry is used.
+There is a convenience functional API. It works with the registry names. If null
+is provided, the default registry entry is used.
 
 ```php
 <?php
@@ -79,7 +81,8 @@ bmetrics_measure('foo.bar', $value, $registryName);
 bmetrics_timing('foo.bar', $diff, null);
 ```
 
-The functions are automatically available through the Composer autoload files mechanism.
+The functions are automatically available through the Composer autoload files
+mechanism.
 
 ## Configuration
 
@@ -130,6 +133,7 @@ Do Configuration:
     # app/config/config.yml
     beberlei_metrics:
         default: foo
+        enable_static_api: true # true by default
         collectors:
             foo:
                 type: statsd
@@ -152,12 +156,25 @@ Do Configuration:
             monolog:
                 type: monolog
 
-This adds collectors to the Metrics registry. The functions are automatically included
-in the Bundle class so that in your code you can just start using the convenience functions.
-Metrics are also added as services:
+This adds collectors to the Metrics registry. The functions are automatically
+included in the Bundle class so that in your code you can just start using the
+convenience functions. Metrics are also added as services:
 
 ```php
 <?php
 $metrics = $container->get('beberlei_metrics.collector.foo');
 ```
 
+Some backends defer sending and aggregate all information, make sure to call
+flush. But if symfony handle a request, the framework do it for you. But if
+symfony handle a cli task, or if symfony is running as a deamon, you have to
+flush by yourself:
+
+```php
+<?php
+$container->get('beberlei_metrics.flush_service')->onTerminate();
+```
+
+If you plan to always use symfony services, and so never use the static api or
+the functions, you can disable it in the `config.yml` with
+`enable_static_api: false`. It is just a matter of performance.
