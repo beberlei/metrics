@@ -27,6 +27,9 @@ class Null implements Collector
     public function measure($variable, $value)
     {
     }
+    public function gauge($variable, $value)
+    {
+    }
     public function flush()
     {
     }
