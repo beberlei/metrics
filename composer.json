@@ -7,16 +7,16 @@
     ],
     "license": "MIT",
     "suggest": {
-        "okitsu/zabbix-sender": "For zabbix integration",
-        "kriswallsmith/buzz": "For Librato integration"
+        "kriswallsmith/buzz": "For Librato integration",
+        "okitsu/zabbix-sender": "For zabbix integration"
     },
     "require-dev": {
-        "symfony/http-kernel": "*",
+        "doctrine/dbal": "*",
+        "kriswallsmith/buzz": "*",
+        "okitsu/zabbix-sender": "*@dev",
         "symfony/config": "*",
         "symfony/dependency-injection": "*",
-        "mockery/mockery": "*",
-        "okitsu/zabbix-sender": "*",
-        "kriswallsmith/buzz": "*"
+        "symfony/http-kernel": "*"
     },
     "autoload": {
         "psr-0": {
