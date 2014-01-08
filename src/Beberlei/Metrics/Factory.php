@@ -46,8 +46,10 @@ abstract class Factory
                     return new Collector\StatsD($options['host']);
                 }
                 if ( ! isset($options['host']) && isset($options['port'])) {
-                    throw new MetricsException('You should specified a host if you specified a port');
+                    throw new MetricsException('You should specified a host if you specified a port.');
                 }
+
+                return new Collector\StatsD($options['host'], $options['port']);
 
             case 'graphite':
                 if ( ! isset($options['host']) && ! isset($options['port'])) {
@@ -57,7 +59,7 @@ abstract class Factory
                     return new Collector\Graphite($options['host']);
                 }
                 if ( ! isset($options['host']) && isset($options['port'])) {
-                    throw new MetricsException('You should specified a host if you specified a port');
+                    throw new MetricsException('You should specified a host if you specified a port.');
                 }
 
                 return new Collector\Graphite($options['host'], $options['port']);
@@ -72,7 +74,7 @@ abstract class Factory
                 } elseif ( isset($options['server']) && ! isset($options['port'])) {
                     $sender = new Sender($options['server']);
                 } elseif ( ! isset($options['server']) && isset($options['port'])) {
-                    throw new MetricsException('You should specified a server if you specified a port');
+                    throw new MetricsException('You should specified a server if you specified a port.');
                 } else {
                     $sender = new Sender($options['server'], $options['port']);
                 }
@@ -119,7 +121,7 @@ abstract class Factory
 
             case 'monolog':
                 if ( ! isset($options['logger'])) {
-                    throw new MetricsException("Missing 'logger' key with monolog service");
+                    throw new MetricsException("Missing 'logger' key with monolog service.");
                 }
 
                 return new Collector\Monolog($options['logger']);
