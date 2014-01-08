@@ -19,7 +19,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
             array('Beberlei\Metrics\Collector\Zabbix', 'zabbix_file', array('hostname' => 'foobar.com', 'file' => '/tmp/foobar')),
             array('Beberlei\Metrics\Collector\Librato', 'librato', array('hostname' => 'foobar.com', 'username' => 'username', 'password' => 'password')),
             array('Beberlei\Metrics\Collector\DoctrineDBAL', 'doctrine_dbal', array('connection' => $this->getMock('Doctrine\DBAL\Connection'))),
-            array('Beberlei\Metrics\Collector\Monolog', 'monolog', array('logger' => 'a logger')),
+            array('Beberlei\Metrics\Collector\Monolog', 'monolog', array('logger' => $this->getMock('Psr\Log\LoggerInterface'))),
             array('Beberlei\Metrics\Collector\Null', 'null'),
         );
     }

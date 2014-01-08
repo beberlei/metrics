@@ -16,7 +16,8 @@
         "symfony/dependency-injection": "*",
         "mockery/mockery": "*",
         "okitsu/zabbix-sender": "*",
-        "kriswallsmith/buzz": "*"
+        "kriswallsmith/buzz": "*",
+        "psr/log": "1.0.0"
     },
     "autoload": {
         "psr-0": {
