@@ -73,6 +73,17 @@ class StatsD implements Collector
     }
 
     /**
+     * Updates one stat gauges by arbitrary amounts.
+     *
+     * @param string $variable The metric to update.
+     * @param int    $value
+     **/
+    public function gauge($variable, $value)
+    {
+        $this->data[] = "$variable:$value|g";
+    }
+
+    /**
      * Squirt the metrics over UDP
      */
     public function flush()
