@@ -22,7 +22,7 @@ class StatsD implements Collector
     private $port;
     private $data = array();
 
-    public function __construct($host, $port)
+    public function __construct($host = 'localhost', $port = '8125')
     {
         $this->host = $host;
         $this->port = $port;
