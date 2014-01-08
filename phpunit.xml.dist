@@ -19,7 +19,7 @@
 
     <filter>
         <whitelist>
-            <directory>.</directory>
+            <directory>src</directory>
             <exclude>
                 <directory>./src/Beberlei/Bundle/MetricsBundle/Tests</directory>
                 <directory>./tests</directory>
