@@ -13,11 +13,13 @@
 
 namespace Beberlei\Metrics\Collector;
 
+use Psr\Log\LoggerInterface;
+
 class Monolog implements Collector
 {
     private $logger;
 
-    public function __construct($logger)
+    public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
     }
@@ -26,18 +28,22 @@ class Monolog implements Collector
     {
         $this->logger->debug("increment:$variable");
     }
+
     public function decrement($variable)
     {
         $this->logger->debug("decrement:$variable");
     }
+
     public function timing($variable, $time)
     {
         $this->logger->debug("timing:$variable:$time");
     }
+
     public function measure($variable, $value)
     {
         $this->logger->debug("measure:$variable:$value");
     }
+
     public function flush()
     {
     }
