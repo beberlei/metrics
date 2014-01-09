@@ -25,5 +25,10 @@
             "Beberlei\\Bundle\\MetricsBundle": "src/"
         },
         "files": ["src/Beberlei/Metrics/functions.php"]
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.x-dev"
+        }
     }
 }
