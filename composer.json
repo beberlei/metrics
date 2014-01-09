@@ -11,6 +11,7 @@
         "kriswallsmith/buzz": "For Librato integration"
     },
     "require-dev": {
+        "doctrine/dbal": "~2.0",
         "kriswallsmith/buzz": "*",
         "okitsu/zabbix-sender": "*@dev",
         "psr/log": "~1.0",
