@@ -3,16 +3,18 @@
 namespace Beberlei\Bundle\MetricsBundle;
 
 use Beberlei\Metrics\Registry;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 class FlushMetrics
 {
     private $registry;
     private $logger;
 
-    public function __construct(Registry $registry, $logger)
+    public function __construct(Registry $registry, LoggerInterface $logger = null)
     {
         $this->registry = $registry;
-        $this->logger = $logger;
+        $this->logger = $logger ?: new NullLogger;
     }
 
     public function onTerminate()
@@ -21,7 +23,7 @@ class FlushMetrics
             try {
                 $collector->flush();
             } catch (\Exception $e) {
-                $this->logger->err("Flushing metrics failed: ".$e->getMessage());
+                $this->logger->error('Flushing metrics failed: '.$e->getMessage(), array('exception' => $e));
             }
         }
 

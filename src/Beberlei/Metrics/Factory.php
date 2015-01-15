@@ -125,7 +125,7 @@ abstract class Factory
                 return new Collector\Null();
 
             default:
-                throw new MetricsException('Unknown metrics collector given.');
+                throw new MetricsException(sprintf('Unknown metrics collector given (%s).', $type));
         }
     }
 

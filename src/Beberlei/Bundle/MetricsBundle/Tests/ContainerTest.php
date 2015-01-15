@@ -69,7 +69,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $loader = new BeberleiMetricsExtension();
         $container->registerExtension($loader);
         $loader->load($configs, $container);
-        $container->setDefinition('logger', new Definition('stdClass'));
+        $container->setDefinition('logger', new Definition('Psr\Log\NullLogger'));
 
         $container->getCompilerPassConfig()->setOptimizationPasses(array(new ResolveDefinitionTemplatesPass()));
         $container->getCompilerPassConfig()->setRemovingPasses(array());
