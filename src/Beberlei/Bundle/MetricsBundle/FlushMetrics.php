@@ -17,7 +17,7 @@ class FlushMetrics
         $this->logger = $logger ?: new NullLogger;
     }
 
-    public function onTerminate()
+    public function flush()
     {
         foreach ($this->registry->all() as $collector) {
             try {

@@ -31,7 +31,6 @@ class BeberleiMetricsBundle extends Bundle
 
     public function shutdown()
     {
-        $flush = $this->container->get('beberlei_metrics.flush_service');
-        $flush->onTerminate();
+        $this->container->get('beberlei_metrics.flush_service')->flush();
     }
 }
