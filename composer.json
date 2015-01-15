@@ -11,13 +11,13 @@
         "kriswallsmith/buzz": "For Librato integration"
     },
     "require-dev": {
-        "symfony/http-kernel": "*",
-        "symfony/config": "*",
-        "symfony/dependency-injection": "*",
-        "mockery/mockery": "*",
-        "okitsu/zabbix-sender": "*",
+        "doctrine/dbal": "~2.0",
         "kriswallsmith/buzz": "*",
-        "psr/log": "1.0.0"
+        "okitsu/zabbix-sender": "*@dev",
+        "psr/log": "~1.0",
+        "symfony/config": "~2.3",
+        "symfony/dependency-injection": "~2.3",
+        "symfony/http-kernel": "~2.3"
     },
     "autoload": {
         "psr-0": {
@@ -26,5 +26,9 @@
         },
         "files": ["src/Beberlei/Metrics/functions.php"]
     },
-    "minimum-stability": "dev"
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.x-dev"
+        }
+    }
 }
