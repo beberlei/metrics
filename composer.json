@@ -3,7 +3,16 @@
     "description": "Simple library to talk to metrics collector services.",
     "keywords": ["metrics", "logging"],
     "authors": [
-        {"name": "Benjamin Eberlei", "email": "kontakt@beberlei.de"}
+        {
+            "name": "Benjamin Eberlei",
+            "email": "kontakt@beberlei.de",
+            "role": "Project Founder"
+        },
+        {
+            "name": "Grégoire Pineau",
+            "email": "lyrixx@lyrixx.info",
+            "role": "Lead Developer"
+        }
     ],
     "license": "MIT",
     "suggest": {
