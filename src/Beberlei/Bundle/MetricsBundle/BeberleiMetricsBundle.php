@@ -17,20 +17,4 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class BeberleiMetricsBundle extends Bundle
 {
-    public function boot()
-    {
-        if (!function_exists('bmetrics_increment')) {
-            require_once __DIR__."/../../Metrics/functions.php";
-        }
-
-        parent::boot();
-
-        // initialize all collectors
-        $this->container->get('beberlei_metrics.registry');
-    }
-
-    public function shutdown()
-    {
-        $this->container->get('beberlei_metrics.flush_service')->flush();
-    }
 }
