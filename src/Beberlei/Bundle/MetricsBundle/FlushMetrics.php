@@ -20,12 +20,11 @@ class FlushMetrics
         foreach ($this->registry->all() as $collector) {
             try {
                 $collector->flush();
-            } catch(\Exception $e) {
-                $this->logger->err("Flushing metrics failed: " . $e->getMessage());
+            } catch (\Exception $e) {
+                $this->logger->err("Flushing metrics failed: ".$e->getMessage());
             }
         }
 
         $this->registry->clear();
     }
 }
-

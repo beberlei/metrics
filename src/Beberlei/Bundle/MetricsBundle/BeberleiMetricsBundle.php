@@ -19,8 +19,8 @@ class BeberleiMetricsBundle extends Bundle
 {
     public function boot()
     {
-        if ( ! function_exists('bmetrics_increment')) {
-            require_once __DIR__ . "/../../Metrics/functions.php";
+        if (!function_exists('bmetrics_increment')) {
+            require_once __DIR__."/../../Metrics/functions.php";
         }
 
         parent::boot();
@@ -35,4 +35,3 @@ class BeberleiMetricsBundle extends Bundle
         $flush->onTerminate();
     }
 }
-

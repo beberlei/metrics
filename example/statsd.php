@@ -1,8 +1,9 @@
 <?php
 
-require_once __DIR__ . "/../vendor/autoload.php";
+require_once __DIR__.'/../vendor/autoload.php';
 
 $metrics = \Beberlei\Metrics\Factory::create('statsd');
+
 while (true) {
     $metrics->increment('foo.bar');
     $metrics->decrement('foo.baz');
@@ -10,4 +11,3 @@ while (true) {
     $metrics->flush();
     usleep(500);
 }
-

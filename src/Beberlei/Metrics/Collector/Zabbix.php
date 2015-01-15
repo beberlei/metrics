@@ -61,4 +61,3 @@ class Zabbix implements Collector
         $this->sender->send();
     }
 }
-

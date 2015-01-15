@@ -90,7 +90,7 @@ class StatsD implements Collector
             return;
         }
 
-        $fp = fsockopen("udp://" . $this->host, $this->port, $errno, $errstr, 1.0);
+        $fp = fsockopen("udp://".$this->host, $this->port, $errno, $errstr, 1.0);
 
         if (!$fp) {
             return;

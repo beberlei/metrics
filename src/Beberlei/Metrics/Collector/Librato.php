@@ -24,7 +24,7 @@ class Librato implements Collector
 
     private $data = array(
         'counters' => array(),
-        'gauges' => array()
+        'gauges' => array(),
     );
 
     public function __construct(Browser $browser, $hostname, $username, $password)
@@ -79,13 +79,11 @@ class Librato implements Collector
 
         try {
             $this->browser->post('https://metrics-api.librato.com/v1/metrics', array(
-                'Authorization: Basic ' . base64_encode($this->username . ":" . $this->password),
+                'Authorization: Basic '.base64_encode($this->username.":".$this->password),
                 'Content-Type: application/json',
             ), json_encode($this->data));
             $this->data = array('gauges' => array(), 'counters' => array());
-        } catch(\Exception $e) {
-
+        } catch (\Exception $e) {
         }
     }
 }
-

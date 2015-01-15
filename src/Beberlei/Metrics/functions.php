@@ -32,4 +32,3 @@ function bmetrics_timing($variable, $time, $registryKey = null)
 {
     Registry::get($registryKey)->timing($variable, $time);
 }
-

@@ -37,12 +37,11 @@ class BeberleiMetricsExtension extends Extension
             $def->setFactoryClass('%beberlei_metrics.factory.class%');
             $def->setArguments(array($collector['type'], $collector));
 
-            $container->setDefinition('beberlei_metrics.collector.' . $name, $def);
+            $container->setDefinition('beberlei_metrics.collector.'.$name, $def);
 
             $registry->addMethodCall('set', array(
-                $name, new Reference('beberlei_metrics.collector.' . $name)
+                $name, new Reference('beberlei_metrics.collector.'.$name),
             ));
         }
     }
 }
-

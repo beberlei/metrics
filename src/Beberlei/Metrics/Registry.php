@@ -18,43 +18,42 @@ namespace Beberlei\Metrics;
  */
 class Registry
 {
-    static private $defaultCollector = 'default';
+    private static $defaultCollector = 'default';
 
-    static private $collectors = array();
+    private static $collectors = array();
 
-    static public function clear()
+    public static function clear()
     {
         self::$collectors = array();
     }
 
-    static public function setDefaultName($defaultCollector)
+    public static function setDefaultName($defaultCollector)
     {
         self::$defaultCollector = $defaultCollector;
     }
 
-    static public function set($name, Collector\Collector $collector)
+    public static function set($name, Collector\Collector $collector)
     {
         self::$collectors[$name] = $collector;
     }
 
     /**
-     * @param null|string $name
+     * @param  null|string                           $name
      * @return \Beberlei\Metrics\Collector\Collector
      */
-    static public function get($name = null)
+    public static function get($name = null)
     {
         $name = $name ?: self::$defaultCollector;
 
-        if ( ! isset(self::$collectors[$name])) {
+        if (!isset(self::$collectors[$name])) {
             self::$collectors[$name] = new Collector\Null();
         }
 
         return self::$collectors[$name];
     }
 
-    static public function all()
+    public static function all()
     {
         return self::$collectors;
     }
 }
-
