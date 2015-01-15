@@ -32,11 +32,17 @@
         "symfony/http-kernel": "~2.3"
     },
     "autoload": {
-        "psr-0": {
-            "Beberlei\\Metrics": "src/",
-            "Beberlei\\Bundle\\MetricsBundle": "src/"
+        "psr-4": {
+            "Beberlei\\Metrics\\": "src/Beberlei/Metrics",
+            "Beberlei\\Bundle\\MetricsBundle\\": "src/Beberlei/Bundle/MetricsBundle"
         },
         "files": ["src/Beberlei/Metrics/functions.php"]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Beberlei\\Metrics\\Tests\\": "src/Beberlei/Metrics/tests",
+            "Beberlei\\Bundle\\MetricsBundle\\Tests\\": "src/Beberlei/Bundle/MetricsBundle/tests"
+        }
     },
     "extra": {
         "branch-alias": {
