@@ -18,6 +18,7 @@
             <argument type="service" id="logger" />
 
             <tag name="kernel.event_listener" event="kernel.terminate" method="flush" priority="100" />
+            <tag name="kernel.event_listener" event="console.terminate" method="flush" priority="100" />
         </service>
     </services>
 
