@@ -18,10 +18,9 @@ namespace Beberlei\Metrics\Collector;
  */
 interface Collector
 {
-    function increment($variable);
-    function decrement($variable);
-    function timing($variable, $time);
-    function measure($variable, $value);
-    function flush();
+    public function increment($variable);
+    public function decrement($variable);
+    public function timing($variable, $time);
+    public function measure($variable, $value);
+    public function flush();
 }
-

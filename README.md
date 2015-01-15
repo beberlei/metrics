@@ -9,23 +9,21 @@ metrics.
 
 Currently supported backends:
 
-* StatsD
-* Graphite
-* Zabbix
-* Librato
 * Doctrine DBAL
-* Monolog
+* Graphite
+* Librato
+* Logger (Psr\Log\LoggerInterface)
 * Null (Dummy that does nothing)
+* StatsD
+* Zabbix
 
 ## Installation
 
 Using Composer:
 
-    {
-        "require": {
-            "beberlei/metrics": "~1.0"
-        }
-    }
+```bash
+composer require beberlei/metrics
+```
 
 ## API
 
@@ -33,12 +31,8 @@ You can instantiate clients:
 
 ```php
 <?php
-$metrics = \Beberlei\Metrics\Factory::create('statsd');
-\Beberlei\Metrics\Registry::set('name', $metrics);
-\Beberlei\Metrics\Registry::setDefaultName('name');
 
-$metrics = \Beberlei\Metrics\Registry::get('name');
-$metrics = \Beberlei\Metrics\Registry::get(); // Will returns the default metrics
+$collector = \Beberlei\Metrics\Factory::create('statsd');
 ```
 
 You can measure stats:
@@ -46,16 +40,15 @@ You can measure stats:
 ```php
 <?php
 
-$metrics = \Beberlei\Metrics\Registry::get('name');
-$metrics->increment('foo.bar');
-$metrics->decrement('foo.bar');
+$collector->increment('foo.bar');
+$collector->decrement('foo.bar');
 
 $start = microtime(true);
 $diff  = microtime(true) - $start;
-$metrics->timing('foo.bar', $diff);
+$collector->timing('foo.bar', $diff);
 
 $value = 1234;
-$metrics->measure('foo.bar', $value);
+$collector->measure('foo.bar', $value);
 ```
 
 Some backends defer sending and aggregate all information, make sure to call
@@ -64,25 +57,8 @@ flush:
 ```php
 <?php
 
-$metrics = \Beberlei\Metrics\Registry::get('name');
-$metrics->flush();
+$collector->flush();
 ```
-
-There is a convenience functional API. It works with the registry names. If null
-is provided, the default registry entry is used.
-
-```php
-<?php
-$registryName = 'name';
-
-bmetrics_increment('foo.bar', $registryName);
-bmetrics_decrement('foo.bar', null);
-bmetrics_measure('foo.bar', $value, $registryName);
-bmetrics_timing('foo.bar', $diff, null);
-```
-
-The functions are automatically available through the Composer autoload files
-mechanism.
 
 ## Configuration
 
@@ -138,12 +114,12 @@ Do Configuration:
                 type: statsd
             bar:
                 type: zabbix
-                hostname: foo.beberlei.de
-                server: localhost
+                previx: foo.beberlei.de
+                host: localhost
                 port: 10051
             baz:
                 type: zabbix_file
-                hostname: foo.beberlei.de
+                previx: foo.beberlei.de
                 file: /etc/zabbix/zabbix_agentd.conf
             librato:
                 type: librato
@@ -161,15 +137,15 @@ convenience functions. Metrics are also added as services:
 
 ```php
 <?php
+
 $metrics = $container->get('beberlei_metrics.collector.foo');
 ```
 
-Some backends defer sending and aggregate all information, make sure to call
-flush. But if symfony handle a request, the framework do it for you. But if
-symfony handle a cli task, or if symfony is running as a deamon, you have to
-flush by yourself:
+and the default collactor can be fetch:
 
 ```php
 <?php
-$container->get('beberlei_metrics.flush_service')->onTerminate();
+
+$metrics = $container->get('beberlei_metrics.collector');
 ```
+

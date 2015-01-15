@@ -32,48 +32,49 @@ abstract class Factory
      * Create Metrics Collector Instance
      *
      * @param string $type
-     * @param array $options
+     * @param array  $options
+     *
      * @return \Beberlei\Metrics\Collector\Collector
      */
-    static public function create($type, array $options = array())
+    public static function create($type, array $options = array())
     {
-        switch($type) {
+        switch ($type) {
             case 'statsd':
-                if ( ! isset($options['host']) && ! isset($options['port'])) {
+                if (!isset($options['host']) && ! isset($options['port'])) {
                     return new Collector\StatsD();
                 }
-                if ( isset($options['host']) && ! isset($options['port'])) {
+                if (isset($options['host']) && ! isset($options['port'])) {
                     return new Collector\StatsD($options['host']);
                 }
-                if ( ! isset($options['host']) && isset($options['port'])) {
+                if (!isset($options['host']) && isset($options['port'])) {
                     throw new MetricsException('You should specified a host if you specified a port.');
                 }
 
                 return new Collector\StatsD($options['host'], $options['port']);
 
             case 'graphite':
-                if ( ! isset($options['host']) && ! isset($options['port'])) {
+                if (!isset($options['host']) && ! isset($options['port'])) {
                     return new Collector\Graphite();
                 }
-                if ( isset($options['host']) && ! isset($options['port'])) {
+                if (isset($options['host']) && ! isset($options['port'])) {
                     return new Collector\Graphite($options['host']);
                 }
-                if ( ! isset($options['host']) && isset($options['port'])) {
+                if (!isset($options['host']) && isset($options['port'])) {
                     throw new MetricsException('You should specified a host if you specified a port.');
                 }
 
                 return new Collector\Graphite($options['host'], $options['port']);
 
             case 'zabbix':
-                if ( ! isset($options['hostname'])) {
+                if (!isset($options['hostname'])) {
                     throw new MetricsException('Hostname is required for zabbix collector.');
                 }
 
-                if ( ! isset($options['server']) && ! isset($options['port'])) {
+                if (!isset($options['server']) && ! isset($options['port'])) {
                     $sender = new Sender();
-                } elseif ( isset($options['server']) && ! isset($options['port'])) {
+                } elseif (isset($options['server']) && ! isset($options['port'])) {
                     $sender = new Sender($options['server']);
-                } elseif ( ! isset($options['server']) && isset($options['port'])) {
+                } elseif (!isset($options['server']) && isset($options['port'])) {
                     throw new MetricsException('You should specified a server if you specified a port.');
                 } else {
                     $sender = new Sender($options['server'], $options['port']);
@@ -82,7 +83,7 @@ abstract class Factory
                 return new Collector\Zabbix($sender, $options['hostname']);
 
             case 'zabbix_file':
-                if ( ! isset($options['hostname'])) {
+                if (!isset($options['hostname'])) {
                     throw new MetricsException('Hostname is required for zabbix collector.');
                 }
 
@@ -93,54 +94,48 @@ abstract class Factory
                 return new Collector\Zabbix($sender, $options['hostname']);
 
             case 'librato':
-                if ( ! isset($options['hostname'])) {
+                if (!isset($options['hostname'])) {
                     throw new MetricsException('Hostname is required for librato collector.');
                 }
 
-                if ( ! isset($options['username'])) {
+                if (!isset($options['username'])) {
                     throw new MetricsException("No username given for librato collector.");
                 }
 
-                if ( ! isset($options['password'])) {
+                if (!isset($options['password'])) {
                     throw new MetricsException("No password given for librato collector.");
                 }
 
-                return new Collector\Librato(
-                    self::getHttpClient(),
-                    $options['hostname'],
-                    $options['username'],
-                    $options['password']
-                );
+                return new Collector\Librato(self::getHttpClient(), $options['hostname'], $options['username'], $options['password']);
 
             case 'doctrine_dbal':
-                if ( ! isset($options['connection'])) {
+                if (!isset($options['connection'])) {
                     throw new MetricsException('connection is required for Doctrine DBAL collector.');
                 }
 
                 return new Collector\DoctrineDBAL($options['connection']);
 
-            case 'monolog':
-                if ( ! isset($options['logger'])) {
-                    throw new MetricsException("Missing 'logger' key with monolog service.");
+            case 'logger':
+                if (!isset($options['logger'])) {
+                    throw new MetricsException("Missing 'logger' key with logger service.");
                 }
 
-                return new Collector\Monolog($options['logger']);
+                return new Collector\Logger($options['logger']);
 
             case 'null':
                 return new Collector\Null();
 
             default:
-                throw new MetricsException('Unknown metrics collector given.');
+                throw new MetricsException(sprintf('Unknown metrics collector given (%s).', $type));
         }
     }
 
-    static public function getHttpClient()
+    private static function getHttpClient()
     {
         if (self::$httpClient === null) {
-            self::$httpClient = new Browser(new Curl);
+            self::$httpClient = new Browser(new Curl());
         }
 
         return self::$httpClient;
     }
 }
-

@@ -34,4 +34,3 @@ class Null implements Collector
     {
     }
 }
-

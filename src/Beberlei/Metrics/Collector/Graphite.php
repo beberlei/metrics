@@ -79,15 +79,14 @@ class Graphite implements Collector
      */
     public function flush()
     {
-        if ( ! $this->data) {
+        if (!$this->data) {
             return;
         }
 
         try {
+            $fp = fsockopen($this->protocol.'://'.$this->host, $this->port);
 
-            $fp = fsockopen($this->protocol . '://' . $this->host, $this->port);
-
-            if (! $fp) {
+            if (!$fp) {
                 return;
             }
 

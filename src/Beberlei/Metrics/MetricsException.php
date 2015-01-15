@@ -15,6 +15,4 @@ namespace Beberlei\Metrics;
 
 class MetricsException extends \Exception
 {
-    
 }
-

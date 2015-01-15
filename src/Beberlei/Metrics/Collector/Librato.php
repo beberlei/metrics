@@ -18,19 +18,19 @@ use Buzz\Browser;
 class Librato implements Collector
 {
     private $browser;
-    private $hostname;
+    private $source;
     private $username;
     private $password;
 
     private $data = array(
         'counters' => array(),
-        'gauges' => array()
+        'gauges' => array(),
     );
 
-    public function __construct(Browser $browser, $hostname, $username, $password)
+    public function __construct(Browser $browser, $source, $username, $password)
     {
         $this->browser  = $browser;
-        $this->hostname = $hostname;
+        $this->source = $source;
         $this->username = $username;
         $this->password = $password;
     }
@@ -38,7 +38,7 @@ class Librato implements Collector
     public function increment($variable)
     {
         $this->data['counters'][] = array(
-            'source' => $this->hostname,
+            'source' => $this->source,
             'name'   => $variable,
             'value'  => 1,
         );
@@ -47,7 +47,7 @@ class Librato implements Collector
     public function decrement($variable)
     {
         $this->data['counters'][] = array(
-            'source' => $this->hostname,
+            'source' => $this->source,
             'name'   => $variable,
             'value'  => -1,
         );
@@ -56,7 +56,7 @@ class Librato implements Collector
     public function timing($variable, $time)
     {
         $this->data['gauges'][] = array(
-            'source' => $this->hostname,
+            'source' => $this->source,
             'name'   => $variable,
             'value'  => $time,
         );
@@ -65,7 +65,7 @@ class Librato implements Collector
     public function measure($variable, $value)
     {
         $this->data['gauges'][] = array(
-            'source' => $this->hostname,
+            'source' => $this->source,
             'name'   => $variable,
             'value'  => $value,
         );
@@ -79,13 +79,11 @@ class Librato implements Collector
 
         try {
             $this->browser->post('https://metrics-api.librato.com/v1/metrics', array(
-                'Authorization: Basic ' . base64_encode($this->username . ":" . $this->password),
+                'Authorization: Basic '.base64_encode($this->username.":".$this->password),
                 'Content-Type: application/json',
             ), json_encode($this->data));
             $this->data = array('gauges' => array(), 'counters' => array());
-        } catch(\Exception $e) {
-
+        } catch (\Exception $e) {
         }
     }
 }
-

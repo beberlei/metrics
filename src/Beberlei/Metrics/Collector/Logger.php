@@ -15,7 +15,7 @@ namespace Beberlei\Metrics\Collector;
 
 use Psr\Log\LoggerInterface;
 
-class Monolog implements Collector
+class Logger implements Collector
 {
     private $logger;
 
@@ -48,4 +48,3 @@ class Monolog implements Collector
     {
     }
 }
-
