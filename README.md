@@ -21,11 +21,9 @@ Currently supported backends:
 
 Using Composer:
 
-    {
-        "require": {
-            "beberlei/metrics": "~1.0"
-        }
-    }
+```bash
+composer require beberlei/metrics
+```
 
 ## API
 
