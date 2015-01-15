@@ -35,8 +35,7 @@
         "psr-4": {
             "Beberlei\\Metrics\\": "src/Beberlei/Metrics",
             "Beberlei\\Bundle\\MetricsBundle\\": "src/Beberlei/Bundle/MetricsBundle"
-        },
-        "files": ["src/Beberlei/Metrics/functions.php"]
+        }
     },
     "autoload-dev": {
         "psr-4": {
