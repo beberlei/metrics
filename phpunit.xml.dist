@@ -13,16 +13,16 @@
     <testsuites>
         <testsuite name="Beberlei Metrics">
             <directory>./src/Beberlei/Bundle/MetricsBundle/Tests</directory>
-            <directory>./tests</directory>
+            <directory>./src/Beberlei/Metrics/Tests/</directory>
         </testsuite>
     </testsuites>
 
     <filter>
         <whitelist>
-            <directory>src</directory>
+            <directory>./src</directory>
             <exclude>
                 <directory>./src/Beberlei/Bundle/MetricsBundle/Tests</directory>
-                <directory>./tests</directory>
+                <directory>./src/Beberlei/Metrics/Tests/</directory>
             </exclude>
         </whitelist>
     </filter>
