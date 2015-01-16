@@ -12,3 +12,6 @@ Upgrade from 1.x to 2.0
 now `prefix`. `hostname`, and `servername` are now `host`. `serverport` is now
 `port`.
 
+* [BC BREAK] The `Registry` is removed.
+
+* [BC BREAK] The `functions.php` is removed.

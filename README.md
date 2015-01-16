@@ -32,12 +32,7 @@ You can instantiate clients:
 ```php
 <?php
 
-$metrics = \Beberlei\Metrics\Factory::create('statsd');
-\Beberlei\Metrics\Registry::set('name', $metrics);
-\Beberlei\Metrics\Registry::setDefaultName('name');
-
-$metrics = \Beberlei\Metrics\Registry::get('name');
-$metrics = \Beberlei\Metrics\Registry::get(); // Will returns the default metrics
+$collector = \Beberlei\Metrics\Factory::create('statsd');
 ```
 
 You can measure stats:
@@ -45,16 +40,15 @@ You can measure stats:
 ```php
 <?php
 
-$metrics = \Beberlei\Metrics\Registry::get('name');
-$metrics->increment('foo.bar');
-$metrics->decrement('foo.bar');
+$collector->increment('foo.bar');
+$collector->decrement('foo.bar');
 
 $start = microtime(true);
 $diff  = microtime(true) - $start;
-$metrics->timing('foo.bar', $diff);
+$collector->timing('foo.bar', $diff);
 
 $value = 1234;
-$metrics->measure('foo.bar', $value);
+$collector->measure('foo.bar', $value);
 ```
 
 Some backends defer sending and aggregate all information, make sure to call
@@ -63,8 +57,7 @@ flush:
 ```php
 <?php
 
-$metrics = \Beberlei\Metrics\Registry::get('name');
-$metrics->flush();
+$collector->flush();
 ```
 
 ## Configuration
