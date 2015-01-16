@@ -37,14 +37,15 @@ class BeberleiMetricsExtension extends Extension
     {
         $definition = new DefinitionDecorator('beberlei_metrics.collector._proto.'.$config['type']);
 
+        // Theses listeners should be as late as possible
         $definition->addTag('kernel.event_listener', array(
             'method' => 'flush',
-            'priority' => 100,
+            'priority' => -1024,
             'event' => 'kernel.terminate',
         ));
         $definition->addTag('kernel.event_listener', array(
             'method' => 'flush',
-            'priority' => 100,
+            'priority' => -1024,
             'event' => 'console.terminate',
         ));
 
