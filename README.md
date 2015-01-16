@@ -9,13 +9,13 @@ metrics.
 
 Currently supported backends:
 
-* StatsD
-* Graphite
-* Zabbix
-* Librato
 * Doctrine DBAL
-* Monolog
+* Graphite
+* Librato
+* Logger (Psr\Log\LoggerInterface)
 * Null (Dummy that does nothing)
+* StatsD
+* Zabbix
 
 ## Installation
 
@@ -31,6 +31,7 @@ You can instantiate clients:
 
 ```php
 <?php
+
 $metrics = \Beberlei\Metrics\Factory::create('statsd');
 \Beberlei\Metrics\Registry::set('name', $metrics);
 \Beberlei\Metrics\Registry::setDefaultName('name');
@@ -120,12 +121,12 @@ Do Configuration:
                 type: statsd
             bar:
                 type: zabbix
-                hostname: foo.beberlei.de
-                server: localhost
+                previx: foo.beberlei.de
+                host: localhost
                 port: 10051
             baz:
                 type: zabbix_file
-                hostname: foo.beberlei.de
+                previx: foo.beberlei.de
                 file: /etc/zabbix/zabbix_agentd.conf
             librato:
                 type: librato
@@ -143,15 +144,15 @@ convenience functions. Metrics are also added as services:
 
 ```php
 <?php
+
 $metrics = $container->get('beberlei_metrics.collector.foo');
 ```
 
-Some backends defer sending and aggregate all information, make sure to call
-flush. But if symfony handle a request, the framework do it for you. But if
-symfony handle a cli task, or if symfony is running as a deamon, you have to
-flush by yourself:
+and the default collactor can be fetch:
 
 ```php
 <?php
-$container->get('beberlei_metrics.flush_service')->onTerminate();
+
+$metrics = $container->get('beberlei_metrics.collector');
 ```
+
