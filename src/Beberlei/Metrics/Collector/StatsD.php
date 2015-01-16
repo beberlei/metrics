@@ -20,12 +20,15 @@ class StatsD implements Collector
 {
     private $host;
     private $port;
-    private $data = array();
+    private $prefix;
+    private $data;
 
-    public function __construct($host = 'localhost', $port = '8125')
+    public function __construct($host = 'localhost', $port = '8125', $prefix = '')
     {
         $this->host = $host;
         $this->port = $port;
+        $this->prefix = $prefix;
+        $this->data = array();
     }
 
     /**
@@ -98,7 +101,7 @@ class StatsD implements Collector
 
         $level = error_reporting(0);
         foreach ($this->data as $line) {
-            fwrite($fp, $line);
+            fwrite($fp, $this->prefix.$line);
         }
         error_reporting($level);
 

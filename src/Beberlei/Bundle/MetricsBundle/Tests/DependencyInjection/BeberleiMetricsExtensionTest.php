@@ -122,6 +122,7 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
                     'type' => 'statsd',
                     'host' => 'statsd.localhost',
                     'port' => '1234',
+                    'prefix' => 'application.com.symfony.',
                 ),
             ),
         ));
@@ -130,11 +131,13 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Beberlei\Metrics\Collector\StatsD', $collector);
         $this->assertSame('localhost', $this->getProperty($collector, 'host'));
         $this->assertSame('8125', $this->getProperty($collector, 'port'));
+        $this->assertSame('', $this->getProperty($collector, 'prefix'));
 
         $collector = $container->get('beberlei_metrics.collector.full');
         $this->assertInstanceOf('Beberlei\Metrics\Collector\StatsD', $collector);
         $this->assertSame('statsd.localhost', $this->getProperty($collector, 'host'));
         $this->assertSame('1234', $this->getProperty($collector, 'port'));
+        $this->assertSame('application.com.symfony.', $this->getProperty($collector, 'prefix'));
     }
 
     public function testWithZabbix()
