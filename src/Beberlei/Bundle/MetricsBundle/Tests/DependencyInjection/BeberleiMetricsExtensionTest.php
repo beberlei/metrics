@@ -22,6 +22,7 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
     public function testWithGraphite()
     {
         $container = $this->createContainer(array(
+            'default' => 'simple',
             'collectors' => array(
                 'simple' => array(
                     'type' => 'graphite',
@@ -114,6 +115,7 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
     public function testWithStatsD()
     {
         $container = $this->createContainer(array(
+            'default' => 'simple',
             'collectors' => array(
                 'simple' => array(
                     'type' => 'statsd',
@@ -143,6 +145,7 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
     public function testWithZabbix()
     {
         $container = $this->createContainer(array(
+            'default' => 'simple',
             'collectors' => array(
                 'simple' => array(
                     'type' => 'zabbix',

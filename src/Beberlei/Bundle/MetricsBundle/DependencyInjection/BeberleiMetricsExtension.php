@@ -23,6 +23,14 @@ class BeberleiMetricsExtension extends Extension
             $definition = $this->createCollector($colConfig['type'], $colConfig);
             $container->setDefinition('beberlei_metrics.collector.'.$name, $definition);
         }
+
+        if (!$config['default'] && 1 === count($config['collectors'])) {
+            $container->setAlias('beberlei_metrics.collector', 'beberlei_metrics.collector.'.$name);
+        } elseif ($container->hasDefinition('beberlei_metrics.collector.'.$config['default'])) {
+            $container->setAlias('beberlei_metrics.collector', 'beberlei_metrics.collector.'.$config['default']);
+        } else {
+            throw new \LogicException('You should select a default collector');
+        }
     }
 
     private function createCollector($type, $config)

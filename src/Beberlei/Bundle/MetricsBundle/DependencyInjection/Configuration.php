@@ -19,8 +19,7 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->scalarNode('default')
-                    ->defaultValue('default')
-                    ->canNotBeEmpty()
+                    ->defaultNull()
                 ->end()
                 ->arrayNode('collectors')
                     ->isRequired()
