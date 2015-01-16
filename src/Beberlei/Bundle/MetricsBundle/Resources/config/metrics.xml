@@ -4,21 +4,44 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
-    <parameters>
-        <parameter key="beberlei_metrics.registry.class">Beberlei\Metrics\Registry</parameter>
-        <parameter key="beberlei_metrics.factory.class">Beberlei\Metrics\Factory</parameter>
-        <parameter key="beberlei_metrics.flush_service.class">Beberlei\Bundle\MetricsBundle\FlushMetrics</parameter>
-    </parameters>
-
     <services>
-        <service id="beberlei_metrics.registry" class="%beberlei_metrics.registry.class%" />
+        <!-- Util -->
+        <service id="beberlei_metrics.util.buzz.curl" class="Buzz\Client\Curl" public="false">
+        </service>
 
-        <service id="beberlei_metrics.flush_service" class="%beberlei_metrics.flush_service.class%">
-            <argument type="service" id="beberlei_metrics.registry" />
+        <service id="beberlei_metrics.util.buzz.browser" class="Buzz\Browser" public="false">
+            <argument type="service" id="beberlei_metrics.util.buzz.curl" />
+        </service>
+
+        <!-- Prototype / Collector -->
+        <service id="beberlei_metrics.collector._proto.doctrine_dbal" class="Beberlei\Metrics\Collector\DoctrineDBAL" abstract="true">
+            <argument /> <!-- Doctrine DBAL connection, set by the extension -->
+        </service>
+        <service id="beberlei_metrics.collector._proto.graphite" class="Beberlei\Metrics\Collector\Graphite" abstract="true">
+            <argument /> <!-- host, set by the extension -->
+            <argument /> <!-- port, set by the extension -->
+            <argument /> <!-- protocol, set by the extension -->
+        </service>
+        <service id="beberlei_metrics.collector._proto.librato" class="Beberlei\Metrics\Collector\Librato" abstract="true">
+            <argument type="service" id="beberlei_metrics.util.buzz.browser" />
+            <argument /> <!-- host, set by the extension -->
+            <argument /> <!-- port, set by the extension -->
+            <argument /> <!-- protocol, set by the extension -->
+        </service>
+        <service id="beberlei_metrics.collector._proto.logger" class="Beberlei\Metrics\Collector\Logger" abstract="true">
             <argument type="service" id="logger" />
-
-            <tag name="kernel.event_listener" event="kernel.terminate" method="flush" priority="100" />
-            <tag name="kernel.event_listener" event="console.terminate" method="flush" priority="100" />
+            <tag name="monolog.logger" channel="beberlei_metrics" />
+        </service>
+        <service id="beberlei_metrics.collector._proto.null" class="Beberlei\Metrics\Collector\Null" abstract="true">
+        </service>
+        <service id="beberlei_metrics.collector._proto.statsd" class="Beberlei\Metrics\Collector\StatsD" abstract="true">
+            <argument /> <!-- host, set by the extension -->
+            <argument /> <!-- port, set by the extension -->
+            <argument /> <!-- prefix, set by the extension -->
+        </service>
+        <service id="beberlei_metrics.collector._proto.zabbix" class="Beberlei\Metrics\Collector\Zabbix" abstract="true">
+            <argument /> <!-- sender, set by the extension -->
+            <argument /> <!-- host, set by the extension -->
         </service>
     </services>
 

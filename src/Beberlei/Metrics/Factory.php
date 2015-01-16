@@ -114,12 +114,12 @@ abstract class Factory
 
                 return new Collector\DoctrineDBAL($options['connection']);
 
-            case 'monolog':
+            case 'logger':
                 if (!isset($options['logger'])) {
-                    throw new MetricsException("Missing 'logger' key with monolog service.");
+                    throw new MetricsException("Missing 'logger' key with logger service.");
                 }
 
-                return new Collector\Monolog($options['logger']);
+                return new Collector\Logger($options['logger']);
 
             case 'null':
                 return new Collector\Null();
