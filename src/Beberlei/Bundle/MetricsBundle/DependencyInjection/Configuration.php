@@ -9,7 +9,7 @@ class Configuration implements ConfigurationInterface
     /**
      * Generates the configuration tree builder.
      *
-     * @return \Symfony\Component\Config\Definition\Builder\TreeBuilder The tree builder
+     * @return TreeBuilder The tree builder
      */
     public function getConfigTreeBuilder()
     {
@@ -27,7 +27,7 @@ class Configuration implements ConfigurationInterface
                     ->prototype('array')
                         ->children()
                             ->scalarNode('type')->end()
-                            ->scalarNode('connection')->defaultValue('default')->end()
+                            ->scalarNode('connection')->defaultNull()->end()
                             ->scalarNode('file')->defaultNull()->end()
                             ->scalarNode('host')->defaultNull()->end()
                             ->scalarNode('password')->defaultNull()->end()

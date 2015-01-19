@@ -35,7 +35,7 @@ class BeberleiMetricsExtension extends Extension
 
     private function createCollector($type, $config)
     {
-        $definition = new DefinitionDecorator('beberlei_metrics.collector._proto.'.$config['type']);
+        $definition = new DefinitionDecorator('beberlei_metrics.collector_proto.'.$config['type']);
 
         // Theses listeners should be as late as possible
         $definition->addTag('kernel.event_listener', array(
@@ -51,7 +51,8 @@ class BeberleiMetricsExtension extends Extension
 
         switch ($type) {
             case 'doctrine_dbal':
-                $definition->replaceArgument(0, new Reference(sprintf('doctrine.dbal.%s_connection', $config['connection'])));
+                $ref = $config['connection'] ? sprintf('doctrine.dbal.%s_connection', $config['connection']) : 'database_connection';
+                $definition->replaceArgument(0, new Reference($ref));
 
                 return $definition;
             case 'graphite':

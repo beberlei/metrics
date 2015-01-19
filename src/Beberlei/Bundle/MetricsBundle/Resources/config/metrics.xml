@@ -14,32 +14,32 @@
         </service>
 
         <!-- Prototype / Collector -->
-        <service id="beberlei_metrics.collector._proto.doctrine_dbal" class="Beberlei\Metrics\Collector\DoctrineDBAL" abstract="true">
+        <service id="beberlei_metrics.collector_proto.doctrine_dbal" class="Beberlei\Metrics\Collector\DoctrineDBAL" abstract="true">
             <argument /> <!-- Doctrine DBAL connection, set by the extension -->
         </service>
-        <service id="beberlei_metrics.collector._proto.graphite" class="Beberlei\Metrics\Collector\Graphite" abstract="true">
+        <service id="beberlei_metrics.collector_proto.graphite" class="Beberlei\Metrics\Collector\Graphite" abstract="true">
             <argument /> <!-- host, set by the extension -->
             <argument /> <!-- port, set by the extension -->
             <argument /> <!-- protocol, set by the extension -->
         </service>
-        <service id="beberlei_metrics.collector._proto.librato" class="Beberlei\Metrics\Collector\Librato" abstract="true">
+        <service id="beberlei_metrics.collector_proto.librato" class="Beberlei\Metrics\Collector\Librato" abstract="true">
             <argument type="service" id="beberlei_metrics.util.buzz.browser" />
             <argument /> <!-- host, set by the extension -->
             <argument /> <!-- port, set by the extension -->
             <argument /> <!-- protocol, set by the extension -->
         </service>
-        <service id="beberlei_metrics.collector._proto.logger" class="Beberlei\Metrics\Collector\Logger" abstract="true">
+        <service id="beberlei_metrics.collector_proto.logger" class="Beberlei\Metrics\Collector\Logger" abstract="true">
             <argument type="service" id="logger" />
             <tag name="monolog.logger" channel="beberlei_metrics" />
         </service>
-        <service id="beberlei_metrics.collector._proto.null" class="Beberlei\Metrics\Collector\Null" abstract="true">
+        <service id="beberlei_metrics.collector_proto.null" class="Beberlei\Metrics\Collector\Null" abstract="true">
         </service>
-        <service id="beberlei_metrics.collector._proto.statsd" class="Beberlei\Metrics\Collector\StatsD" abstract="true">
+        <service id="beberlei_metrics.collector_proto.statsd" class="Beberlei\Metrics\Collector\StatsD" abstract="true">
             <argument /> <!-- host, set by the extension -->
             <argument /> <!-- port, set by the extension -->
             <argument /> <!-- prefix, set by the extension -->
         </service>
-        <service id="beberlei_metrics.collector._proto.zabbix" class="Beberlei\Metrics\Collector\Zabbix" abstract="true">
+        <service id="beberlei_metrics.collector_proto.zabbix" class="Beberlei\Metrics\Collector\Zabbix" abstract="true">
             <argument /> <!-- sender, set by the extension -->
             <argument /> <!-- host, set by the extension -->
         </service>

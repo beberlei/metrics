@@ -19,7 +19,7 @@
         "okitsu/zabbix-sender": "For zabbix integration",
         "kriswallsmith/buzz": "For Librato integration"
     },
-    "require-dev": {
+    "require": {
         "psr/log": "~1.0"
     },
     "require-dev": {
@@ -35,12 +35,6 @@
         "psr-4": {
             "Beberlei\\Metrics\\": "src/Beberlei/Metrics",
             "Beberlei\\Bundle\\MetricsBundle\\": "src/Beberlei/Bundle/MetricsBundle"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Beberlei\\Metrics\\Tests\\": "src/Beberlei/Metrics/tests",
-            "Beberlei\\Bundle\\MetricsBundle\\Tests\\": "src/Beberlei/Bundle/MetricsBundle/tests"
         }
     },
     "extra": {

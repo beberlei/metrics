@@ -31,8 +31,9 @@ abstract class Factory
     /**
      * Create Metrics Collector Instance
      *
-     * @param  string                                $type
-     * @param  array                                 $options
+     * @param string $type
+     * @param array  $options
+     *
      * @return \Beberlei\Metrics\Collector\Collector
      */
     public static function create($type, array $options = array())
@@ -129,7 +130,7 @@ abstract class Factory
         }
     }
 
-    public static function getHttpClient()
+    private static function getHttpClient()
     {
         if (self::$httpClient === null) {
             self::$httpClient = new Browser(new Curl());
