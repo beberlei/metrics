@@ -1,0 +1,51 @@
+---------------------------------------------------------------------------
+
+by lyrixx at 2015-01-15T18:00:41Z
+
+About the lib:
+
+* I want to remove the Factory: It does not bring something useful here. It's IMHO simpler to instantiate an object directly.
+* I want to remove the `functions.php`. In all modern PHP application, we have a DIC or something like that.
+* I want to remove the Registry. I never use it, and IMHO, it's better to inject the "right" class than an "abstraction".
+
+What do you think?
+
+---------------------------------------------------------------------------
+
+by lyrixx at 2015-01-15T22:10:56Z
+
+Actually, I did not see that the Factory and the Registry where used in the Bundle. So now, I just want to remove the `functions.php` ;)
+
+---------------------------------------------------------------------------
+
+by lyrixx at 2015-01-16T15:41:38Z
+
+And finally, The bundle does't use the Factory nor the Registry anymore...
+
+---------------------------------------------------------------------------
+
+by stof at 2015-01-18T19:58:26Z
+
+I would rather keep tests in a separate folder rather than nesting them inside the library codebase
+
+---------------------------------------------------------------------------
+
+by lyrixx at 2015-01-19T09:33:42Z
+
+> I would rather keep tests in a separate folder rather than nesting them inside the library codebase
+
+Why? Symfony and lot of other lib share the same folder
+
+---------------------------------------------------------------------------
+
+by stof at 2015-01-19T11:22:03Z
+
+> Why? Symfony and lot of other lib share the same folder
+
+Symfony has it in the code because of the subtree splits which should include tests. Before that, they were in a separate folder
+
+---------------------------------------------------------------------------
+
+by lyrixx at 2015-01-19T11:30:30Z
+
+I know, But it there a valid reason to have 2 different folders? For me, tests are part of code, and so should live inside the same folder.
