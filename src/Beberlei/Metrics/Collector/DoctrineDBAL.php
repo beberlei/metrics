@@ -61,7 +61,7 @@ class DoctrineDBAL implements Collector
 
     public function flush()
     {
-        if ( ! $this->data) {
+        if (!$this->data) {
             return;
         }
 
@@ -78,11 +78,10 @@ class DoctrineDBAL implements Collector
             }
 
             $this->conn->commit();
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             $this->conn->rollback();
         }
 
         $this->data = array();
     }
 }
-

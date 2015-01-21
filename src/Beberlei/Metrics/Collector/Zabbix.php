@@ -28,32 +28,32 @@ class Zabbix implements Collector
     /**
      * @var string
      */
-    private $hostname;
+    private $prefix;
 
-    public function __construct(Sender $sender, $hostname = null)
+    public function __construct(Sender $sender, $prefix = null)
     {
-        $this->sender   = $sender;
-        $this->hostname = $hostname ?: gethostname();
+        $this->sender = $sender;
+        $this->prefix = $prefix ?: gethostname();
     }
 
     public function increment($variable)
     {
-        $this->sender->addData($this->hostname, $variable, '1');
+        $this->sender->addData($this->prefix, $variable, '1');
     }
 
     public function decrement($variable)
     {
-        $this->sender->addData($this->hostname, $variable, '-1');
+        $this->sender->addData($this->prefix, $variable, '-1');
     }
 
     public function timing($variable, $time)
     {
-        $this->sender->addData($this->hostname, $variable, $time);
+        $this->sender->addData($this->prefix, $variable, $time);
     }
 
     public function measure($variable, $value)
     {
-        $this->sender->addData($this->hostname, $variable, $value);
+        $this->sender->addData($this->prefix, $variable, $value);
     }
 
     public function flush()
@@ -61,4 +61,3 @@ class Zabbix implements Collector
         $this->sender->send();
     }
 }
-
