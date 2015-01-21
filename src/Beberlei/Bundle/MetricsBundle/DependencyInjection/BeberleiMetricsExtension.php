@@ -57,7 +57,7 @@ class BeberleiMetricsExtension extends Extension
                 return $definition;
             case 'graphite':
                 $definition->replaceArgument(0, $config['host'] ?: 'localhost');
-                $definition->replaceArgument(1, $config['port'] ?: '2003');
+                $definition->replaceArgument(1, $config['port'] ?: 2003);
                 $definition->replaceArgument(2, $config['protocol'] ?: 'tcp');
 
                 return $definition;
@@ -72,7 +72,7 @@ class BeberleiMetricsExtension extends Extension
                 return $definition;
             case 'statsd':
                 $definition->replaceArgument(0, $config['host'] ?: 'localhost');
-                $definition->replaceArgument(1, $config['port'] ?: '8125');
+                $definition->replaceArgument(1, $config['port'] ?: 8125);
                 $definition->replaceArgument(2, (string) $config['prefix']);
 
                 return $definition;

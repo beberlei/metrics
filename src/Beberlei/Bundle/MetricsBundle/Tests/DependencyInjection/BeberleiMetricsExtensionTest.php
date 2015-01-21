@@ -30,7 +30,7 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
                 'full' => array(
                     'type' => 'graphite',
                     'host' => 'graphite.localhost',
-                    'port' => '1234',
+                    'port' => 1234,
                     'protocol' => 'udp',
                 ),
             ),
@@ -40,13 +40,13 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Beberlei\Metrics\Collector\Graphite', $collector);
         $this->assertSame('tcp', $this->getProperty($collector, 'protocol'));
         $this->assertSame('localhost', $this->getProperty($collector, 'host'));
-        $this->assertSame('2003', $this->getProperty($collector, 'port'));
+        $this->assertSame(2003, $this->getProperty($collector, 'port'));
 
         $collector = $container->get('beberlei_metrics.collector.full');
         $this->assertInstanceOf('Beberlei\Metrics\Collector\Graphite', $collector);
         $this->assertSame('udp', $this->getProperty($collector, 'protocol'));
         $this->assertSame('graphite.localhost', $this->getProperty($collector, 'host'));
-        $this->assertSame('1234', $this->getProperty($collector, 'port'));
+        $this->assertSame(1234, $this->getProperty($collector, 'port'));
     }
 
     /**
@@ -123,7 +123,7 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
                 'full' => array(
                     'type' => 'statsd',
                     'host' => 'statsd.localhost',
-                    'port' => '1234',
+                    'port' => 1234,
                     'prefix' => 'application.com.symfony.',
                 ),
             ),
@@ -132,13 +132,13 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
         $collector = $container->get('beberlei_metrics.collector.simple');
         $this->assertInstanceOf('Beberlei\Metrics\Collector\StatsD', $collector);
         $this->assertSame('localhost', $this->getProperty($collector, 'host'));
-        $this->assertSame('8125', $this->getProperty($collector, 'port'));
+        $this->assertSame(8125, $this->getProperty($collector, 'port'));
         $this->assertSame('', $this->getProperty($collector, 'prefix'));
 
         $collector = $container->get('beberlei_metrics.collector.full');
         $this->assertInstanceOf('Beberlei\Metrics\Collector\StatsD', $collector);
         $this->assertSame('statsd.localhost', $this->getProperty($collector, 'host'));
-        $this->assertSame('1234', $this->getProperty($collector, 'port'));
+        $this->assertSame(1234, $this->getProperty($collector, 'port'));
         $this->assertSame('application.com.symfony.', $this->getProperty($collector, 'prefix'));
     }
 
