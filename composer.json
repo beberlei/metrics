@@ -26,7 +26,6 @@
         "doctrine/dbal": "~2.0",
         "kriswallsmith/buzz": "*",
         "okitsu/zabbix-sender": "*@dev",
-        "psr/log": "~1.0",
         "symfony/config": "~2.3",
         "symfony/dependency-injection": "~2.3",
         "symfony/http-kernel": "~2.3"
