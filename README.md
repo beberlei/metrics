@@ -4,8 +4,7 @@ Simple library that abstracts different metrics collectors. I find this
 necessary to have a consistent and simple metrics API that doesn't cause vendor
 lock-in.
 
-It also ships with a Symfony Bundle. This is not a library for displaying
-metrics.
+It also ships with a Symfony Bundle. **This is not a library for displaying metrics.**
 
 Currently supported backends:
 
@@ -88,7 +87,7 @@ $null = \Beberlei\Metrics\Factory::create('null');
 
 ## Symfony Bundle Integration
 
-Activate Bundle into Kernel:
+Register Bundle into Kernel:
 
 ```php
 <?php
@@ -133,7 +132,7 @@ Do Configuration:
 
 This adds collectors to the Metrics registry. The functions are automatically
 included in the Bundle class so that in your code you can just start using the
-convenience functions. Metrics are also added as services:
+convenient functions. Metrics are also added as services:
 
 ```php
 <?php
@@ -141,7 +140,7 @@ convenience functions. Metrics are also added as services:
 $metrics = $container->get('beberlei_metrics.collector.foo');
 ```
 
-and the default collactor can be fetch:
+and the default collector can be fetched:
 
 ```php
 <?php
