@@ -103,10 +103,11 @@ class Graphite implements Collector
 
     public function push($stat, $value, $time = null)
     {
-        if (is_float($value)) {
-            $this->data[] = sprintf("%s %.18f %d\n", $stat, $value, $time ?: time());
-        } else {
-            $this->data[] = sprintf("%s %d %d\n", $stat, $value, $time ?: time());
-        }
+        $this->data[] = sprintf(
+            is_float($value) ? "%s %.18f %d\n" : "%s %d %d\n",
+            $stat,
+            $value,
+            $time ?: time()
+        );
     }
 }
