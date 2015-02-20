@@ -1,0 +1,11 @@
+---------------------------------------------------------------------------
+
+by stof at 2015-02-20T13:53:05Z
+
+I would put only the choice of the pattern in a conditional rather than the whole logic to avoid duplication
+
+---------------------------------------------------------------------------
+
+by tucksaun at 2015-02-20T14:09:35Z
+
+what about now?
