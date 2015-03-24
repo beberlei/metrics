@@ -113,12 +113,12 @@ Do Configuration:
                 type: statsd
             bar:
                 type: zabbix
-                previx: foo.beberlei.de
+                prefix: foo.beberlei.de
                 host: localhost
                 port: 10051
             baz:
                 type: zabbix_file
-                previx: foo.beberlei.de
+                prefix: foo.beberlei.de
                 file: /etc/zabbix/zabbix_agentd.conf
             librato:
                 type: librato
