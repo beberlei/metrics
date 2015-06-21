@@ -123,7 +123,7 @@ abstract class Factory
                 return new Collector\Logger($options['logger']);
 
             case 'null':
-                return new Collector\Null();
+                return new Collector\NullCollector();
 
             default:
                 throw new MetricsException(sprintf('Unknown metrics collector given (%s).', $type));

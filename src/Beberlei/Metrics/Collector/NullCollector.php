@@ -13,9 +13,24 @@
 
 namespace Beberlei\Metrics\Collector;
 
-/**
- * @deprecated for PHP7 compatibility, use NullCollector instead.
- */
-class Null extends NullCollector
+class NullCollector implements Collector
 {
+    public function increment($variable)
+    {
+    }
+    public function decrement($variable)
+    {
+    }
+    public function timing($variable, $time)
+    {
+    }
+    public function measure($variable, $value)
+    {
+    }
+    public function gauge($variable, $value)
+    {
+    }
+    public function flush()
+    {
+    }
 }

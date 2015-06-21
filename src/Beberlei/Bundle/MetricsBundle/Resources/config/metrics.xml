@@ -32,7 +32,7 @@
             <argument type="service" id="logger" />
             <tag name="monolog.logger" channel="beberlei_metrics" />
         </service>
-        <service id="beberlei_metrics.collector_proto.null" class="Beberlei\Metrics\Collector\Null" abstract="true">
+        <service id="beberlei_metrics.collector_proto.null" class="Beberlei\Metrics\Collector\NullCollector" abstract="true">
         </service>
         <service id="beberlei_metrics.collector_proto.statsd" class="Beberlei\Metrics\Collector\StatsD" abstract="true">
             <argument /> <!-- host, set by the extension -->
