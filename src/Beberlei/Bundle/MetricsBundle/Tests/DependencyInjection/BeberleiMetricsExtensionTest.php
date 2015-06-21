@@ -99,7 +99,7 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Beberlei\Metrics\Collector\Logger', $container->get('beberlei_metrics.collector.logger'));
     }
 
-    public function testWithNull()
+    public function testWithNullCollector()
     {
         $container = $this->createContainer(array(
             'collectors' => array(
@@ -109,7 +109,7 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
             ),
         ));
 
-        $this->assertInstanceOf('Beberlei\Metrics\Collector\Null', $container->get('beberlei_metrics.collector.null'));
+        $this->assertInstanceOf('Beberlei\Metrics\Collector\NullCollector', $container->get('beberlei_metrics.collector.null'));
     }
 
     public function testWithStatsD()
