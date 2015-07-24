@@ -1,5 +1,7 @@
 # Metrics
 
+[![Build Status](https://travis-ci.org/beberlei/metrics.svg?branch=master)](https://travis-ci.org/beberlei/metrics)
+
 Simple library that abstracts different metrics collectors. I find this
 necessary to have a consistent and simple metrics API that doesn't cause vendor
 lock-in.
