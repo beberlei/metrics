@@ -10,6 +10,7 @@ Currently supported backends:
 
 * Doctrine DBAL
 * Graphite
+* InfluxDB
 * Librato
 * Logger (Psr\Log\LoggerInterface)
 * Null (Dummy that does nothing)
