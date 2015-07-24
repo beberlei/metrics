@@ -1,0 +1,68 @@
+---------------------------------------------------------------------------
+
+by davidfuhr at 2015-07-22T14:31:31Z
+
+Do you really want to support php 5.3?
+
+---------------------------------------------------------------------------
+
+by lyrixx at 2015-07-22T14:32:56Z
+
+> Do you really want to support php 5.3?
+
+Do you need to use a feature that exist only in php 5.4+ ?
+
+But anyway, I'm fine with bumping to 5.4+
+
+Finally, Could you add update the symfony2 bundle? If no, don't worry, I can take care of it.
+
+---------------------------------------------------------------------------
+
+by davidfuhr at 2015-07-22T14:37:30Z
+
+It's the library I use for InfluxDB (https://github.com/corley/influxdb-php-sdk) that requires PHP 5.4. Didn't look into it why it requires 5.4 exactly.
+
+Would be fantastic if you could add the bundle part!
+
+---------------------------------------------------------------------------
+
+by lyrixx at 2015-07-22T14:57:00Z
+
+> It's the library I use for InfluxDB (https://github.com/corley/influxdb-php-sdk) that requires PHP 5.4. Didn't look into it why it requires 5.4 exactly.
+
+Ok, So there is no problem to keep this lib with php 5.3. Composer will manager that for us.
+You just have to skip **your** tests on php 5.3 (there is an anotation for that;))
+
+> Would be fantastic if you could add the bundle part!
+
+Ok, Will do that in another PR.
+
+---------------------------------------------------------------------------
+
+by davidfuhr at 2015-07-24T09:13:39Z
+
+> Ok, So there is no problem to keep this lib with php 5.3. Composer will manager that for us. You just have to skip your tests on php 5.3 (there is an anotation for that;))
+
+That doesn't work in this case. I tried to add `--ignore-platform-reqs` to the composer install command, but unfortunately the library adds some autoload file to composer which causes phpunit to fail right away.
+
+So i see three possible solutions:
+
+1. Remove php 5.3 from travis (this is what i did in my last commit)
+2. Use another Influx-Library (e.g. https://github.com/crodas/InfluxPHP)
+3. Split the Influx stuff to an extra library, but that would require adjustments to the factory to allow other collectors to be registered
+
+---------------------------------------------------------------------------
+
+by lyrixx at 2015-07-24T09:43:50Z
+
+> Remove php 5.3 from travis (this is what i did in my last commit)
+
+:+1: ;)
+
+---------------------------------------------------------------------------
+
+by davidfuhr at 2015-07-24T09:59:22Z
+
+> Could you revert this change ?
+
+Done. :)
