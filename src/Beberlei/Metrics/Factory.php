@@ -34,7 +34,8 @@ abstract class Factory
      * @param string $type
      * @param array  $options
      *
-     * @return \Beberlei\Metrics\Collector\Collector
+     * @throws MetricsException
+     * @return Collector\Collector
      */
     public static function create($type, array $options = array())
     {
@@ -121,6 +122,13 @@ abstract class Factory
                 }
 
                 return new Collector\Logger($options['logger']);
+
+            case 'influxdb':
+                if (!isset($options['client'])) {
+                    throw new MetricsException('Missing \'client\' key for InfluxDB collector.');
+                }
+
+                return new Collector\InfluxDB($options['client']);
 
             case 'null':
                 return new Collector\NullCollector();

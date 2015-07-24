@@ -22,6 +22,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
             array('Beberlei\Metrics\Collector\DoctrineDBAL', 'doctrine_dbal', array('connection' => $this->getMockBuilder('Doctrine\DBAL\Connection')->disableOriginalConstructor()->getMock())),
             array('Beberlei\Metrics\Collector\Logger', 'logger', array('logger' => new NullLogger())),
             array('Beberlei\Metrics\Collector\NullCollector', 'null'),
+            array('Beberlei\Metrics\Collector\InfluxDB', 'influxdb', array('client' => $this->getMockBuilder('\\InfluxDB\\Client')->disableOriginalConstructor()->getMock())),
         );
     }
 
@@ -47,6 +48,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
             array('No password given for librato collector.', 'librato', array('hostname' => 'foobar.com', 'username' => 'username')),
             array('connection is required for Doctrine DBAL collector.', 'doctrine_dbal'),
             array('Missing \'logger\' key with logger service.', 'logger'),
+            array('Missing \'client\' key for InfluxDB collector.', 'influxdb'),
         );
     }
 
