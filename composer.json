@@ -22,7 +22,7 @@
         "colinmollenhour/credis": "For Redis integration"
     },
     "require": {
-        "psr/log": "~1.0",
+        "psr/log": "~1.0"
     },
     "require-dev": {
         "corley/influxdb-sdk": "^0.5.1",
