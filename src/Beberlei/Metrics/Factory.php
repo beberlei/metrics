@@ -130,6 +130,19 @@ abstract class Factory
 
                 return new Collector\InfluxDB($options['client']);
 
+            case 'redis':
+                if (!isset($options['host']) && !isset($options['port'])) {
+                    return new Collector\Redis();
+                }
+                if (isset($options['host']) && !isset($options['port'])) {
+                    return new Collector\Redis($options['host']);
+                }
+                if (!isset($options['host']) && isset($options['port'])) {
+                    throw new MetricsException('Redis Host should be specified when a port is specified');
+                }
+
+                return new Collector\Redis($options['host'], $options['port']);
+
             case 'null':
                 return new Collector\NullCollector();
 

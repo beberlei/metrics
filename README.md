@@ -18,6 +18,7 @@ Currently supported backends:
 * Null (Dummy that does nothing)
 * StatsD
 * Zabbix
+* Redis
 
 ## Installation
 
