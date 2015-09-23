@@ -16,7 +16,7 @@ namespace Beberlei\Metrics\Collector;
 use Beberlei\Metrics\Collector\Collector;
 use Credis_Client;
 
-class Redis implements Collector
+class CRedis implements Collector
 {
     private $host;
     private $port;

@@ -132,16 +132,16 @@ abstract class Factory
 
             case 'redis':
                 if (!isset($options['host']) && !isset($options['port'])) {
-                    return new Collector\Redis();
+                    return new Collector\CRedis();
                 }
                 if (isset($options['host']) && !isset($options['port'])) {
-                    return new Collector\Redis($options['host']);
+                    return new Collector\CRedis($options['host']);
                 }
                 if (!isset($options['host']) && isset($options['port'])) {
                     throw new MetricsException('Redis Host should be specified when a port is specified');
                 }
 
-                return new Collector\Redis($options['host'], $options['port']);
+                return new Collector\CRedis($options['host'], $options['port']);
 
             case 'null':
                 return new Collector\NullCollector();
