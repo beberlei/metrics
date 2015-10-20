@@ -106,9 +106,11 @@ class Librato implements Collector
             return;
         }
 
+        $authToken = base64_encode($this->username.':'.$this->password);
+
         try {
             $this->browser->post('https://metrics-api.librato.com/v1/metrics', array(
-                'Authorization: Basic '.base64_encode($this->username.":".$this->password),
+                'Authorization: Basic '.$authToken,
                 'Content-Type: application/json',
             ), json_encode($this->data));
             $this->data = array('gauges' => array(), 'counters' => array());
