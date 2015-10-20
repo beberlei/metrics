@@ -18,9 +18,38 @@ namespace Beberlei\Metrics\Collector;
  */
 interface Collector
 {
-    public function increment($variable);
-    public function decrement($variable);
-    public function timing($variable, $time);
+    /**
+     * Updates a counter by some arbitrary amount
+     *
+     * @param string $variable
+     * @param int $value The amount to increment the counter by
+     */
     public function measure($variable, $value);
+
+    /**
+     * Increments a counter
+     *
+     * @param string $variable
+     */
+    public function increment($variable);
+
+    /**
+     * Decrements a counter
+     *
+     * @param string $variable
+     */
+    public function decrement($variable);
+
+    /**
+     * Records a timing
+     *
+     * @param string $variable
+     * @param int $time The duration of the timing in milliseconds
+     */
+    public function timing($variable, $time);
+
+    /**
+     * Sends the metrics to the adpater backend
+     */
     public function flush();
 }

@@ -13,23 +13,46 @@
 
 namespace Beberlei\Metrics\Collector;
 
-class NullCollector implements Collector
+class NullCollector implements GaugeableCollector
 {
+    /**
+     * {@inheritDoc}
+     */
     public function increment($variable)
     {
     }
+
+    /**
+     * {@inheritDoc}
+     */
     public function decrement($variable)
     {
     }
+
+    /**
+     * {@inheritDoc}
+     */
     public function timing($variable, $time)
     {
     }
+
+    /**
+     * {@inheritDoc}
+     */
     public function measure($variable, $value)
     {
     }
+
+    /**
+     * {@inheritDoc}
+     */
     public function gauge($variable, $value)
     {
     }
+
+    /**
+     * {@inheritDoc}
+     */
     public function flush()
     {
     }

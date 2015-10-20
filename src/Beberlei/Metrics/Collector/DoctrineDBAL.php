@@ -31,34 +31,55 @@ use Exception;
  */
 class DoctrineDBAL implements Collector
 {
+    /** @var \Doctrine\DBAL\Connection */
     private $conn;
+
+    /** @var array */
     private $data;
 
+    /**
+     * @param \Doctrine\DBAL\Connection $conn
+     */
     public function __construct(Connection $conn)
     {
         $this->conn = $conn;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function timing($stat, $time)
     {
         $this->data[] = array($stat, $time, date('Y-m-d'));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function increment($stats)
     {
         $this->data[] = array($stats, 1, date('Y-m-d'));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function decrement($stats)
     {
         $this->data[] = array($stats, -1, date('Y-m-d'));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function measure($variable, $value)
     {
         $this->data[] = array($variable, $value, date('Y-m-d'));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function flush()
     {
         if (!$this->data) {
