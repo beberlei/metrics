@@ -17,16 +17,30 @@ use Buzz\Browser;
 
 class Librato implements Collector
 {
+    /** @var \Buzz\Browser */
     private $browser;
+
+    /** @var string */
     private $source;
+
+    /** @var string */
     private $username;
+
+    /** @var string */
     private $password;
 
+    /** @var array */
     private $data = array(
         'counters' => array(),
         'gauges' => array(),
     );
 
+    /**
+     * @param \Buzz\Browser $browser
+     * @param string $source
+     * @param string $username
+     * @param string $password
+     */
     public function __construct(Browser $browser, $source, $username, $password)
     {
         $this->browser  = $browser;
@@ -35,6 +49,9 @@ class Librato implements Collector
         $this->password = $password;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function increment($variable)
     {
         $this->data['counters'][] = array(
@@ -44,6 +61,9 @@ class Librato implements Collector
         );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function decrement($variable)
     {
         $this->data['counters'][] = array(
@@ -53,6 +73,9 @@ class Librato implements Collector
         );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function timing($variable, $time)
     {
         $this->data['gauges'][] = array(
@@ -62,6 +85,9 @@ class Librato implements Collector
         );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function measure($variable, $value)
     {
         $this->data['gauges'][] = array(
@@ -71,15 +97,20 @@ class Librato implements Collector
         );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function flush()
     {
         if (!$this->data['gauges'] && !$this->data['counters']) {
             return;
         }
 
+        $authToken = base64_encode($this->username.':'.$this->password);
+
         try {
             $this->browser->post('https://metrics-api.librato.com/v1/metrics', array(
-                'Authorization: Basic '.base64_encode($this->username.":".$this->password),
+                'Authorization: Basic '.$authToken,
                 'Content-Type: application/json',
             ), json_encode($this->data));
             $this->data = array('gauges' => array(), 'counters' => array());

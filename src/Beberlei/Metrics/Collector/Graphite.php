@@ -20,11 +20,23 @@ use Exception;
  */
 class Graphite implements Collector
 {
+    /** @var string */
     private $protocol;
+
+    /** @var string */
     private $host;
+
+    /** @var int */
     private $port;
+
+    /** @var array */
     private $data = array();
 
+    /**
+     * @param string $host
+     * @param int $port
+     * @param string $protocol
+     */
     public function __construct($host = 'localhost', $port = 2003, $protocol = 'tcp')
     {
         $this->host = $host;
@@ -33,49 +45,39 @@ class Graphite implements Collector
     }
 
     /**
-     * Log timing information
-     *
-     * @param string $variable The metric to in log timing info for.
-     * @param float  $time     The ellapsed time (ms) to log
-     **/
+     * {@inheritDoc}
+     */
     public function timing($variable, $time)
     {
-        $this->push($variable, $time);
+        $this->pushStat($variable, $time);
     }
 
     /**
-     * Increments one or more variable counters
-     *
-     * @param string $variable The metric to increment.
-     **/
+     * {@inheritDoc}
+     */
     public function increment($variable)
     {
-        $this->push($variable, 1);
+        $this->pushStat($variable, 1);
     }
 
     /**
-     * Decrements one or more variable counters.
-     *
-     * @param string $variable The metric to increment.
-     **/
+     * {@inheritDoc}
+     */
     public function decrement($variable)
     {
-        $this->push($variable, -1);
+        $this->pushStat($variable, -1);
     }
 
     /**
-     * Updates one or more variable counters by arbitrary amounts.
-     *
-     * @param string $variable The metric to update.
-     * @param int    $value    The value to log
-     **/
+     * {@inheritDoc}
+     */
     public function measure($variable, $value)
     {
-        $this->push($variable, $value);
+        $this->pushStat($variable, $value);
     }
 
     /**
-     * Squirt the metrics over UDP
+     * {@inheritDoc}
      */
     public function flush()
     {
@@ -101,7 +103,12 @@ class Graphite implements Collector
         $this->data = array();
     }
 
-    public function push($stat, $value, $time = null)
+    /**
+     * @param string $stat
+     * @param string $value
+     * @param int|null $time
+     */
+    private function pushStat($stat, $value, $time = null)
     {
         $this->data[] = sprintf(
             is_float($value) ? "%s %.18f %d\n" : "%s %d %d\n",
@@ -109,5 +116,23 @@ class Graphite implements Collector
             $value,
             $time ?: time()
         );
+    }
+
+    /**
+     * @internal
+     * @todo Makes this method private, move pushStat() logic into this one afterward
+     *
+     * @param $stat
+     * @param $value
+     * @param int|null $time
+     */
+    public function push($stat, $value, $time = null)
+    {
+        trigger_error(
+            'This method is used for internal usage only. It will be removed from public API on the next major version',
+            E_USER_WARNING
+        );
+
+        $this->pushStat($stat, $value, $time);
     }
 }
