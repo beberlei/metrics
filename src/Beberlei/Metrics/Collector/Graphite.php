@@ -49,7 +49,7 @@ class Graphite implements Collector
      */
     public function timing($variable, $time)
     {
-        $this->push($variable, $time);
+        $this->pushStat($variable, $time);
     }
 
     /**
@@ -57,7 +57,7 @@ class Graphite implements Collector
      */
     public function increment($variable)
     {
-        $this->push($variable, 1);
+        $this->pushStat($variable, 1);
     }
 
     /**
@@ -65,7 +65,7 @@ class Graphite implements Collector
      */
     public function decrement($variable)
     {
-        $this->push($variable, -1);
+        $this->pushStat($variable, -1);
     }
 
     /**
@@ -73,7 +73,7 @@ class Graphite implements Collector
      */
     public function measure($variable, $value)
     {
-        $this->push($variable, $value);
+        $this->pushStat($variable, $value);
     }
 
     /**
@@ -103,7 +103,12 @@ class Graphite implements Collector
         $this->data = array();
     }
 
-    public function push($stat, $value, $time = null)
+    /**
+     * @param string $stat
+     * @param string $value
+     * @param int|null $time
+     */
+    private function pushStat($stat, $value, $time = null)
     {
         $this->data[] = sprintf(
             is_float($value) ? "%s %.18f %d\n" : "%s %d %d\n",
@@ -111,5 +116,23 @@ class Graphite implements Collector
             $value,
             $time ?: time()
         );
+    }
+
+    /**
+     * @internal
+     * @todo Makes this method private, move pushStat() logic into this one afterward
+     *
+     * @param $stat
+     * @param $value
+     * @param int|null $time
+     */
+    public function push($stat, $value, $time = null)
+    {
+        trigger_error(
+            'This method is used for internal usage only. It will be removed from public API on the next major version',
+            E_USER_WARNING
+        );
+
+        $this->pushStat($stat, $value, $time);
     }
 }
