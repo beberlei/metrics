@@ -33,7 +33,7 @@ class Logger implements Collector
      */
     public function increment($variable)
     {
-        $this->logger->debug("increment:$variable");
+        $this->logger->debug('increment:'.$variable);
     }
 
     /**
@@ -41,7 +41,7 @@ class Logger implements Collector
      */
     public function decrement($variable)
     {
-        $this->logger->debug("decrement:$variable");
+        $this->logger->debug('decrement:'.$variable);
     }
 
     /**
@@ -49,7 +49,7 @@ class Logger implements Collector
      */
     public function timing($variable, $time)
     {
-        $this->logger->debug("timing:$variable:$time");
+        $this->logger->debug(sprintf('timing:%s:%s', $variable, $time));
     }
 
     /**
@@ -57,7 +57,7 @@ class Logger implements Collector
      */
     public function measure($variable, $value)
     {
-        $this->logger->debug("measure:$variable:$value");
+        $this->logger->debug(sprintf('measure:%s:%s', $variable, $value));
     }
 
     /**
