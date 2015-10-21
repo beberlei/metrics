@@ -15,7 +15,7 @@ namespace Beberlei\Metrics\Collector;
 
 use Psr\Log\LoggerInterface;
 
-class Logger implements Collector
+class Logger implements Collector, GaugeableCollector
 {
     /** @var \Psr\Log\LoggerInterface */
     private $logger;
@@ -63,7 +63,16 @@ class Logger implements Collector
     /**
      * {@inheritDoc}
      */
+    public function gauge($variable, $value)
+    {
+        $this->logger->debug(sprintf('gauge:%s:%s', $variable, $value));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function flush()
     {
+        $this->logger->debug('flush');
     }
 }
