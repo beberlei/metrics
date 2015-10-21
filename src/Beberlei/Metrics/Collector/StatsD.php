@@ -18,11 +18,23 @@ namespace Beberlei\Metrics\Collector;
  */
 class StatsD implements Collector
 {
+    /** @var string */
     private $host;
+
+    /** @var string */
     private $port;
+
+    /** @var string */
     private $prefix;
+
+    /** @var array */
     private $data;
 
+    /**
+     * @param string $host
+     * @param string $port
+     * @param string $prefix
+     */
     public function __construct($host = 'localhost', $port = '8125', $prefix = '')
     {
         $this->host = $host;
@@ -32,60 +44,47 @@ class StatsD implements Collector
     }
 
     /**
-     * Log timing information
-     *
-     * @param string $variable The metric to in log timing info for.
-     * @param float  $time     The ellapsed time (ms) to log
-     **/
+     * {@inheritDoc}
+     */
     public function timing($variable, $time)
     {
         $this->data[] = "$variable:$time|ms";
     }
 
     /**
-     * Increments one or more variable counters
-     *
-     * @param string $variable The metric to increment.
-     **/
+     * {@inheritDoc}
+     */
     public function increment($variable)
     {
         $this->data[] = "$variable:1|c";
     }
 
     /**
-     * Decrements one or more variable counters.
-     *
-     * @param string $variable The metric to increment.
-     **/
+     * {@inheritDoc}
+     */
     public function decrement($variable)
     {
         $this->data[] = "$variable:-1|c";
     }
 
     /**
-     * Updates one or more variable counters by arbitrary amounts.
-     *
-     * @param string $variable The metric to update.
-     * @param int    $value    The value to set
-     **/
+     * {@inheritDoc}
+     */
     public function measure($variable, $value)
     {
         $this->data[] = "$variable:$value|c";
     }
 
     /**
-     * Updates one stat gauges by arbitrary amounts.
-     *
-     * @param string $variable The metric to update.
-     * @param int    $value
-     **/
+     * {@inheritDoc}
+     */
     public function gauge($variable, $value)
     {
         $this->data[] = "$variable:$value|g";
     }
 
     /**
-     * Squirt the metrics over UDP
+     * {@inheritDoc}
      */
     public function flush()
     {
