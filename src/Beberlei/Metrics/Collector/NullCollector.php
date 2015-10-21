@@ -13,7 +13,7 @@
 
 namespace Beberlei\Metrics\Collector;
 
-class NullCollector implements Collector
+class NullCollector implements Collector, GaugeableCollector
 {
     /**
      * {@inheritDoc}

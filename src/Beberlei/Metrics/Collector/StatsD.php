@@ -16,7 +16,7 @@ namespace Beberlei\Metrics\Collector;
 /**
  * Sends statistics to the stats daemon over UDP
  */
-class StatsD implements Collector
+class StatsD implements Collector, GaugeableCollector
 {
     /** @var string */
     private $host;
