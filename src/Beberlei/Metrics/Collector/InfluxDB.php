@@ -56,5 +56,7 @@ class InfluxDB implements Collector
         foreach ($this->data as $data) {
             $this->client->mark($data[0], array('value' => $data[1]));
         }
+
+        $this->data = array();
     }
 }
