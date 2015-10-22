@@ -89,7 +89,7 @@ class DoctrineDBAL implements Collector
         try {
             $this->conn->beginTransaction();
 
-            $stmt = $this->conn->prepare("INSERT INTO metrics (metric, measurement, created) VALUES (?, ?, ?)");
+            $stmt = $this->conn->prepare('INSERT INTO metrics (metric, measurement, created) VALUES (?, ?, ?)');
 
             foreach ($this->data as $measurement) {
                 $stmt->bindParam(1, $measurement[0]);

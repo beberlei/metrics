@@ -48,7 +48,7 @@ class StatsD implements Collector, GaugeableCollector
      */
     public function timing($variable, $time)
     {
-        $this->data[] = "$variable:$time|ms";
+        $this->data[] = sprintf('%s:%s|ms', $variable, $time);
     }
 
     /**
@@ -56,7 +56,7 @@ class StatsD implements Collector, GaugeableCollector
      */
     public function increment($variable)
     {
-        $this->data[] = "$variable:1|c";
+        $this->data[] = $variable.':1|c';
     }
 
     /**
@@ -64,7 +64,7 @@ class StatsD implements Collector, GaugeableCollector
      */
     public function decrement($variable)
     {
-        $this->data[] = "$variable:-1|c";
+        $this->data[] = $variable.':-1|c';
     }
 
     /**
@@ -72,7 +72,7 @@ class StatsD implements Collector, GaugeableCollector
      */
     public function measure($variable, $value)
     {
-        $this->data[] = "$variable:$value|c";
+        $this->data[] = sprintf('%s:%s|c', $variable, $value);
     }
 
     /**
@@ -80,7 +80,7 @@ class StatsD implements Collector, GaugeableCollector
      */
     public function gauge($variable, $value)
     {
-        $this->data[] = "$variable:$value|g";
+        $this->data[] = sprintf('%s:%s|g', $variable, $value);
     }
 
     /**
@@ -92,7 +92,7 @@ class StatsD implements Collector, GaugeableCollector
             return;
         }
 
-        $fp = fsockopen("udp://".$this->host, $this->port, $errno, $errstr, 1.0);
+        $fp = fsockopen('udp://'.$this->host, $this->port, $errno, $errstr, 1.0);
 
         if (!$fp) {
             return;
