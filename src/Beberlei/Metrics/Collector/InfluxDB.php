@@ -13,14 +13,14 @@
 
 namespace Beberlei\Metrics\Collector;
 
-use Beberlei\Metrics\Collector\Collector;
 use InfluxDB\Client;
 
 class InfluxDB implements Collector
 {
-    /**
-     * @var array
-     */
+    /** @var \InfluxDB\Client */
+    private $client;
+
+    /** @var array */
     private $data = array();
 
     /**
@@ -31,30 +31,47 @@ class InfluxDB implements Collector
         $this->client = $client;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function increment($variable)
     {
         $this->data[] = array($variable, 1);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function decrement($variable)
     {
         $this->data[] = array($variable, -1);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function timing($variable, $time)
     {
         $this->data[] = array($variable, $time);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function measure($variable, $value)
     {
         $this->data[] = array($variable, $value);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function flush()
     {
         foreach ($this->data as $data) {
             $this->client->mark($data[0], array('value' => $data[1]));
         }
+
+        $this->data = array();
     }
 }

@@ -20,11 +20,23 @@ use Exception;
  */
 class Graphite implements Collector
 {
+    /** @var string */
     private $protocol;
+
+    /** @var string */
     private $host;
+
+    /** @var int */
     private $port;
+
+    /** @var array */
     private $data = array();
 
+    /**
+     * @param string $host
+     * @param int $port
+     * @param string $protocol
+     */
     public function __construct($host = 'localhost', $port = 2003, $protocol = 'tcp')
     {
         $this->host = $host;
@@ -33,49 +45,39 @@ class Graphite implements Collector
     }
 
     /**
-     * Log timing information
-     *
-     * @param string $variable The metric to in log timing info for.
-     * @param float  $time     The ellapsed time (ms) to log
-     **/
+     * {@inheritDoc}
+     */
     public function timing($variable, $time)
     {
         $this->push($variable, $time);
     }
 
     /**
-     * Increments one or more variable counters
-     *
-     * @param string $variable The metric to increment.
-     **/
+     * {@inheritDoc}
+     */
     public function increment($variable)
     {
         $this->push($variable, 1);
     }
 
     /**
-     * Decrements one or more variable counters.
-     *
-     * @param string $variable The metric to increment.
-     **/
+     * {@inheritDoc}
+     */
     public function decrement($variable)
     {
         $this->push($variable, -1);
     }
 
     /**
-     * Updates one or more variable counters by arbitrary amounts.
-     *
-     * @param string $variable The metric to update.
-     * @param int    $value    The value to log
-     **/
+     * {@inheritDoc}
+     */
     public function measure($variable, $value)
     {
         $this->push($variable, $value);
     }
 
     /**
-     * Squirt the metrics over UDP
+     * {@inheritDoc}
      */
     public function flush()
     {

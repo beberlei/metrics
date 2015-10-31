@@ -20,42 +20,57 @@ use Net\Zabbix\Sender;
  */
 class Zabbix implements Collector
 {
-    /**
-     * @var Net\Zabbix\Sender
-     */
+    /** @var \Net\Zabbix\Sender */
     private $sender;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $prefix;
 
+    /**
+     * @param \Net\Zabbix\Sender $sender
+     * @param null $prefix
+     */
     public function __construct(Sender $sender, $prefix = null)
     {
         $this->sender = $sender;
         $this->prefix = $prefix ?: gethostname();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function increment($variable)
     {
         $this->sender->addData($this->prefix, $variable, '1');
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function decrement($variable)
     {
         $this->sender->addData($this->prefix, $variable, '-1');
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function timing($variable, $time)
     {
         $this->sender->addData($this->prefix, $variable, $time);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function measure($variable, $value)
     {
         $this->sender->addData($this->prefix, $variable, $value);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function flush()
     {
         $this->sender->send();
