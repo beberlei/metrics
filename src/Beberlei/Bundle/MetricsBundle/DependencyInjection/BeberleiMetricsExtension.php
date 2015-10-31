@@ -91,6 +91,11 @@ class BeberleiMetricsExtension extends Extension
                 $definition->replaceArgument(1, $config['prefix']);
 
                 return $definition;
+            case 'credis':
+                $definition->replaceArgument(0, $config['host'] ?: '127.0.0.1');
+                $definition->replaceArgument(1, $config['port'] ?: 6379);
+
+                return $definition;
             default:
                 throw new \InvalidArgumentException(sprintf('The type "%s" is not supported', $type));
         }

@@ -23,6 +23,9 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
             array('Beberlei\Metrics\Collector\Logger', 'logger', array('logger' => new NullLogger())),
             array('Beberlei\Metrics\Collector\NullCollector', 'null'),
             array('Beberlei\Metrics\Collector\InfluxDB', 'influxdb', array('client' => $this->getMockBuilder('\\InfluxDB\\Client')->disableOriginalConstructor()->getMock())),
+            array('Beberlei\Metrics\Collector\CRedis', 'credis'),
+            array('Beberlei\Metrics\Collector\CRedis', 'credis', array('host' => 'localhost', 'port' => 1234)),
+            array('Beberlei\Metrics\Collector\CRedis', 'credis', array('host' => 'localhost'))
         );
     }
 
@@ -49,6 +52,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
             array('connection is required for Doctrine DBAL collector.', 'doctrine_dbal'),
             array('Missing \'logger\' key with logger service.', 'logger'),
             array('Missing \'client\' key for InfluxDB collector.', 'influxdb'),
+            array('Redis Host should be specified when a port is specified', 'credis', array('port' => '1234')),
         );
     }
 
