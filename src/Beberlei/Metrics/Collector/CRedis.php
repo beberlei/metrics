@@ -1,6 +1,6 @@
 <?php
 /**
- * Beberlei Metrics
+ * Beberlei Metrics.
  *
  * LICENSE
  *
@@ -10,10 +10,8 @@
  * obtain it through the world-wide-web, please send an email
  * to kontakt@beberlei.de so I can send you a copy immediately.
  */
-
 namespace Beberlei\Metrics\Collector;
 
-use Beberlei\Metrics\Collector\Collector;
 use Credis_Client;
 
 class CRedis implements Collector
@@ -53,5 +51,4 @@ class CRedis implements Collector
     {
         // No Need to Implement flush() method for now.
     }
-
 }

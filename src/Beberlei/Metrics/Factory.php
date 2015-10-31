@@ -130,7 +130,7 @@ abstract class Factory
 
                 return new Collector\InfluxDB($options['client']);
 
-            case 'redis':
+            case 'credis':
                 if (!isset($options['host']) && !isset($options['port'])) {
                     return new Collector\CRedis();
                 }
