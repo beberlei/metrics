@@ -2,7 +2,7 @@
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-$metrics = \Beberlei\Metrics\Factory::create('redis');
+$metrics = \Beberlei\Metrics\Factory::create('credis');
 
 while (true) {
     $metrics->increment('foo.bar');

@@ -37,16 +37,26 @@ class CRedis implements Collector
         $this->credis->decr($variable);
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     public function timing($variable, $time)
     {
         $this->credis->set($variable, $time);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function measure($variable, $value)
     {
         $this->credis->set($variable, $value);
     }
-
+    
+    /**
+     * {@inheritDoc}
+     */
     public function flush()
     {
         // No Need to Implement flush() method for now.
