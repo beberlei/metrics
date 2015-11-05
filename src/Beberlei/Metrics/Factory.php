@@ -50,8 +50,12 @@ abstract class Factory
                 if (!isset($options['host']) && isset($options['port'])) {
                     throw new MetricsException('You should specified a host if you specified a port.');
                 }
+                if ((!isset($options['host']) || !isset($options['port'])) && isset($options['prefix'])) {
+                    throw new MetricsException('gi');
+                }
+                $prefix = isset($options['prefix']) ? $options['prefix'] : '';
 
-                return new Collector\StatsD($options['host'], $options['port']);
+                return new Collector\StatsD($options['host'], $options['port'], $prefix);
 
             case 'graphite':
                 if (!isset($options['host']) && ! isset($options['port'])) {
