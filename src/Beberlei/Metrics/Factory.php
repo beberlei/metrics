@@ -41,23 +41,28 @@ abstract class Factory
     {
         switch ($type) {
             case 'statsd':
-                if (!isset($options['host']) && ! isset($options['port'])) {
+                if ((!isset($options['host']) || !isset($options['port'])) && isset($options['prefix'])) {
+                    throw new MetricsException('You should specified a host and a port if you specified a prefix.');
+                }
+                if (!isset($options['host']) && !isset($options['port'])) {
                     return new Collector\StatsD();
                 }
-                if (isset($options['host']) && ! isset($options['port'])) {
+                if (isset($options['host']) && !isset($options['port'])) {
                     return new Collector\StatsD($options['host']);
                 }
                 if (!isset($options['host']) && isset($options['port'])) {
                     throw new MetricsException('You should specified a host if you specified a port.');
                 }
+                
+                $prefix = isset($options['prefix']) ? $options['prefix'] : '';
 
-                return new Collector\StatsD($options['host'], $options['port']);
+                return new Collector\StatsD($options['host'], $options['port'], $prefix);
 
             case 'graphite':
-                if (!isset($options['host']) && ! isset($options['port'])) {
+                if (!isset($options['host']) && !isset($options['port'])) {
                     return new Collector\Graphite();
                 }
-                if (isset($options['host']) && ! isset($options['port'])) {
+                if (isset($options['host']) && !isset($options['port'])) {
                     return new Collector\Graphite($options['host']);
                 }
                 if (!isset($options['host']) && isset($options['port'])) {
@@ -71,9 +76,9 @@ abstract class Factory
                     throw new MetricsException('Hostname is required for zabbix collector.');
                 }
 
-                if (!isset($options['server']) && ! isset($options['port'])) {
+                if (!isset($options['server']) && !isset($options['port'])) {
                     $sender = new Sender();
-                } elseif (isset($options['server']) && ! isset($options['port'])) {
+                } elseif (isset($options['server']) && !isset($options['port'])) {
                     $sender = new Sender($options['server']);
                 } elseif (!isset($options['server']) && isset($options['port'])) {
                     throw new MetricsException('You should specified a server if you specified a port.');
