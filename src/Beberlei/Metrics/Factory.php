@@ -51,7 +51,7 @@ abstract class Factory
                     throw new MetricsException('You should specified a host if you specified a port.');
                 }
                 if ((!isset($options['host']) || !isset($options['port'])) && isset($options['prefix'])) {
-                    throw new MetricsException('gi');
+                    throw new MetricsException('You should specified a host and a port if you specified a prefix.');
                 }
                 $prefix = isset($options['prefix']) ? $options['prefix'] : '';
 
