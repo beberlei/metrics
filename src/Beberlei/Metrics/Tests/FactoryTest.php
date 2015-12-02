@@ -11,6 +11,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
     {
         return array(
             array('Beberlei\Metrics\Collector\StatsD', 'statsd'),
+            array('Beberlei\Metrics\Collector\StatsD', 'statsd', array('host' => 'localhost', 'port' => 1234, 'prefix' => 'prefix')),
             array('Beberlei\Metrics\Collector\StatsD', 'statsd', array('host' => 'localhost', 'port' => 1234)),
             array('Beberlei\Metrics\Collector\StatsD', 'statsd', array('host' => 'localhost')),
             array('Beberlei\Metrics\Collector\Graphite', 'graphite'),
@@ -41,6 +42,9 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
     {
         return array(
             array('You should specified a host if you specified a port.', 'statsd', array('port' => '1234')),
+            array('You should specified a host and a port if you specified a prefix.', 'statsd', array('prefix' => 'prefix')),
+            array('You should specified a host and a port if you specified a prefix.', 'statsd', array('port' => '1234', 'prefix' => 'prefix')),
+            array('You should specified a host and a port if you specified a prefix.', 'statsd', array('hostname' => 'foobar.com', 'prefix' => 'prefix')),
             array('You should specified a host if you specified a port.', 'graphite', array('port' => '1234')),
             array('Hostname is required for zabbix collector.', 'zabbix'),
             array('Hostname is required for zabbix collector.', 'zabbix', array('hostname', 'foobar.com')),
