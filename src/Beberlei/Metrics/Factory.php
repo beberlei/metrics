@@ -53,7 +53,7 @@ abstract class Factory
                 if (!isset($options['host']) && isset($options['port'])) {
                     throw new MetricsException('You should specified a host if you specified a port.');
                 }
-                
+
                 $prefix = isset($options['prefix']) ? $options['prefix'] : '';
 
                 return new Collector\StatsD($options['host'], $options['port'], $prefix);
@@ -136,17 +136,11 @@ abstract class Factory
                 return new Collector\InfluxDB($options['client']);
 
             case 'credis':
-                if (!isset($options['host']) && !isset($options['port'])) {
-                    return new Collector\CRedis();
-                }
-                if (isset($options['host']) && !isset($options['port'])) {
-                    return new Collector\CRedis($options['host']);
-                }
-                if (!isset($options['host']) && isset($options['port'])) {
-                    throw new MetricsException('Redis Host should be specified when a port is specified');
+                if (!isset($options['credis_client'])) {
+                    throw new MetricsException('Missing \'credis_client\' key for CRedis collector.');
                 }
 
-                return new Collector\CRedis($options['host'], $options['port']);
+                return new Collector\CRedis($options['credis_client']);
 
             case 'null':
                 return new Collector\NullCollector();

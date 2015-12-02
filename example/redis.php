@@ -2,7 +2,11 @@
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-$metrics = \Beberlei\Metrics\Factory::create('credis');
+$credis = new Credis_Client();
+
+$metrics = \Beberlei\Metrics\Factory::create('credis', array(
+    'credis_client' => $credis,
+));
 
 while (true) {
     $metrics->increment('foo.bar');

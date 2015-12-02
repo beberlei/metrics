@@ -28,6 +28,7 @@ class Configuration implements ConfigurationInterface
                         ->children()
                             ->scalarNode('type')->isRequired()->end()
                             ->scalarNode('connection')->defaultNull()->end()
+                            ->scalarNode('credis_client')->defaultNull()->end()
                             ->scalarNode('file')->defaultNull()->end()
                             ->scalarNode('host')->defaultNull()->end()
                             ->scalarNode('password')->defaultNull()->end()

@@ -194,24 +194,22 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
             'collectors' => array(
                 'simple' => array(
                     'type' => 'credis',
+                    'credis_client' => 'credis'
                 ),
                 'full' => array(
                     'type' => 'credis',
-                    'host' => 'credis.localhost',
-                    'port' => 1337,
-                ),
+                    'credis_client' => 'credis',
+                    'host' => 'redis.localhost',
+                    'port' => 1234
+                )
             ),
         ));
 
         $collector = $container->get('beberlei_metrics.collector.simple');
         $this->assertInstanceOf('Beberlei\Metrics\Collector\CRedis', $collector);
-        $this->assertSame('127.0.0.1', $this->getProperty($collector, 'host'));
-        $this->assertSame(6379, $this->getProperty($collector, 'port'));
 
         $collector = $container->get('beberlei_metrics.collector.full');
         $this->assertInstanceOf('Beberlei\Metrics\Collector\CRedis', $collector);
-        $this->assertSame('credis.localhost', $this->getProperty($collector, 'host'));
-        $this->assertSame(1337, $this->getProperty($collector, 'port'));
     }
 
 

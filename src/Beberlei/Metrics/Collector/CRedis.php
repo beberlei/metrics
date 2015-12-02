@@ -16,20 +16,12 @@ use Credis_Client;
 
 class CRedis implements Collector
 {
-    /** @var string */
-    private $host;
-
-    /** @var string */
-    private $port;
-
     /** @var \Credis_Client */
-    private $credis;
+    private $credis_client;
 
-    public function __construct($host = '127.0.0.1', $port = 6379)
+    public function __construct(Credis_Client $credis_client)
     {
-        $this->host = $host;
-        $this->port = $port;
-        $this->credis = new Credis_Client($host, $port);
+        $this->credis_client = $credis_client;
     }
 
     /**
@@ -37,7 +29,7 @@ class CRedis implements Collector
      */
     public function increment($variable)
     {
-        $this->credis->incr($variable);
+        $this->credis_client->incr($variable);
     }
 
     /**
@@ -45,7 +37,7 @@ class CRedis implements Collector
      */
     public function decrement($variable)
     {
-        $this->credis->decr($variable);
+        $this->credis_client->decr($variable);
     }
 
     /**
@@ -53,7 +45,7 @@ class CRedis implements Collector
      */
     public function timing($variable, $time)
     {
-        $this->credis->set($variable, $time);
+        $this->credis_client->set($variable, $time);
     }
 
     /**
@@ -61,7 +53,7 @@ class CRedis implements Collector
      */
     public function measure($variable, $value)
     {
-        $this->credis->set($variable, $value);
+        $this->credis_client->set($variable, $value);
     }
 
     /**

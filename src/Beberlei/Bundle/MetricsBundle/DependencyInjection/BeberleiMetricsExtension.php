@@ -92,8 +92,11 @@ class BeberleiMetricsExtension extends Extension
 
                 return $definition;
             case 'credis':
-                $definition->replaceArgument(0, $config['host'] ?: '127.0.0.1');
-                $definition->replaceArgument(1, $config['port'] ?: 6379);
+                $credis_client = new Definition('Credis_Client');
+                $credis_client ->addArgument($config['host'] ?: 'localhost');
+                $credis_client ->addArgument($config['port'] ?: 6379);
+
+                $definition->replaceArgument(0, $credis_client);
 
                 return $definition;
             default:
