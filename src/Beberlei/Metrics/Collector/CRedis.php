@@ -33,7 +33,7 @@ class CRedis implements Collector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function increment($variable)
     {
@@ -41,7 +41,7 @@ class CRedis implements Collector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function decrement($variable)
     {
@@ -49,7 +49,7 @@ class CRedis implements Collector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function timing($variable, $time)
     {
@@ -57,7 +57,7 @@ class CRedis implements Collector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function measure($variable, $value)
     {
@@ -65,7 +65,7 @@ class CRedis implements Collector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function flush()
     {
