@@ -49,7 +49,7 @@ interface Collector
     public function timing($variable, $time);
 
     /**
-     * Sends the metrics to the adpater backend
+     * Sends the metrics to the adapter backend
      */
     public function flush();
 }
