@@ -18,7 +18,8 @@
     "suggest": {
         "corley/influxdb-sdk": "For InfluxDB integration",
         "okitsu/zabbix-sender": "For zabbix integration",
-        "kriswallsmith/buzz": "For Librato integration"
+        "kriswallsmith/buzz": "For Librato integration",
+        "colinmollenhour/credis": "For Redis integration"
     },
     "require": {
         "psr/log": "~1.0"
@@ -30,7 +31,8 @@
         "okitsu/zabbix-sender": "*@dev",
         "symfony/config": "~2.3",
         "symfony/dependency-injection": "~2.3",
-        "symfony/http-kernel": "~2.3"
+        "symfony/http-kernel": "~2.3",
+        "colinmollenhour/credis": "^1.5"
     },
     "autoload": {
         "psr-4": {

@@ -43,6 +43,9 @@
             <argument /> <!-- sender, set by the extension -->
             <argument /> <!-- host, set by the extension -->
         </service>
+        <service id="beberlei_metrics.collector_proto.credis" class="Beberlei\Metrics\Collector\CRedis" abstract="true">
+            <argument /> <!-- credis_client, set by the extension -->
+        </service>
     </services>
 
 </container>
