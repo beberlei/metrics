@@ -24,7 +24,7 @@ use Buzz\Client\Curl;
 abstract class Factory
 {
     /**
-     * @var Buzz\Browser
+     * @var Browser
      */
     private static $httpClient;
 
@@ -41,22 +41,24 @@ abstract class Factory
     {
         switch ($type) {
             case 'statsd':
+                $prefix = isset($options['prefix']) ? $options['prefix'] : '';
+                $type = isset($options['type']) ? strtolower($options['type']) : 'statsd';
+                $metricFactory = self::createStatsDMetricFactory($type, $prefix);
+
                 if ((!isset($options['host']) || !isset($options['port'])) && isset($options['prefix'])) {
                     throw new MetricsException('You should specified a host and a port if you specified a prefix.');
                 }
                 if (!isset($options['host']) && !isset($options['port'])) {
-                    return new Collector\StatsD();
+                    return new Collector\StatsD($metricFactory);
                 }
                 if (isset($options['host']) && !isset($options['port'])) {
-                    return new Collector\StatsD($options['host']);
+                    return new Collector\StatsD($metricFactory, $options['host']);
                 }
                 if (!isset($options['host']) && isset($options['port'])) {
                     throw new MetricsException('You should specified a host if you specified a port.');
                 }
-                
-                $prefix = isset($options['prefix']) ? $options['prefix'] : '';
 
-                return new Collector\StatsD($options['host'], $options['port'], $prefix);
+                return new Collector\StatsD($metricFactory, $options['host'], $options['port']);
 
             case 'graphite':
                 if (!isset($options['host']) && !isset($options['port'])) {
@@ -150,5 +152,28 @@ abstract class Factory
         }
 
         return self::$httpClient;
+    }
+
+    /**
+     * @param string $type Lowercased type identifier.
+     * @param string $prefix
+     * @return StatsDMetric\StatsDMetricFactory
+     */
+    private static function createStatsDMetricFactory($type, $prefix)
+    {
+        switch ($type) {
+            case 'datadog':
+                $metricFactory = new \Beberlei\Metrics\StatsDMetric\DataDogStatsD($prefix);
+                break;
+            case 'influx':
+                $metricFactory = new \Beberlei\Metrics\StatsDMetric\InfluxStatsD($prefix);
+                break;
+            case 'statsd':
+            default:
+                $metricFactory = new \Beberlei\Metrics\StatsDMetric\StatsD($prefix);
+                break;
+        }
+
+        return $metricFactory;
     }
 }

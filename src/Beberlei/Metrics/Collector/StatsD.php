@@ -13,6 +13,8 @@
 
 namespace Beberlei\Metrics\Collector;
 
+use Beberlei\Metrics\StatsDMetric\StatsDMetricFactory;
+
 /**
  * Sends statistics to the stats daemon over UDP
  */
@@ -24,63 +26,68 @@ class StatsD implements Collector, GaugeableCollector
     /** @var string */
     private $port;
 
-    /** @var string */
-    private $prefix;
+    /** @var StatsDMetricFactory */
+    private $metricFactory;
 
     /** @var array */
     private $data;
 
+    /** @var float */
+    private $sampleRate;
+
     /**
+     * @param StatsDMetricFactory $metricFactory
      * @param string $host
      * @param string $port
-     * @param string $prefix
+     * @param float $sampleRate
      */
-    public function __construct($host = 'localhost', $port = '8125', $prefix = '')
+    public function __construct(StatsDMetricFactory $metricFactory, $host = 'localhost', $port = '8125', $sampleRate = 1)
     {
         $this->host = $host;
         $this->port = $port;
-        $this->prefix = $prefix;
+        $this->metricFactory = $metricFactory;
+        $this->sampleRate = $sampleRate;
         $this->data = array();
     }
 
     /**
      * {@inheritDoc}
      */
-    public function timing($variable, $time)
+    public function timing($variable, $time, array $tags = array())
     {
-        $this->data[] = sprintf('%s:%s|ms', $variable, $time);
+        $this->data[] = $this->metricFactory->create($variable, $time, 'ms', $this->sampleRate, $tags);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function increment($variable)
+    public function increment($variable, array $tags = array())
     {
-        $this->data[] = $variable.':1|c';
+        $this->data[] = $this->metricFactory->create($variable, 1, 'c', $this->sampleRate, $tags);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function decrement($variable)
+    public function decrement($variable, array $tags = array())
     {
-        $this->data[] = $variable.':-1|c';
+        $this->data[] = $this->metricFactory->create($variable, -1, 'c', $this->sampleRate, $tags);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function measure($variable, $value)
+    public function measure($variable, $value, array $tags = array())
     {
-        $this->data[] = sprintf('%s:%s|c', $variable, $value);
+        $this->data[] = $this->metricFactory->create($variable, $value, 'c', $this->sampleRate, $tags);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function gauge($variable, $value)
+    public function gauge($variable, $value, array $tags = array())
     {
-        $this->data[] = sprintf('%s:%s|g', $variable, $value);
+        $this->data[] = $this->metricFactory->create($variable, $value, 'g', $this->sampleRate, $tags);
     }
 
     /**
@@ -100,7 +107,7 @@ class StatsD implements Collector, GaugeableCollector
 
         $level = error_reporting(0);
         foreach ($this->data as $line) {
-            fwrite($fp, $this->prefix.$line);
+            fwrite($fp, $line);
         }
         error_reporting($level);
 
