@@ -15,13 +15,16 @@ namespace Beberlei\Metrics\Collector;
 
 use InfluxDB\Client;
 
-class InfluxDB implements Collector
+class InfluxDB implements Collector, TaggableCollector
 {
     /** @var \InfluxDB\Client */
     private $client;
 
     /** @var array */
     private $data = array();
+
+    /** @var array */
+    private $tags = array();
 
     /**
      * @param Client $client
@@ -69,9 +72,25 @@ class InfluxDB implements Collector
     public function flush()
     {
         foreach ($this->data as $data) {
-            $this->client->mark($data[0], array('value' => $data[1]));
+            $this->client->mark(array(
+                "points" => array(
+                    array(
+                        "measurement" => $data[0],
+                        "fields" => array('value' => $data[1]),
+                    ),
+                ),
+                "tags" => $this->tags,
+            ));
         }
 
         $this->data = array();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setTags($tags)
+    {
+        $this->tags = $tags;
     }
 }
