@@ -49,6 +49,10 @@ class BeberleiMetricsExtension extends Extension
             'event' => 'console.terminate',
         ));
 
+        if (count($config['tags']) > 0) {
+            $definition->addMethodCall('setTags', array($config['tags']));
+        }
+
         switch ($type) {
             case 'doctrine_dbal':
                 $ref = $config['connection'] ? sprintf('doctrine.dbal.%s_connection', $config['connection']) : 'database_connection';
@@ -59,6 +63,10 @@ class BeberleiMetricsExtension extends Extension
                 $definition->replaceArgument(0, $config['host'] ?: 'localhost');
                 $definition->replaceArgument(1, $config['port'] ?: 2003);
                 $definition->replaceArgument(2, $config['protocol'] ?: 'tcp');
+
+                return $definition;
+            case 'influxdb':
+                $definition->replaceArgument(0, new Reference($config['influxdb_client']));
 
                 return $definition;
             case 'librato':

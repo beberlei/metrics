@@ -187,7 +187,59 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Net\Zabbix\Sender', $sender);
     }
 
-    private function createContainer($configs)
+    public function testWithInfluxDB()
+    {
+        $influxDBClientMock = $this->getMockBuilder('InfluxDB\Client')
+            ->disableOriginalConstructor()
+            ->getMock()
+        ;
+
+        $container = $this->createContainer(array(
+            'collectors' => array(
+                'influxdb' => array(
+                    'type' => 'influxdb',
+                    'influxdb_client' => 'influxdb_client_mock',
+                ),
+            ),
+        ), array(
+            'influxdb_client_mock' => $influxDBClientMock,
+        ));
+
+        $collector = $container->get('beberlei_metrics.collector.influxdb');
+        $this->assertInstanceOf('Beberlei\Metrics\Collector\InfluxDB', $collector);
+        $this->assertSame($influxDBClientMock, $this->getProperty($collector, 'client'));
+    }
+
+    public function testWithInfluxDBAndWithTags()
+    {
+        $expectedTags = array(
+            'string_tag' => 'first_value',
+            'int_tag' => 123,
+        );
+
+        $influxDBClientMock = $this->getMockBuilder('InfluxDB\Client')
+            ->disableOriginalConstructor()
+            ->getMock()
+        ;
+
+        $container = $this->createContainer(array(
+            'collectors' => array(
+                'influxdb' => array(
+                    'type' => 'influxdb',
+                    'influxdb_client' => 'influxdb_client_mock',
+                    'tags' => $expectedTags,
+                ),
+            ),
+        ), array(
+            'influxdb_client_mock' => $influxDBClientMock,
+        ));
+
+        $collector = $container->get('beberlei_metrics.collector.influxdb');
+        $this->assertInstanceOf('Beberlei\Metrics\Collector\InfluxDB', $collector);
+        $this->assertEquals($expectedTags, $this->getProperty($collector, 'tags'));
+    }
+
+    private function createContainer($configs, $additionalServices = array())
     {
         $container = new ContainerBuilder();
 
@@ -195,6 +247,10 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
         $extension->load(array($configs), $container);
         // Needed for logger collector
         $container->setDefinition('logger', new Definition('Psr\Log\NullLogger'));
+
+        foreach ($additionalServices as $serviceId => $additionalService) {
+            $container->set($serviceId, $additionalService);
+        }
 
         $container->compile();
 

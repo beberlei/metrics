@@ -132,6 +132,12 @@ Do Configuration:
                 connection: metrics # using the connection named "metrics"
             monolog:
                 type: monolog
+            influxdb:
+                type: influxdb
+                influxdb_client: influxdb_client_service # using the InfluxDB client service named "influxdb_client_service"
+                tags:
+                    dc: "west"
+                    node_instance: "hermes10"
 
 This adds collectors to the Metrics registry. The functions are automatically
 included in the Bundle class so that in your code you can just start using the

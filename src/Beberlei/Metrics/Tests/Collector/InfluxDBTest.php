@@ -38,9 +38,19 @@ class InfluxDBTest extends \PHPUnit_Framework_TestCase
 
     public function testCollectIncrement()
     {
+        $expectedArgs = array(
+            "points" => array(
+                array(
+                    "measurement" => 'series-name',
+                    "fields" => array('value' => 1),
+                ),
+            ),
+            "tags" => array(),
+        );
+
         $this->client->expects($this->once())
             ->method('mark')
-            ->with('series-name', array('value' => 1));
+            ->with($expectedArgs);
 
         $this->collector->increment('series-name');
         $this->collector->flush();
@@ -48,9 +58,19 @@ class InfluxDBTest extends \PHPUnit_Framework_TestCase
 
     public function testCollectDecrement()
     {
+        $expectedArgs = array(
+            "points" => array(
+                array(
+                    "measurement" => 'series-name',
+                    "fields" => array('value' => -1),
+                ),
+            ),
+            "tags" => array(),
+        );
+
         $this->client->expects($this->once())
             ->method('mark')
-            ->with('series-name', array('value' => -1));
+            ->with($expectedArgs);
 
         $this->collector->decrement('series-name');
         $this->collector->flush();
@@ -58,9 +78,19 @@ class InfluxDBTest extends \PHPUnit_Framework_TestCase
 
     public function testCollectTiming()
     {
+        $expectedArgs = array(
+            "points" => array(
+                array(
+                    "measurement" => 'series-name',
+                    "fields" => array('value' => 47.11),
+                ),
+            ),
+            "tags" => array(),
+        );
+
         $this->client->expects($this->once())
             ->method('mark')
-            ->with('series-name', array('value' => 47.11));
+            ->with($expectedArgs);
 
         $this->collector->timing('series-name', 47.11);
         $this->collector->flush();
@@ -68,11 +98,47 @@ class InfluxDBTest extends \PHPUnit_Framework_TestCase
 
     public function testCollectMeasure()
     {
+        $expectedArgs = array(
+            "points" => array(
+                array(
+                    "measurement" => 'series-name',
+                    "fields" => array('value' => 47.11),
+                ),
+            ),
+            "tags" => array(),
+        );
+
         $this->client->expects($this->once())
             ->method('mark')
-            ->with('series-name', array('value' => 47.11));
+            ->with($expectedArgs);
 
-        $this->collector->timing('series-name', 47.11);
+        $this->collector->measure('series-name', 47.11);
+        $this->collector->flush();
+    }
+
+    public function testCollectMeasureWithTags()
+    {
+        $expectedTags = array(
+            'dc' => 'west',
+            'node' => 'nemesis101',
+        );
+
+        $expectedArgs = array(
+            "points" => array(
+                array(
+                    "measurement" => 'series-name',
+                    "fields" => array('value' => 47.11),
+                ),
+            ),
+            "tags" => $expectedTags,
+        );
+
+        $this->client->expects($this->once())
+            ->method('mark')
+            ->with($expectedArgs);
+
+        $this->collector->setTags($expectedTags);
+        $this->collector->measure('series-name', 47.11);
         $this->collector->flush();
     }
 }
