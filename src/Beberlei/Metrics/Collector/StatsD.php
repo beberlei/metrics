@@ -30,7 +30,7 @@ class StatsD implements Collector, GaugeableCollector, TaggableCollector
     /** @var array */
     private $data;
 
-    /** @var array */
+    /** @var string */
     private $tags = '';
 
     /**
