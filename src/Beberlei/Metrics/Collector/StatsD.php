@@ -16,7 +16,7 @@ namespace Beberlei\Metrics\Collector;
 /**
  * Sends statistics to the stats daemon over UDP
  */
-class StatsD implements Collector, GaugeableCollector
+class StatsD implements Collector, GaugeableCollector, TaggableCollector
 {
     /** @var string */
     private $host;
@@ -29,6 +29,9 @@ class StatsD implements Collector, GaugeableCollector
 
     /** @var array */
     private $data;
+
+    /** @var array */
+    private $tags = '';
 
     /**
      * @param string $host
@@ -46,9 +49,18 @@ class StatsD implements Collector, GaugeableCollector
     /**
      * {@inheritDoc}
      */
+    public function setTags($tags)
+    {
+        $this->tags = http_build_query($tags, '', ',');
+        $this->tags = (strlen($this->tags) > 0 ? ',' . $this->tags : $this->tags);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function timing($variable, $time)
     {
-        $this->data[] = sprintf('%s:%s|ms', $variable, $time);
+        $this->data[] = sprintf('%s%s:%s|ms', $variable, $this->tags, $time);
     }
 
     /**
@@ -56,7 +68,7 @@ class StatsD implements Collector, GaugeableCollector
      */
     public function increment($variable)
     {
-        $this->data[] = $variable.':1|c';
+        $this->data[] = $variable . $this->tags . ':1|c';
     }
 
     /**
@@ -64,7 +76,7 @@ class StatsD implements Collector, GaugeableCollector
      */
     public function decrement($variable)
     {
-        $this->data[] = $variable.':-1|c';
+        $this->data[] = $variable . $this->tags . ':-1|c';
     }
 
     /**
@@ -72,7 +84,7 @@ class StatsD implements Collector, GaugeableCollector
      */
     public function measure($variable, $value)
     {
-        $this->data[] = sprintf('%s:%s|c', $variable, $value);
+        $this->data[] = sprintf('%s%s:%s|c', $variable, $this->tags, $value);
     }
 
     /**
@@ -80,7 +92,7 @@ class StatsD implements Collector, GaugeableCollector
      */
     public function gauge($variable, $value)
     {
-        $this->data[] = sprintf('%s:%s|g', $variable, $value);
+        $this->data[] = sprintf('%s%s:%s|g', $variable, $this->tags, $value);
     }
 
     /**
