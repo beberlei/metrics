@@ -16,7 +16,7 @@ namespace Beberlei\Metrics\Collector;
 /**
  * Sends statistics to the stats daemon over UDP
  */
-class StatsD implements Collector, GaugeableCollector, TaggableCollector
+class StatsD implements Collector, GaugeableCollector
 {
     /** @var string */
     private $host;
@@ -29,9 +29,6 @@ class StatsD implements Collector, GaugeableCollector, TaggableCollector
 
     /** @var array */
     private $data;
-
-    /** @var string */
-    private $tags = '';
 
     /**
      * @param string $host
@@ -49,18 +46,9 @@ class StatsD implements Collector, GaugeableCollector, TaggableCollector
     /**
      * {@inheritDoc}
      */
-    public function setTags($tags)
-    {
-        $this->tags = http_build_query($tags, '', ',');
-        $this->tags = (strlen($this->tags) > 0 ? ',' . $this->tags : $this->tags);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function timing($variable, $time)
     {
-        $this->data[] = sprintf('%s%s:%s|ms', $variable, $this->tags, $time);
+        $this->data[] = sprintf('%s:%s|ms', $variable, $time);
     }
 
     /**
@@ -68,7 +56,7 @@ class StatsD implements Collector, GaugeableCollector, TaggableCollector
      */
     public function increment($variable)
     {
-        $this->data[] = $variable . $this->tags . ':1|c';
+        $this->data[] = $variable.':1|c';
     }
 
     /**
@@ -76,7 +64,7 @@ class StatsD implements Collector, GaugeableCollector, TaggableCollector
      */
     public function decrement($variable)
     {
-        $this->data[] = $variable . $this->tags . ':-1|c';
+        $this->data[] = $variable.':-1|c';
     }
 
     /**
@@ -84,7 +72,7 @@ class StatsD implements Collector, GaugeableCollector, TaggableCollector
      */
     public function measure($variable, $value)
     {
-        $this->data[] = sprintf('%s%s:%s|c', $variable, $this->tags, $value);
+        $this->data[] = sprintf('%s:%s|c', $variable, $value);
     }
 
     /**
@@ -92,7 +80,7 @@ class StatsD implements Collector, GaugeableCollector, TaggableCollector
      */
     public function gauge($variable, $value)
     {
-        $this->data[] = sprintf('%s%s:%s|g', $variable, $this->tags, $value);
+        $this->data[] = sprintf('%s:%s|g', $variable, $value);
     }
 
     /**
