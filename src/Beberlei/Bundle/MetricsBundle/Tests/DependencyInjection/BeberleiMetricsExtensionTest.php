@@ -142,6 +142,44 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('application.com.symfony.', $this->getProperty($collector, 'prefix'));
     }
 
+    public function testWithTelegraf()
+    {
+        $expectedTags = array(
+            'string_tag' => 'first_value',
+            'int_tag' => 123,
+        );
+
+        $container = $this->createContainer(array(
+            'default' => 'simple',
+            'collectors' => array(
+                'simple' => array(
+                    'type' => 'telegraf',
+                ),
+                'full' => array(
+                    'type' => 'telegraf',
+                    'host' => 'telegraf.localhost',
+                    'port' => 1234,
+                    'prefix' => 'application.com.symfony.',
+                    'tags' => $expectedTags,
+                ),
+            ),
+        ));
+
+        $collector = $container->get('beberlei_metrics.collector.simple');
+        $this->assertInstanceOf('Beberlei\Metrics\Collector\Telegraf', $collector);
+        $this->assertSame('localhost', $this->getProperty($collector, 'host'));
+        $this->assertSame(8125, $this->getProperty($collector, 'port'));
+        $this->assertSame('', $this->getProperty($collector, 'prefix'));
+
+        $collector = $container->get('beberlei_metrics.collector.full');
+        $this->assertInstanceOf('Beberlei\Metrics\Collector\Telegraf', $collector);
+        $this->assertSame('telegraf.localhost', $this->getProperty($collector, 'host'));
+        $this->assertSame(1234, $this->getProperty($collector, 'port'));
+        $this->assertSame('application.com.symfony.', $this->getProperty($collector, 'prefix'));
+
+        $this->assertEquals(',string_tag=first_value,int_tag=123', $this->getProperty($collector, 'tags'));
+    }
+
     public function testWithZabbix()
     {
         $container = $this->createContainer(array(
