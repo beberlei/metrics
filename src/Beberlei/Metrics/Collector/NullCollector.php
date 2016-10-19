@@ -1,6 +1,6 @@
 <?php
 /**
- * Beberlei Metrics
+ * Beberlei Metrics.
  *
  * LICENSE
  *
@@ -10,48 +10,47 @@
  * obtain it through the world-wide-web, please send an email
  * to kontakt@beberlei.de so I can send you a copy immediately.
  */
-
 namespace Beberlei\Metrics\Collector;
 
 class NullCollector implements Collector, GaugeableCollector
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function increment($variable)
     {
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function decrement($variable)
     {
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function timing($variable, $time)
     {
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function measure($variable, $value)
     {
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function gauge($variable, $value)
     {
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function flush()
     {

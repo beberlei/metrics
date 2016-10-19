@@ -1,6 +1,6 @@
 <?php
 /**
- * Beberlei Metrics
+ * Beberlei Metrics.
  *
  * LICENSE
  *
@@ -10,7 +10,6 @@
  * obtain it through the world-wide-web, please send an email
  * to kontakt@beberlei.de so I can send you a copy immediately.
  */
-
 namespace Beberlei\Metrics;
 
 use Net\Zabbix\Sender;
@@ -29,12 +28,13 @@ abstract class Factory
     private static $httpClient;
 
     /**
-     * Create Metrics Collector Instance
+     * Create Metrics Collector Instance.
      *
      * @param string $type
      * @param array  $options
      *
      * @throws MetricsException
+     *
      * @return Collector\Collector
      */
     public static function create($type, array $options = array())
@@ -53,7 +53,7 @@ abstract class Factory
                 if (!isset($options['host']) && isset($options['port'])) {
                     throw new MetricsException('You should specified a host if you specified a port.');
                 }
-                
+
                 $prefix = isset($options['prefix']) ? $options['prefix'] : '';
 
                 return new Collector\StatsD($options['host'], $options['port'], $prefix);
@@ -123,11 +123,11 @@ abstract class Factory
                 }
 
                 if (!isset($options['username'])) {
-                    throw new MetricsException("No username given for librato collector.");
+                    throw new MetricsException('No username given for librato collector.');
                 }
 
                 if (!isset($options['password'])) {
-                    throw new MetricsException("No password given for librato collector.");
+                    throw new MetricsException('No password given for librato collector.');
                 }
 
                 return new Collector\Librato(self::getHttpClient(), $options['hostname'], $options['username'], $options['password']);

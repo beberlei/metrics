@@ -1,6 +1,6 @@
 <?php
 /**
- * Beberlei Metrics
+ * Beberlei Metrics.
  *
  * LICENSE
  *
@@ -10,16 +10,15 @@
  * obtain it through the world-wide-web, please send an email
  * to kontakt@beberlei.de so I can send you a copy immediately.
  */
-
 namespace Beberlei\Metrics\Collector;
 
 interface GaugeableCollector
 {
     /**
-     * Updates a gauge by an arbitrary amount
+     * Updates a gauge by an arbitrary amount.
      *
      * @param string $variable
-     * @param int $value
+     * @param int    $value
      */
     public function gauge($variable, $value);
 }

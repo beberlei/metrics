@@ -1,6 +1,6 @@
 <?php
 /**
- * Beberlei Metrics
+ * Beberlei Metrics.
  *
  * LICENSE
  *
@@ -10,13 +10,12 @@
  * obtain it through the world-wide-web, please send an email
  * to kontakt@beberlei.de so I can send you a copy immediately.
  */
-
 namespace Beberlei\Metrics\Collector;
 
 use Net\Zabbix\Sender;
 
 /**
- * Zabbix Collector
+ * Zabbix Collector.
  */
 class Zabbix implements Collector
 {
@@ -28,7 +27,7 @@ class Zabbix implements Collector
 
     /**
      * @param \Net\Zabbix\Sender $sender
-     * @param null $prefix
+     * @param null               $prefix
      */
     public function __construct(Sender $sender, $prefix = null)
     {
@@ -37,7 +36,7 @@ class Zabbix implements Collector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function increment($variable)
     {
@@ -45,7 +44,7 @@ class Zabbix implements Collector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function decrement($variable)
     {
@@ -53,7 +52,7 @@ class Zabbix implements Collector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function timing($variable, $time)
     {
@@ -61,7 +60,7 @@ class Zabbix implements Collector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function measure($variable, $value)
     {
@@ -69,7 +68,7 @@ class Zabbix implements Collector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function flush()
     {

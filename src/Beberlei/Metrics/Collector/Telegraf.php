@@ -1,6 +1,6 @@
 <?php
 /**
- * Beberlei Metrics
+ * Beberlei Metrics.
  *
  * LICENSE
  *
@@ -10,7 +10,6 @@
  * obtain it through the world-wide-web, please send an email
  * to kontakt@beberlei.de so I can send you a copy immediately.
  */
-
 namespace Beberlei\Metrics\Collector;
 
 /**
@@ -49,16 +48,16 @@ class Telegraf implements Collector, GaugeableCollector, TaggableCollector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function setTags($tags)
     {
         $this->tags = http_build_query($tags, '', ',');
-        $this->tags = (strlen($this->tags) > 0 ? ',' . $this->tags : $this->tags);
+        $this->tags = (strlen($this->tags) > 0 ? ','.$this->tags : $this->tags);
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function timing($variable, $time)
     {
@@ -66,23 +65,23 @@ class Telegraf implements Collector, GaugeableCollector, TaggableCollector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function increment($variable)
     {
-        $this->data[] = $variable . $this->tags . ':1|c';
+        $this->data[] = $variable.$this->tags.':1|c';
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function decrement($variable)
     {
-        $this->data[] = $variable . $this->tags . ':-1|c';
+        $this->data[] = $variable.$this->tags.':-1|c';
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function measure($variable, $value)
     {
@@ -90,7 +89,7 @@ class Telegraf implements Collector, GaugeableCollector, TaggableCollector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function gauge($variable, $value)
     {
@@ -100,8 +99,6 @@ class Telegraf implements Collector, GaugeableCollector, TaggableCollector
     /**
      * @param $variable
      * @param $value
-     *
-     * @return void
      */
     public function set($variable, $value)
     {
@@ -109,7 +106,7 @@ class Telegraf implements Collector, GaugeableCollector, TaggableCollector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function flush()
     {

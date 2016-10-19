@@ -1,6 +1,6 @@
 <?php
 /**
- * Beberlei Metrics
+ * Beberlei Metrics.
  *
  * LICENSE
  *
@@ -10,13 +10,12 @@
  * obtain it through the world-wide-web, please send an email
  * to kontakt@beberlei.de so I can send you a copy immediately.
  */
-
 namespace Beberlei\Metrics\Collector;
 
 use Exception;
 
 /**
- * Sends statistics to the stats daemon over UDP or TCP
+ * Sends statistics to the stats daemon over UDP or TCP.
  */
 class Graphite implements Collector
 {
@@ -34,7 +33,7 @@ class Graphite implements Collector
 
     /**
      * @param string $host
-     * @param int $port
+     * @param int    $port
      * @param string $protocol
      */
     public function __construct($host = 'localhost', $port = 2003, $protocol = 'tcp')
@@ -45,7 +44,7 @@ class Graphite implements Collector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function timing($variable, $time)
     {
@@ -53,7 +52,7 @@ class Graphite implements Collector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function increment($variable)
     {
@@ -61,7 +60,7 @@ class Graphite implements Collector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function decrement($variable)
     {
@@ -69,7 +68,7 @@ class Graphite implements Collector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function measure($variable, $value)
     {
@@ -77,7 +76,7 @@ class Graphite implements Collector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function flush()
     {

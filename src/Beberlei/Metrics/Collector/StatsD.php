@@ -1,6 +1,6 @@
 <?php
 /**
- * Beberlei Metrics
+ * Beberlei Metrics.
  *
  * LICENSE
  *
@@ -10,11 +10,10 @@
  * obtain it through the world-wide-web, please send an email
  * to kontakt@beberlei.de so I can send you a copy immediately.
  */
-
 namespace Beberlei\Metrics\Collector;
 
 /**
- * Sends statistics to the stats daemon over UDP
+ * Sends statistics to the stats daemon over UDP.
  */
 class StatsD implements Collector, GaugeableCollector
 {
@@ -44,7 +43,7 @@ class StatsD implements Collector, GaugeableCollector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function timing($variable, $time)
     {
@@ -52,7 +51,7 @@ class StatsD implements Collector, GaugeableCollector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function increment($variable)
     {
@@ -60,7 +59,7 @@ class StatsD implements Collector, GaugeableCollector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function decrement($variable)
     {
@@ -68,7 +67,7 @@ class StatsD implements Collector, GaugeableCollector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function measure($variable, $value)
     {
@@ -76,7 +75,7 @@ class StatsD implements Collector, GaugeableCollector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function gauge($variable, $value)
     {
@@ -84,7 +83,7 @@ class StatsD implements Collector, GaugeableCollector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function flush()
     {

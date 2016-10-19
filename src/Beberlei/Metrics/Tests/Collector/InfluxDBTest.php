@@ -1,6 +1,6 @@
 <?php
 /**
- * Beberlei Metrics
+ * Beberlei Metrics.
  *
  * LICENSE
  *
@@ -10,7 +10,6 @@
  * obtain it through the world-wide-web, please send an email
  * to kontakt@beberlei.de so I can send you a copy immediately.
  */
-
 namespace Beberlei\Metrics\Tests\Collector;
 
 use PHPUnit_Framework_MockObject_MockObject;
@@ -39,13 +38,13 @@ class InfluxDBTest extends \PHPUnit_Framework_TestCase
     public function testCollectIncrement()
     {
         $expectedArgs = array(
-            "points" => array(
+            'points' => array(
                 array(
-                    "measurement" => 'series-name',
-                    "fields" => array('value' => 1),
+                    'measurement' => 'series-name',
+                    'fields' => array('value' => 1),
                 ),
             ),
-            "tags" => array(),
+            'tags' => array(),
         );
 
         $this->client->expects($this->once())
@@ -59,13 +58,13 @@ class InfluxDBTest extends \PHPUnit_Framework_TestCase
     public function testCollectDecrement()
     {
         $expectedArgs = array(
-            "points" => array(
+            'points' => array(
                 array(
-                    "measurement" => 'series-name',
-                    "fields" => array('value' => -1),
+                    'measurement' => 'series-name',
+                    'fields' => array('value' => -1),
                 ),
             ),
-            "tags" => array(),
+            'tags' => array(),
         );
 
         $this->client->expects($this->once())
@@ -79,13 +78,13 @@ class InfluxDBTest extends \PHPUnit_Framework_TestCase
     public function testCollectTiming()
     {
         $expectedArgs = array(
-            "points" => array(
+            'points' => array(
                 array(
-                    "measurement" => 'series-name',
-                    "fields" => array('value' => 47.11),
+                    'measurement' => 'series-name',
+                    'fields' => array('value' => 47.11),
                 ),
             ),
-            "tags" => array(),
+            'tags' => array(),
         );
 
         $this->client->expects($this->once())
@@ -99,13 +98,13 @@ class InfluxDBTest extends \PHPUnit_Framework_TestCase
     public function testCollectMeasure()
     {
         $expectedArgs = array(
-            "points" => array(
+            'points' => array(
                 array(
-                    "measurement" => 'series-name',
-                    "fields" => array('value' => 47.11),
+                    'measurement' => 'series-name',
+                    'fields' => array('value' => 47.11),
                 ),
             ),
-            "tags" => array(),
+            'tags' => array(),
         );
 
         $this->client->expects($this->once())
@@ -124,13 +123,13 @@ class InfluxDBTest extends \PHPUnit_Framework_TestCase
         );
 
         $expectedArgs = array(
-            "points" => array(
+            'points' => array(
                 array(
-                    "measurement" => 'series-name',
-                    "fields" => array('value' => 47.11),
+                    'measurement' => 'series-name',
+                    'fields' => array('value' => 47.11),
                 ),
             ),
-            "tags" => $expectedTags,
+            'tags' => $expectedTags,
         );
 
         $this->client->expects($this->once())

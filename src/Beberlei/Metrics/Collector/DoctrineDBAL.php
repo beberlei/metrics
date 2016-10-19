@@ -1,6 +1,6 @@
 <?php
 /**
- * Beberlei Metrics
+ * Beberlei Metrics.
  *
  * LICENSE
  *
@@ -10,14 +10,13 @@
  * obtain it through the world-wide-web, please send an email
  * to kontakt@beberlei.de so I can send you a copy immediately.
  */
-
 namespace Beberlei\Metrics\Collector;
 
 use Doctrine\DBAL\Connection;
 use Exception;
 
 /**
- * Sends statistics to a relational database
+ * Sends statistics to a relational database.
  *
  * The database you connect to has to have a table
  * named `metrics` with columns:
@@ -46,7 +45,7 @@ class DoctrineDBAL implements Collector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function timing($stat, $time)
     {
@@ -54,7 +53,7 @@ class DoctrineDBAL implements Collector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function increment($stats)
     {
@@ -62,7 +61,7 @@ class DoctrineDBAL implements Collector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function decrement($stats)
     {
@@ -70,7 +69,7 @@ class DoctrineDBAL implements Collector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function measure($variable, $value)
     {
@@ -78,7 +77,7 @@ class DoctrineDBAL implements Collector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function flush()
     {

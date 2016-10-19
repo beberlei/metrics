@@ -1,4 +1,5 @@
 <?php
+
 namespace Beberlei\Bundle\MetricsBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
@@ -43,15 +44,21 @@ class Configuration implements ConfigurationInterface
                             ->end()
                         ->end()
                         ->validate()
-                            ->ifTrue(function ($v) { return 'librato' === $v['type'] && empty($v['source']); })
+                            ->ifTrue(function ($v) {
+                                return 'librato' === $v['type'] && empty($v['source']);
+                            })
                             ->thenInvalid('The source has to be specified to use a Librato')
                         ->end()
                         ->validate()
-                            ->ifTrue(function ($v) { return 'librato' === $v['type'] && empty($v['username']); })
+                            ->ifTrue(function ($v) {
+                                return 'librato' === $v['type'] && empty($v['username']);
+                            })
                             ->thenInvalid('The username has to be specified to use a Librato')
                         ->end()
                         ->validate()
-                            ->ifTrue(function ($v) { return 'librato' === $v['type'] && empty($v['password']); })
+                            ->ifTrue(function ($v) {
+                                return 'librato' === $v['type'] && empty($v['password']);
+                            })
                             ->thenInvalid('The password has to be specified to use a Librato')
                         ->end()
                     ->end()

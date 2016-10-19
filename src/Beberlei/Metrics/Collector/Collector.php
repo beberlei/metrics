@@ -1,6 +1,6 @@
 <?php
 /**
- * Beberlei Metrics
+ * Beberlei Metrics.
  *
  * LICENSE
  *
@@ -10,46 +10,45 @@
  * obtain it through the world-wide-web, please send an email
  * to kontakt@beberlei.de so I can send you a copy immediately.
  */
-
 namespace Beberlei\Metrics\Collector;
 
 /**
- * Collector interface
+ * Collector interface.
  */
 interface Collector
 {
     /**
-     * Updates a counter by some arbitrary amount
+     * Updates a counter by some arbitrary amount.
      *
      * @param string $variable
-     * @param int $value The amount to increment the counter by
+     * @param int    $value    The amount to increment the counter by
      */
     public function measure($variable, $value);
 
     /**
-     * Increments a counter
+     * Increments a counter.
      *
      * @param string $variable
      */
     public function increment($variable);
 
     /**
-     * Decrements a counter
+     * Decrements a counter.
      *
      * @param string $variable
      */
     public function decrement($variable);
 
     /**
-     * Records a timing
+     * Records a timing.
      *
      * @param string $variable
-     * @param int $time The duration of the timing in milliseconds
+     * @param int    $time     The duration of the timing in milliseconds
      */
     public function timing($variable, $time);
 
     /**
-     * Sends the metrics to the adapter backend
+     * Sends the metrics to the adapter backend.
      */
     public function flush();
 }

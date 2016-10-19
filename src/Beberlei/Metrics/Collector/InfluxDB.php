@@ -1,6 +1,6 @@
 <?php
 /**
- * Beberlei Metrics
+ * Beberlei Metrics.
  *
  * LICENSE
  *
@@ -10,7 +10,6 @@
  * obtain it through the world-wide-web, please send an email
  * to kontakt@beberlei.de so I can send you a copy immediately.
  */
-
 namespace Beberlei\Metrics\Collector;
 
 use InfluxDB\Client;
@@ -35,7 +34,7 @@ class InfluxDB implements Collector, TaggableCollector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function increment($variable)
     {
@@ -43,7 +42,7 @@ class InfluxDB implements Collector, TaggableCollector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function decrement($variable)
     {
@@ -51,7 +50,7 @@ class InfluxDB implements Collector, TaggableCollector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function timing($variable, $time)
     {
@@ -59,7 +58,7 @@ class InfluxDB implements Collector, TaggableCollector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function measure($variable, $value)
     {
@@ -67,19 +66,19 @@ class InfluxDB implements Collector, TaggableCollector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function flush()
     {
         foreach ($this->data as $data) {
             $this->client->mark(array(
-                "points" => array(
+                'points' => array(
                     array(
-                        "measurement" => $data[0],
-                        "fields" => array('value' => $data[1]),
+                        'measurement' => $data[0],
+                        'fields' => array('value' => $data[1]),
                     ),
                 ),
-                "tags" => $this->tags,
+                'tags' => $this->tags,
             ));
         }
 
@@ -87,7 +86,7 @@ class InfluxDB implements Collector, TaggableCollector
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function setTags($tags)
     {

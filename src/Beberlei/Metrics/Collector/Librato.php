@@ -1,6 +1,6 @@
 <?php
 /**
- * Beberlei Metrics
+ * Beberlei Metrics.
  *
  * LICENSE
  *
@@ -10,7 +10,6 @@
  * obtain it through the world-wide-web, please send an email
  * to kontakt@beberlei.de so I can send you a copy immediately.
  */
-
 namespace Beberlei\Metrics\Collector;
 
 use Buzz\Browser;
@@ -37,68 +36,68 @@ class Librato implements Collector
 
     /**
      * @param \Buzz\Browser $browser
-     * @param string $source
-     * @param string $username
-     * @param string $password
+     * @param string        $source
+     * @param string        $username
+     * @param string        $password
      */
     public function __construct(Browser $browser, $source, $username, $password)
     {
-        $this->browser  = $browser;
+        $this->browser = $browser;
         $this->source = $source;
         $this->username = $username;
         $this->password = $password;
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function increment($variable)
     {
         $this->data['counters'][] = array(
             'source' => $this->source,
-            'name'   => $variable,
-            'value'  => 1,
+            'name' => $variable,
+            'value' => 1,
         );
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function decrement($variable)
     {
         $this->data['counters'][] = array(
             'source' => $this->source,
-            'name'   => $variable,
-            'value'  => -1,
+            'name' => $variable,
+            'value' => -1,
         );
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function timing($variable, $time)
     {
         $this->data['gauges'][] = array(
             'source' => $this->source,
-            'name'   => $variable,
-            'value'  => $time,
+            'name' => $variable,
+            'value' => $time,
         );
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function measure($variable, $value)
     {
         $this->data['gauges'][] = array(
             'source' => $this->source,
-            'name'   => $variable,
-            'value'  => $value,
+            'name' => $variable,
+            'value' => $value,
         );
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function flush()
     {

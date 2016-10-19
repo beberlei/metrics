@@ -1,6 +1,6 @@
 <?php
 /**
- * Beberlei Metrics
+ * Beberlei Metrics.
  *
  * LICENSE
  *
@@ -10,16 +10,15 @@
  * obtain it through the world-wide-web, please send an email
  * to kontakt@beberlei.de so I can send you a copy immediately.
  */
-
 namespace Beberlei\Metrics\Collector;
 
 /**
- * TaggableCollector interface
+ * TaggableCollector interface.
  */
 interface TaggableCollector
 {
     /**
-     * Sets a metrics tags
+     * Sets a metrics tags.
      *
      * @param array $tags
      */

@@ -1,4 +1,5 @@
 <?php
+
 namespace Beberlei\Bundle\MetricsBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
