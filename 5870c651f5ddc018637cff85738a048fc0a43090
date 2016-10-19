@@ -1,0 +1,54 @@
+---------------------------------------------------------------------------
+
+by lyrixx at 2016-10-07T14:16:57Z
+
+Thanks @dsantang for this new feature. I appreciate it.
+
+I never used statsd tags, do you have any docs about that? thanks.
+
+---------------------------------------------------------------------------
+
+by dsantang at 2016-10-10T11:20:12Z
+
+Hey @lyrixx, sorry for the delayed response.
+It is actually only (I think) for the Telegraf - StatsD implementation.
+On this page, the "Introducing Influx StatsD" section shows how to tag StatsD metrics:
+
+https://www.influxdata.com/getting-started-with-sending-statsd-metrics-to-telegraf-influxdb/
+
+---------------------------------------------------------------------------
+
+by lyrixx at 2016-10-10T11:53:21Z
+
+Ah Ok. that's why I never hear about that feature.
+Because this feature is not part of the standard, I'm a bit reluctant to add it.
+May be we can add a new Collector: `Telegraph`. What do you think ?
+
+---------------------------------------------------------------------------
+
+by dsantang at 2016-10-11T13:14:38Z
+
+Yeah, that way we can better separate the concerns.
+Altho that will lead to code duplication* **IF** we do not want to re-build the `StatsD` collector as well.
+What approach would you suggest?
+
+*(the class `Telegraf` will basically have the same code of `StatsD` with in addition the Tags logic)
+
+---------------------------------------------------------------------------
+
+by lyrixx at 2016-10-11T13:36:42Z
+
+If it's possible to extends the code, let's do this.
+It it's not possible, I'm totally fine with code duplication.
+
+---------------------------------------------------------------------------
+
+by lyrixx at 2016-10-13T11:11:52Z
+
+:+1:
+
+---------------------------------------------------------------------------
+
+by dsantang at 2016-10-19T08:38:25Z
+
+Thanks for your review @lyrixx,  do you know if this will be merged any time soon?
