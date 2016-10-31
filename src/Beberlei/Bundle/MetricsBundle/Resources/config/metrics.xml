@@ -37,6 +37,10 @@
         </service>
         <service id="beberlei_metrics.collector_proto.null" class="Beberlei\Metrics\Collector\NullCollector" abstract="true">
         </service>
+        <service id="beberlei_metrics.collector_proto.prometheus" class="Beberlei\Metrics\Collector\Prometheus" abstract="true">
+            <argument /> <!-- Prometheus collector registry, set by the extension -->
+            <argument /> <!-- Prometheus namespace, set by the extension -->
+        </service>
         <service id="beberlei_metrics.collector_proto.statsd" class="Beberlei\Metrics\Collector\StatsD" abstract="true">
             <argument /> <!-- host, set by the extension -->
             <argument /> <!-- port, set by the extension -->

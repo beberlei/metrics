@@ -78,6 +78,11 @@ class BeberleiMetricsExtension extends Extension
             case 'logger':
             case 'null':
                 return $definition;
+            case 'prometheus':
+                $definition->replaceArgument(0, new Reference($config['prometheus_collector_registry']));
+                $definition->replaceArgument(1, $config['namespace']);
+
+                return $definition;
             case 'statsd':
                 $definition->replaceArgument(0, $config['host'] ?: 'localhost');
                 $definition->replaceArgument(1, $config['port'] ?: 8125);
