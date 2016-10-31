@@ -17,6 +17,7 @@ Currently supported backends:
 * Librato
 * Logger (Psr\Log\LoggerInterface)
 * Null (Dummy that does nothing)
+* Prometheus
 * StatsD
 * Zabbix
 
@@ -136,6 +137,13 @@ Do Configuration:
             influxdb:
                 type: influxdb
                 influxdb_client: influxdb_client_service # using the InfluxDB client service named "influxdb_client_service"
+                tags:
+                    dc: "west"
+                    node_instance: "hermes10"
+            prometheus:
+                type: prometheus
+                prometheus_collector_registry: prometheus_collector_registry_service # using the Prometheus collector registry service named "prometheus_collector_registry_service"
+                prometheus_namespace: app_name # optional
                 tags:
                     dc: "west"
                     node_instance: "hermes10"

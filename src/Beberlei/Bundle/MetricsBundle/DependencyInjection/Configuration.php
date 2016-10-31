@@ -37,6 +37,8 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('source')->defaultNull()->end()
                             ->scalarNode('username')->defaultNull()->end()
                             ->scalarNode('influxdb_client')->defaultNull()->end()
+                            ->scalarNode('prometheus_collector_registry')->defaultNull()->end()
+                            ->scalarNode('prometheus_namespace')->defaultValue('')->end()
                             ->arrayNode('tags')
                                 ->defaultValue(array())
                                 ->prototype('scalar')->end()

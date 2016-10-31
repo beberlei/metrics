@@ -156,6 +156,15 @@ abstract class Factory
             case 'null':
                 return new Collector\NullCollector();
 
+            case 'prometheus':
+                if (!isset($options['collector_registry'])) {
+                    throw new MetricsException('Missing \'collector_registry\' key for Prometheus collector.');
+                }
+
+                $namespace = isset($options['namespace']) ? $options['namespace'] : '';
+
+                return new Collector\Prometheus($options['collector_registry'], $namespace);
+
             default:
                 throw new MetricsException(sprintf('Unknown metrics collector given (%s).', $type));
         }
