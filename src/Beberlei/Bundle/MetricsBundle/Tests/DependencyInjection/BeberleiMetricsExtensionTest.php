@@ -315,7 +315,7 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
                 'prometheus' => array(
                     'type' => 'prometheus',
                     'prometheus_collector_registry' => 'prometheus_collector_registry_mock',
-                    'prometheus_namespace' => $expectedNamespace,
+                    'namespace' => $expectedNamespace,
                 ),
             ),
         ), array(
@@ -355,6 +355,22 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
         $collector = $container->get('beberlei_metrics.collector.prometheus');
         $this->assertInstanceOf('Beberlei\Metrics\Collector\Prometheus', $collector);
         $this->assertEquals($expectedTags, $this->getProperty($collector, 'tags'));
+    }
+
+    /**
+     * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
+     * @expectedExceptionMessage The prometheus_collector_registry has to be specified to use a Prometheus
+     *
+     */
+    public function testValidationWhenTypeIsPrometheusAndPrometheusCollectorRegistryIsNotSpecified()
+    {
+        $this->createContainer(array(
+            'collectors' => array(
+                'prometheus' => array(
+                    'type' => 'prometheus',
+                ),
+            ),
+        ));
     }
 
     private function createContainer($configs, $additionalServices = array())

@@ -143,7 +143,7 @@ Do Configuration:
             prometheus:
                 type: prometheus
                 prometheus_collector_registry: prometheus_collector_registry_service # using the Prometheus collector registry service named "prometheus_collector_registry_service"
-                prometheus_namespace: app_name # optional
+                namespace: app_name # optional
                 tags:
                     dc: "west"
                     node_instance: "hermes10"

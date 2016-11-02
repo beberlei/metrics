@@ -63,6 +63,7 @@ class PrometheusTest extends \PHPUnit_Framework_TestCase
         ;
 
         $this->collector->measure(self::TEST_VARIABLE_NAME, $expectedVariableValue);
+        $this->collector->flush();
     }
 
     public function testMeasureWithTags()
@@ -93,6 +94,7 @@ class PrometheusTest extends \PHPUnit_Framework_TestCase
         ));
 
         $this->collector->measure(self::TEST_VARIABLE_NAME, $expectedVariableValue);
+        $this->collector->flush();
     }
 
     public function testIncrement()
@@ -115,6 +117,7 @@ class PrometheusTest extends \PHPUnit_Framework_TestCase
         ;
 
         $this->collector->increment(self::TEST_VARIABLE_NAME);
+        $this->collector->flush();
     }
 
     public function testIncrementWithTags()
@@ -144,6 +147,7 @@ class PrometheusTest extends \PHPUnit_Framework_TestCase
         ));
 
         $this->collector->increment(self::TEST_VARIABLE_NAME);
+        $this->collector->flush();
     }
 
     public function testDecrement()
@@ -166,6 +170,7 @@ class PrometheusTest extends \PHPUnit_Framework_TestCase
         ;
 
         $this->collector->decrement(self::TEST_VARIABLE_NAME);
+        $this->collector->flush();
     }
 
     public function testDecrementWithTags()
@@ -195,6 +200,7 @@ class PrometheusTest extends \PHPUnit_Framework_TestCase
         ));
 
         $this->collector->decrement(self::TEST_VARIABLE_NAME);
+        $this->collector->flush();
     }
 
     public function testTiming()
@@ -219,6 +225,7 @@ class PrometheusTest extends \PHPUnit_Framework_TestCase
         ;
 
         $this->collector->timing(self::TEST_VARIABLE_NAME, $expectedVariableValue);
+        $this->collector->flush();
     }
 
     public function testTimingWithTags()
@@ -249,6 +256,7 @@ class PrometheusTest extends \PHPUnit_Framework_TestCase
         ));
 
         $this->collector->timing(self::TEST_VARIABLE_NAME, $expectedVariableValue);
+        $this->collector->flush();
     }
 
     public function testMeasureWhenSetNewVariableWithTags()
@@ -286,5 +294,43 @@ class PrometheusTest extends \PHPUnit_Framework_TestCase
         ));
 
         $this->collector->measure(self::TEST_VARIABLE_NAME, $expectedVariableValue);
+        $this->collector->flush();
+    }
+
+    /**
+     * Method flush must to reset value of field `data`.
+     */
+    public function testFlushWhenCallsTwiceWithDifferentData()
+    {
+        $firstExpectedVariableValue = 123;
+        $secondExpectedVariableValue = 321;
+
+        $gaugeMock = $this->getMockBuilder('\\Prometheus\\Gauge')
+            ->disableOriginalConstructor()
+            ->getMock()
+        ;
+        $gaugeMock
+            ->expects($this->at(0))
+            ->method('set')
+            ->with($firstExpectedVariableValue, array())
+        ;
+        $gaugeMock
+            ->expects($this->at(1))
+            ->method('set')
+            ->with($secondExpectedVariableValue, array())
+        ;
+
+        $this->collectorRegistryMock
+            ->expects($this->exactly(2))
+            ->method('getGauge')
+            ->with(self::TEST_NAMESPACE, self::TEST_VARIABLE_NAME)
+            ->willReturn($gaugeMock)
+        ;
+
+        $this->collector->measure(self::TEST_VARIABLE_NAME, $firstExpectedVariableValue);
+        $this->collector->flush();
+
+        $this->collector->measure(self::TEST_VARIABLE_NAME, $secondExpectedVariableValue);
+        $this->collector->flush();
     }
 }

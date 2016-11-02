@@ -28,6 +28,12 @@ class Prometheus implements Collector, TaggableCollector
      */
     private $namespace = '';
 
+    /** @var array */
+    private $data = array(
+        'counters' => array(),
+        'gauges' => array(),
+    );
+
     /**
      * @var array
      */
@@ -48,9 +54,10 @@ class Prometheus implements Collector, TaggableCollector
      */
     public function measure($variable, $value)
     {
-        $gauge = $this->getOrRegisterGaugeForVariable($variable);
-
-        $gauge->set($value, array_values($this->tags));
+        $this->data['gauges'][] = array(
+            'name'   => $variable,
+            'value'  => $value,
+        );
     }
 
     /**
@@ -58,9 +65,10 @@ class Prometheus implements Collector, TaggableCollector
      */
     public function increment($variable)
     {
-        $gauge = $this->getOrRegisterGaugeForVariable($variable);
-
-        $gauge->inc(array_values($this->tags));
+        $this->data['counters'][] = array(
+            'name'   => $variable,
+            'value'  => 1,
+        );
     }
 
     /**
@@ -68,9 +76,10 @@ class Prometheus implements Collector, TaggableCollector
      */
     public function decrement($variable)
     {
-        $gauge = $this->getOrRegisterGaugeForVariable($variable);
-
-        $gauge->dec(array_values($this->tags));
+        $this->data['counters'][] = array(
+            'name'   => $variable,
+            'value'  => -1,
+        );
     }
 
     /**
@@ -86,6 +95,29 @@ class Prometheus implements Collector, TaggableCollector
      */
     public function flush()
     {
+        if (!$this->data['gauges'] && !$this->data['counters']) {
+            return;
+        }
+
+        $tagsValues = array_values($this->tags);
+
+        foreach ($this->data['counters'] as $counterData) {
+            $gauge = $this->getOrRegisterGaugeForVariable($counterData['name']);
+
+            if ($counterData['value'] > 0) {
+                $gauge->inc($tagsValues);
+            } elseif ($counterData['value'] < 0) {
+                $gauge->dec($tagsValues);
+            }
+        }
+
+        foreach ($this->data['gauges'] as $gaugeData) {
+            $gauge = $this->getOrRegisterGaugeForVariable($gaugeData['name']);
+
+            $gauge->set($gaugeData['value'], $tagsValues);
+        }
+
+        $this->data = array('counters' => array(), 'gauges' => array());
     }
 
     /**

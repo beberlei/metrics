@@ -80,7 +80,7 @@ class BeberleiMetricsExtension extends Extension
                 return $definition;
             case 'prometheus':
                 $definition->replaceArgument(0, new Reference($config['prometheus_collector_registry']));
-                $definition->replaceArgument(1, $config['prometheus_namespace']);
+                $definition->replaceArgument(1, $config['namespace']);
 
                 return $definition;
             case 'statsd':
