@@ -276,6 +276,102 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedTags, $this->getProperty($collector, 'tags'));
     }
 
+    public function testWithPrometheus()
+    {
+        $prometheusCollectorRegistryMock = $this->getMockBuilder('\\Prometheus\\CollectorRegistry')
+            ->disableOriginalConstructor()
+            ->getMock()
+        ;
+
+        $container = $this->createContainer(array(
+            'collectors' => array(
+                'prometheus' => array(
+                    'type' => 'prometheus',
+                    'prometheus_collector_registry' => 'prometheus_collector_registry_mock',
+                ),
+            ),
+        ), array(
+            'prometheus_collector_registry_mock' => $prometheusCollectorRegistryMock,
+        ));
+
+        $collector = $container->get('beberlei_metrics.collector.prometheus');
+        $this->assertInstanceOf('Beberlei\Metrics\Collector\Prometheus', $collector);
+        $this->assertSame($prometheusCollectorRegistryMock, $this->getProperty($collector, 'collectorRegistry'));
+        $this->assertSame('', $this->getProperty($collector, 'namespace'));
+    }
+
+    public function testWithPrometheusAndWithNamespace()
+    {
+        $expectedNamespace = 'some_namespace';
+
+        $prometheusCollectorRegistryMock = $this->getMockBuilder('\\Prometheus\\CollectorRegistry')
+            ->disableOriginalConstructor()
+            ->getMock()
+        ;
+
+        $container = $this->createContainer(array(
+            'collectors' => array(
+                'prometheus' => array(
+                    'type' => 'prometheus',
+                    'prometheus_collector_registry' => 'prometheus_collector_registry_mock',
+                    'namespace' => $expectedNamespace,
+                ),
+            ),
+        ), array(
+            'prometheus_collector_registry_mock' => $prometheusCollectorRegistryMock,
+        ));
+
+        $collector = $container->get('beberlei_metrics.collector.prometheus');
+        $this->assertInstanceOf('Beberlei\Metrics\Collector\Prometheus', $collector);
+        $this->assertSame($prometheusCollectorRegistryMock, $this->getProperty($collector, 'collectorRegistry'));
+        $this->assertSame($expectedNamespace, $this->getProperty($collector, 'namespace'));
+    }
+
+    public function testWithPrometheusAndWithTags()
+    {
+        $expectedTags = array(
+            'string_tag' => 'first_value',
+            'int_tag' => 123,
+        );
+
+        $prometheusCollectorRegistryMock = $this->getMockBuilder('\\Prometheus\\CollectorRegistry')
+            ->disableOriginalConstructor()
+            ->getMock()
+        ;
+
+        $container = $this->createContainer(array(
+            'collectors' => array(
+                'prometheus' => array(
+                    'type' => 'prometheus',
+                    'prometheus_collector_registry' => 'prometheus_collector_registry_mock',
+                    'tags' => $expectedTags,
+                ),
+            ),
+        ), array(
+            'prometheus_collector_registry_mock' => $prometheusCollectorRegistryMock,
+        ));
+
+        $collector = $container->get('beberlei_metrics.collector.prometheus');
+        $this->assertInstanceOf('Beberlei\Metrics\Collector\Prometheus', $collector);
+        $this->assertEquals($expectedTags, $this->getProperty($collector, 'tags'));
+    }
+
+    /**
+     * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
+     * @expectedExceptionMessage The prometheus_collector_registry has to be specified to use a Prometheus
+     *
+     */
+    public function testValidationWhenTypeIsPrometheusAndPrometheusCollectorRegistryIsNotSpecified()
+    {
+        $this->createContainer(array(
+            'collectors' => array(
+                'prometheus' => array(
+                    'type' => 'prometheus',
+                ),
+            ),
+        ));
+    }
+
     private function createContainer($configs, $additionalServices = array())
     {
         $container = new ContainerBuilder();
