@@ -46,6 +46,11 @@
             <argument /> <!-- port, set by the extension -->
             <argument /> <!-- prefix, set by the extension -->
         </service>
+        <service id="beberlei_metrics.collector_proto.dogstatsd" class="Beberlei\Metrics\Collector\DogStatsD" abstract="true">
+            <argument /> <!-- host, set by the extension -->
+            <argument /> <!-- port, set by the extension -->
+            <argument /> <!-- prefix, set by the extension -->
+        </service>
         <service id="beberlei_metrics.collector_proto.telegraf" class="Beberlei\Metrics\Collector\Telegraf" abstract="true">
             <argument /> <!-- host, set by the extension -->
             <argument /> <!-- port, set by the extension -->

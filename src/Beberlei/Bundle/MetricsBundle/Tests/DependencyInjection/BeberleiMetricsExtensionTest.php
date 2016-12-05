@@ -141,6 +141,36 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('application.com.symfony.', $this->getProperty($collector, 'prefix'));
     }
 
+    public function testWithDogStatsD()
+    {
+        $container = $this->createContainer(array(
+            'default' => 'simple',
+            'collectors' => array(
+                'simple' => array(
+                    'type' => 'dogstatsd',
+                ),
+                'full' => array(
+                    'type' => 'dogstatsd',
+                    'host' => 'dogstatsd.localhost',
+                    'port' => 1234,
+                    'prefix' => 'application.com.symfony.',
+                ),
+            ),
+        ));
+
+        $collector = $container->get('beberlei_metrics.collector.simple');
+        $this->assertInstanceOf('Beberlei\Metrics\Collector\DogStatsD', $collector);
+        $this->assertSame('localhost', $this->getProperty($collector, 'host'));
+        $this->assertSame(8125, $this->getProperty($collector, 'port'));
+        $this->assertSame('', $this->getProperty($collector, 'prefix'));
+
+        $collector = $container->get('beberlei_metrics.collector.full');
+        $this->assertInstanceOf('Beberlei\Metrics\Collector\DogStatsD', $collector);
+        $this->assertSame('dogstatsd.localhost', $this->getProperty($collector, 'host'));
+        $this->assertSame(1234, $this->getProperty($collector, 'port'));
+        $this->assertSame('application.com.symfony.', $this->getProperty($collector, 'prefix'));
+    }
+
     public function testWithTelegraf()
     {
         $expectedTags = array(
