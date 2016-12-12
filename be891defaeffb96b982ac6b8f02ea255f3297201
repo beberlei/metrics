@@ -1,0 +1,25 @@
+---------------------------------------------------------------------------
+
+by lyrixx at 2016-12-12T09:57:13Z
+
+This looks good to me. But I'm not very comfortable with having two ways to do the same things. There is now 2 ways to add tags.
+
+Is it a real use case to send different tags with the same Collector?
+
+---------------------------------------------------------------------------
+
+by eexit at 2016-12-12T11:07:39Z
+
+Thanks for the review @lyrixx!
+
+> But I'm not very comfortable with having two ways to do the same things. There is now 2 ways to add tags.
+
+I agree with that but thing is that there's no normalized way to add tags with metric collectors.. Looks like each vendor has its own way to support them.
+
+> Is it a real use case to send different tags with the same Collector?
+
+Absolutely. We do at CareerBuilder.
+
+Here's the DataDog [doc](http://docs.datadoghq.com/guides/metrics/#tags):
+
+> Tags are a way of adding dimensions to metrics, so they can be sliced, diced, aggregated and compared on the front end. Suppose we wanted to measure the performance of two algorithms in the real world.
