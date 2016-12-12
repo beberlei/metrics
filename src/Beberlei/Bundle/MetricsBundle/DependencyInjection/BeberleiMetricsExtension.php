@@ -85,6 +85,7 @@ class BeberleiMetricsExtension extends Extension
 
                 return $definition;
             case 'statsd':
+            case 'dogstatsd':
                 $definition->replaceArgument(0, $config['host'] ?: 'localhost');
                 $definition->replaceArgument(1, $config['port'] ?: 8125);
                 $definition->replaceArgument(2, (string) $config['prefix']);

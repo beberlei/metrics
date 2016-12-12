@@ -58,6 +58,24 @@ abstract class Factory
 
                 return new Collector\StatsD($options['host'], $options['port'], $prefix);
 
+            case 'dogstatsd':
+                if ((!isset($options['host']) || !isset($options['port'])) && isset($options['prefix'])) {
+                    throw new MetricsException('You should specified a host and a port if you specified a prefix.');
+                }
+                if (!isset($options['host']) && !isset($options['port'])) {
+                    return new Collector\DogStatsD();
+                }
+                if (isset($options['host']) && !isset($options['port'])) {
+                    return new Collector\DogStatsD($options['host']);
+                }
+                if (!isset($options['host']) && isset($options['port'])) {
+                    throw new MetricsException('You should specified a host if you specified a port.');
+                }
+
+                $prefix = isset($options['prefix']) ? $options['prefix'] : '';
+
+                return new Collector\DogStatsD($options['host'], $options['port'], $prefix);
+
             case 'telegraf':
                 if ((!isset($options['host']) || !isset($options['port'])) && isset($options['prefix'])) {
                     throw new MetricsException('You should specified a host and a port if you specified a prefix.');

@@ -20,6 +20,7 @@ Currently supported backends:
 * Prometheus
 * StatsD
 * Zabbix
+* DogStatsD
 
 ## Installation
 
