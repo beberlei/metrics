@@ -64,7 +64,9 @@ class Configuration implements ConfigurationInterface
                             ->thenInvalid('The password has to be specified to use a Librato')
                         ->end()
                         ->validate()
-                            ->ifTrue(function ($v) { return 'prometheus' === $v['type'] && empty($v['prometheus_collector_registry']); })
+                            ->ifTrue(function ($v) {
+                                return 'prometheus' === $v['type'] && empty($v['prometheus_collector_registry']);
+                            })
                             ->thenInvalid('The prometheus_collector_registry has to be specified to use a Prometheus')
                         ->end()
                     ->end()

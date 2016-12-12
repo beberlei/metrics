@@ -52,7 +52,7 @@ class DogStatsD implements Collector, InlineTaggableGaugeableCollector
      */
     public function increment($variable, $tags = array())
     {
-        $this->data[] = $variable . ':1|c' . $this->buildTagString($tags);
+        $this->data[] = $variable.':1|c'.$this->buildTagString($tags);
     }
 
     /**
@@ -60,7 +60,7 @@ class DogStatsD implements Collector, InlineTaggableGaugeableCollector
      */
     public function decrement($variable, $tags = array())
     {
-        $this->data[] = $variable . ':-1|c' . $this->buildTagString($tags);
+        $this->data[] = $variable.':-1|c'.$this->buildTagString($tags);
     }
 
     /**
@@ -110,6 +110,7 @@ class DogStatsD implements Collector, InlineTaggableGaugeableCollector
      * DogStatsD tag string and returns the string.
      *
      * @param $tags array
+     *
      * @return string
      */
     private function buildTagString($tags)

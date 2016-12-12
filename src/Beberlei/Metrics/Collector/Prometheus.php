@@ -1,6 +1,6 @@
 <?php
 /**
- * Beberlei Metrics
+ * Beberlei Metrics.
  *
  * LICENSE
  *
@@ -10,7 +10,6 @@
  * obtain it through the world-wide-web, please send an email
  * to kontakt@beberlei.de so I can send you a copy immediately.
  */
-
 namespace Beberlei\Metrics\Collector;
 
 use Prometheus\CollectorRegistry;
@@ -41,7 +40,7 @@ class Prometheus implements Collector, TaggableCollector
 
     /**
      * @param CollectorRegistry $collectorRegistry
-     * @param string $namespace
+     * @param string            $namespace
      */
     public function __construct(CollectorRegistry $collectorRegistry, $namespace = '')
     {
@@ -50,40 +49,40 @@ class Prometheus implements Collector, TaggableCollector
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function measure($variable, $value)
     {
         $this->data['gauges'][] = array(
-            'name'   => $variable,
-            'value'  => $value,
+            'name' => $variable,
+            'value' => $value,
         );
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function increment($variable)
     {
         $this->data['counters'][] = array(
-            'name'   => $variable,
-            'value'  => 1,
+            'name' => $variable,
+            'value' => 1,
         );
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function decrement($variable)
     {
         $this->data['counters'][] = array(
-            'name'   => $variable,
-            'value'  => -1,
+            'name' => $variable,
+            'value' => -1,
         );
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function timing($variable, $time)
     {
@@ -91,7 +90,7 @@ class Prometheus implements Collector, TaggableCollector
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function flush()
     {
@@ -121,7 +120,7 @@ class Prometheus implements Collector, TaggableCollector
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setTags($tags)
     {
@@ -130,6 +129,7 @@ class Prometheus implements Collector, TaggableCollector
 
     /**
      * @param string $variable
+     *
      * @return \Prometheus\Gauge
      */
     private function getOrRegisterGaugeForVariable($variable)

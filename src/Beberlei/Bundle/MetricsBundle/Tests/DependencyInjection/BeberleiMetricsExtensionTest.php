@@ -389,7 +389,6 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
      * @expectedExceptionMessage The prometheus_collector_registry has to be specified to use a Prometheus
-     *
      */
     public function testValidationWhenTypeIsPrometheusAndPrometheusCollectorRegistryIsNotSpecified()
     {

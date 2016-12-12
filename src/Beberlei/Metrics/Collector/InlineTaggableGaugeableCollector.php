@@ -21,8 +21,9 @@ interface InlineTaggableGaugeableCollector
      * Updates a counter by some arbitrary amount.
      *
      * @param string $variable
-     * @param int $value The amount to increment the counter by
-     * @param array $tags Tags to be attached to the metric
+     * @param int    $value    The amount to increment the counter by
+     * @param array  $tags     Tags to be attached to the metric
+     *
      * @return
      */
     public function measure($variable, $value, $tags = array());
@@ -31,7 +32,7 @@ interface InlineTaggableGaugeableCollector
      * Increments a counter.
      *
      * @param string $variable
-     * @param array $tags Tags to be attached to the metric
+     * @param array  $tags     Tags to be attached to the metric
      */
     public function increment($variable, $tags = array());
 
@@ -39,7 +40,7 @@ interface InlineTaggableGaugeableCollector
      * Decrements a counter.
      *
      * @param string $variable
-     * @param array $tags Tags to be attached to the metric
+     * @param array  $tags     Tags to be attached to the metric
      */
     public function decrement($variable, $tags = array());
 
@@ -48,7 +49,7 @@ interface InlineTaggableGaugeableCollector
      *
      * @param string $variable
      * @param int    $time     The duration of the timing in milliseconds
-     * @param array $tags Tags to be attached to the metric
+     * @param array  $tags     Tags to be attached to the metric
      */
     public function timing($variable, $time, $tags = array());
 
@@ -57,7 +58,7 @@ interface InlineTaggableGaugeableCollector
      *
      * @param string $variable
      * @param int    $value
-     * @param array $tags Tags to be attached to the metric
+     * @param array  $tags     Tags to be attached to the metric
      */
     public function gauge($variable, $value, $tags = array());
 }
