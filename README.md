@@ -130,6 +130,7 @@ Do Configuration:
                 type: librato
                 username: foo
                 password: bar
+                source: hermes10
             dbal:
                 type: doctrine_dbal
                 connection: metrics # using the connection named "metrics"
