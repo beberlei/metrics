@@ -36,33 +36,33 @@ class InfluxDB implements Collector, TaggableCollector
     /**
      * {@inheritdoc}
      */
-    public function increment($variable)
+    public function increment($variable, $tags = array())
     {
-        $this->data[] = array($variable, 1);
+        $this->data[] = array($variable, 1, $tags);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function decrement($variable)
+    public function decrement($variable, $tags = array())
     {
-        $this->data[] = array($variable, -1);
+        $this->data[] = array($variable, -1, $tags);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function timing($variable, $time)
+    public function timing($variable, $time, $tags = array())
     {
-        $this->data[] = array($variable, $time);
+        $this->data[] = array($variable, $time, $tags);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function measure($variable, $value)
+    public function measure($variable, $value, $tags = array())
     {
-        $this->data[] = array($variable, $value);
+        $this->data[] = array($variable, $value, $tags);
     }
 
     /**
@@ -78,7 +78,7 @@ class InfluxDB implements Collector, TaggableCollector
                         'fields' => array('value' => $data[1]),
                     ),
                 ),
-                'tags' => $this->tags,
+                'tags' => array_merge($this->tags, $data[2]),
             ));
         }
 

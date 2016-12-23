@@ -96,6 +96,59 @@ class PrometheusTest extends \PHPUnit_Framework_TestCase
         $this->collector->flush();
     }
 
+	public function testMeasureWithInlineTags()
+    {
+        $expectedVariableValue = 123;
+        $expectedVariableValue2 = 456;
+        $globalTags = array(
+			'tag1' => 'value1',
+			'tag2' => 'value2',
+			);
+		$inlineTags = array(
+			'tag3' => 'value3',
+			);
+
+        $gaugeMock = $this->getMockBuilder('\\Prometheus\\Gauge')
+            ->disableOriginalConstructor()
+            ->getMock()
+			;
+        $gaugeMock2 = $this->getMockBuilder('\\Prometheus\\Gauge')
+            ->disableOriginalConstructor()
+            ->getMock()
+			;
+        $gaugeMock
+            ->expects($this->once())
+            ->method('set')
+            ->with($expectedVariableValue, array_values(array_merge($globalTags, $inlineTags)))
+			;
+        $gaugeMock
+			->expects($this->once())
+            ->method('set')
+            ->with($expectedVariableValue2, array_values($globalTags))
+			;
+
+        $this->collectorRegistryMock
+            ->expects($this->exactly(2));
+        $this->collectorRegistryMock
+            ->expects($this->at(0))
+            ->method('getGauge')
+            ->with(self::TEST_NAMESPACE, self::TEST_VARIABLE_NAME)
+            ->willReturn($gaugeMock)
+			;
+        $this->collectorRegistryMock
+            ->expects($this->at(1))
+            ->method('getGauge')
+            ->with(self::TEST_NAMESPACE, self::TEST_VARIABLE_NAME.'_2')
+            ->willReturn($gaugeMock2)
+			;
+
+        $this->collector->setTags($globalTags);
+
+        $this->collector->measure(self::TEST_VARIABLE_NAME, $expectedVariableValue, $inlineTags);
+        $this->collector->measure(self::TEST_VARIABLE_NAME.'_2', $expectedVariableValue2);
+        $this->collector->flush();
+    }
+
     public function testIncrement()
     {
         $gaugeMock = $this->getMockBuilder('\\Prometheus\\Gauge')
@@ -146,6 +199,57 @@ class PrometheusTest extends \PHPUnit_Framework_TestCase
         ));
 
         $this->collector->increment(self::TEST_VARIABLE_NAME);
+        $this->collector->flush();
+    }
+
+    public function testIncrementWithInlineTags()
+    {
+		$globalTags = array(
+            'tag1' => 'value1',
+            'tag2' => 'value2',
+			);
+		$inlineTags = array(
+			'tag3' => 'value3',
+			);
+
+        $gaugeMock = $this->getMockBuilder('\\Prometheus\\Gauge')
+            ->disableOriginalConstructor()
+            ->getMock()
+        ;
+        $gaugeMock2 = $this->getMockBuilder('\\Prometheus\\Gauge')
+            ->disableOriginalConstructor()
+            ->getMock()
+        ;
+        $gaugeMock
+            ->expects($this->once())
+            ->method('inc')
+            ->with(array_values(array_merge($globalTags, $inlineTags)))
+        ;
+        $gaugeMock2
+            ->expects($this->once())
+            ->method('inc')
+            ->with(array_values($globalTags))
+        ;
+
+        $this->collectorRegistryMock
+            ->expects($this->exactly(2));
+        $this->collectorRegistryMock
+            ->expects($this->at(0))
+            ->method('getGauge')
+            ->with(self::TEST_NAMESPACE, self::TEST_VARIABLE_NAME)
+            ->willReturn($gaugeMock)
+        ;
+        $this->collectorRegistryMock
+            ->expects($this->at(1))
+            ->method('getGauge')
+            ->with(self::TEST_NAMESPACE, self::TEST_VARIABLE_NAME.'_2')
+            ->willReturn($gaugeMock2)
+        ;
+
+        $this->collector->setTags($globalTags);
+
+        $this->collector->increment(self::TEST_VARIABLE_NAME, $inlineTags);
+        $this->collector->increment(self::TEST_VARIABLE_NAME.'_2');
         $this->collector->flush();
     }
 
@@ -202,6 +306,57 @@ class PrometheusTest extends \PHPUnit_Framework_TestCase
         $this->collector->flush();
     }
 
+	public function testDecrementWithInlineTags()
+    {
+		$globalTags = array(
+            'tag1' => 'value1',
+            'tag2' => 'value2',
+			);
+		$inlineTags = array(
+			'tag3' => 'value3',
+			);
+
+        $gaugeMock = $this->getMockBuilder('\\Prometheus\\Gauge')
+            ->disableOriginalConstructor()
+            ->getMock()
+			;
+        $gaugeMock2 = $this->getMockBuilder('\\Prometheus\\Gauge')
+            ->disableOriginalConstructor()
+            ->getMock()
+			;
+        $gaugeMock
+            ->expects($this->once())
+            ->method('dec')
+            ->with(array_merge($globalTags, $inlineTags))
+			;
+        $gaugeMock2
+            ->expects($this->once())
+            ->method('dec')
+            ->with(array_values($globalTags))
+			;
+
+        $this->collectorRegistryMock
+            ->expects($this->exactly(2));
+        $this->collectorRegistryMock
+            ->expects($this->at(0))
+            ->method('getGauge')
+            ->with(self::TEST_NAMESPACE, self::TEST_VARIABLE_NAME)
+            ->willReturn($gaugeMock)
+			;
+        $this->collectorRegistryMock
+            ->expects($this->at(1))
+            ->method('getGauge')
+            ->with(self::TEST_NAMESPACE, self::TEST_VARIABLE_NAME.'_2')
+            ->willReturn($gaugeMock2)
+			;
+
+        $this->collector->setTags($globalTags);
+
+        $this->collector->decrement(self::TEST_VARIABLE_NAME, $inlineTags);
+        $this->collector->decrement(self::TEST_VARIABLE_NAME.'_2');
+        $this->collector->flush();
+    }
+
     public function testTiming()
     {
         $expectedVariableValue = 123;
@@ -255,6 +410,59 @@ class PrometheusTest extends \PHPUnit_Framework_TestCase
         ));
 
         $this->collector->timing(self::TEST_VARIABLE_NAME, $expectedVariableValue);
+        $this->collector->flush();
+    }
+
+    public function testTimingWithInlineTags()
+    {
+        $expectedVariableValue = 123;
+		$expectedVariableValue2 = 456;
+        $globalTags = array(
+			'tag1' => 'value1',
+			'tag2' => 'value2',
+			);
+		$inlineTags = array(
+			'tag3' => 'value3',
+			);
+
+        $gaugeMock = $this->getMockBuilder('\\Prometheus\\Gauge')
+            ->disableOriginalConstructor()
+            ->getMock()
+        ;
+        $gaugeMock2 = $this->getMockBuilder('\\Prometheus\\Gauge')
+            ->disableOriginalConstructor()
+            ->getMock()
+        ;
+        $gaugeMock
+            ->expects($this->once())
+            ->method('set')
+            ->with($expectedVariableValue, array_values(array_merge($globalTags, $inlineTags)))
+        ;
+        $gaugeMock2
+            ->expects($this->once())
+            ->method('set')
+            ->with($expectedVariableValue, array_values($globalTags))
+        ;
+
+        $this->collectorRegistryMock
+            ->expects($this->exactly(2));
+        $this->collectorRegistryMock
+            ->expects($this->at(0))
+            ->method('getGauge')
+            ->with(self::TEST_NAMESPACE, self::TEST_VARIABLE_NAME)
+            ->willReturn($gaugeMock)
+        ;
+        $this->collectorRegistryMock
+            ->expects($this->at(0))
+            ->method('getGauge')
+            ->with(self::TEST_NAMESPACE, self::TEST_VARIABLE_NAME.'_2')
+            ->willReturn($gaugeMock2)
+        ;
+
+        $this->collector->setTags($globalTags);
+
+        $this->collector->timing(self::TEST_VARIABLE_NAME, $expectedVariableValue, $inlineTags);
+        $this->collector->timing(self::TEST_VARIABLE_NAME.'_2', $expectedVariableValue);
         $this->collector->flush();
     }
 

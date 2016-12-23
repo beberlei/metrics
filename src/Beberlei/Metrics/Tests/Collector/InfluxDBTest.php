@@ -140,4 +140,54 @@ class InfluxDBTest extends \PHPUnit_Framework_TestCase
         $this->collector->measure('series-name', 47.11);
         $this->collector->flush();
     }
+
+	public function testCollectMeasureWithInlineTags()
+    {
+        $globalTags = array(
+            'dc' => 'west',
+            'node' => 'nemesis101',
+			);
+
+		$inlineTags = array(
+			'resource' => 'stuff'
+			);
+
+		$expectedTags = array_merge($globalTags, $inlineTags);
+
+        $expectedArgs = array(
+            'points' => array(
+                array(
+                    'measurement' => 'series-name',
+                    'fields' => array('value' => 47.11),
+					),
+				),
+            'tags' => $expectedTags,
+			);
+
+		$expectedArgs2 = array(
+            'points' => array(
+                array(
+                    'measurement' => 'series-name-2',
+                    'fields' => array('value' => 53.22),
+					),
+				),
+            'tags' => $globalTags,
+			);
+
+        $this->client->expects($this->exactly(2))
+            ->method('mark');
+
+        $this->client->expects($this->at(0))
+            ->method('mark')
+            ->with($expectedArgs);
+
+		$this->client->expects($this->at(1))
+            ->method('mark')
+            ->with($expectedArgs2);
+
+        $this->collector->setTags($globalTags);
+        $this->collector->measure('series-name', 47.11, $inlineTags);
+        $this->collector->measure('series-name-2', 53.22);
+        $this->collector->flush();
+    }
 }
