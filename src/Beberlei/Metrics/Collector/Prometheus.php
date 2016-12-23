@@ -102,24 +102,20 @@ class Prometheus implements Collector, TaggableCollector
             return;
         }
 
-        $globalTagsValues = array_values($this->tags);
-
         foreach ($this->data['counters'] as $counterData) {
 			$gauge = $this->getOrRegisterGaugeForVariable($counterData['name'], $counterData['tags']);
 
-			$tagsValues = array_values($counterData['tags']);
             if ($counterData['value'] > 0) {
-                $gauge->inc(array_merge($globalTagsValues, $tagsValues));
+                $gauge->inc(array_values(array_merge($this->tags, $counterData['tags'])));
             } elseif ($counterData['value'] < 0) {
-                $gauge->dec(array_merge($globalTagsValues, $tagsValues));
+                $gauge->dec(array_values(array_merge($this->tags, $counterData['tags'])));
             }
         }
 
         foreach ($this->data['gauges'] as $gaugeData) {
-			$gauge = $this->getOrRegisterGaugeForVariable($gaugeData['name'], $counterData['tags']);
+			$gauge = $this->getOrRegisterGaugeForVariable($gaugeData['name'], $gaugeData['tags']);
 
-			$tagsValues = array_values($counterData['tags']);
-            $gauge->set($gaugeData['value'], array_merge($globalTagsValues, $tagsValues));
+            $gauge->set($gaugeData['value'], array_values(array_merge($this->tags, $gaugeData['tags'])));
         }
 
         $this->data = array('counters' => array(), 'gauges' => array());
@@ -136,6 +132,7 @@ class Prometheus implements Collector, TaggableCollector
     /**
      * @param string $variable
      *
+     * @param array $tags
      * @return \Prometheus\Gauge
      */
     private function getOrRegisterGaugeForVariable($variable, $tags = array())
