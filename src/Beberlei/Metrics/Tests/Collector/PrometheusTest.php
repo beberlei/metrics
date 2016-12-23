@@ -121,7 +121,7 @@ class PrometheusTest extends \PHPUnit_Framework_TestCase
             ->method('set')
             ->with($expectedVariableValue, array_values(array_merge($globalTags, $inlineTags)))
 			;
-        $gaugeMock
+        $gaugeMock2
 			->expects($this->once())
             ->method('set')
             ->with($expectedVariableValue2, array_values($globalTags))
