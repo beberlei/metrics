@@ -232,7 +232,8 @@ class PrometheusTest extends \PHPUnit_Framework_TestCase
         ;
 
         $this->collectorRegistryMock
-            ->expects($this->exactly(2));
+            ->expects($this->exactly(2))
+            ->method('getGauge');
         $this->collectorRegistryMock
             ->expects($this->at(0))
             ->method('getGauge')
@@ -336,7 +337,8 @@ class PrometheusTest extends \PHPUnit_Framework_TestCase
 			;
 
         $this->collectorRegistryMock
-            ->expects($this->exactly(2));
+            ->expects($this->exactly(2))
+            ->method('getGauge');
         $this->collectorRegistryMock
             ->expects($this->at(0))
             ->method('getGauge')
@@ -445,7 +447,8 @@ class PrometheusTest extends \PHPUnit_Framework_TestCase
         ;
 
         $this->collectorRegistryMock
-            ->expects($this->exactly(2));
+            ->expects($this->exactly(2))
+            ->method('getGauge');
         $this->collectorRegistryMock
             ->expects($this->at(0))
             ->method('getGauge')
