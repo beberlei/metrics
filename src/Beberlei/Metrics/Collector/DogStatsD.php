@@ -13,7 +13,7 @@
 
 namespace Beberlei\Metrics\Collector;
 
-class DogStatsD implements Collector, InlineTaggableGaugeableCollector
+class DogStatsD implements Collector, TaggableCollector, TaggableGaugeableCollector
 {
     /** @var string */
     private $host;
