@@ -26,6 +26,9 @@ class DogStatsD implements Collector, TaggableCollector, TaggableGaugeableCollec
     /** @var array */
     private $data;
 
+    /** @var array */
+    private $tags = array();
+
     /**
      * @param string $host
      * @param string $port
@@ -106,6 +109,14 @@ class DogStatsD implements Collector, TaggableCollector, TaggableGaugeableCollec
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function setTags($tags)
+    {
+        $this->tags = $tags;
+    }
+
+    /**
      * Given a key/value map of metric tags, builds them into a
      * DogStatsD tag string and returns the string.
      *
@@ -116,6 +127,8 @@ class DogStatsD implements Collector, TaggableCollector, TaggableGaugeableCollec
     private function buildTagString($tags)
     {
         $results = array();
+
+        $tags = array_merge($this->tags, $tags);
 
         foreach ($tags as $key => $value) {
             $results[] = sprintf('%s:%s', $key, $value);
