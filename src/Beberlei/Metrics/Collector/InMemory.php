@@ -19,7 +19,11 @@ namespace Beberlei\Metrics\Collector;
 class InMemory implements Collector, GaugeableCollector
 {
     /** @var  int[] */
-    private $data = [];
+    private $incrementData = [];
+    /** @var  int[] */
+    private $gaugeData = [];
+    /** @var  int[] */
+    private $timingData = [];
 
     /**
      * Updates a counter by some arbitrary amount.
@@ -29,10 +33,10 @@ class InMemory implements Collector, GaugeableCollector
      */
     public function measure($variable, $value)
     {
-        if (!isset($this->data[$variable])) {
-            $this->data[$variable] = 0;
+        if (!isset($this->incrementData[$variable])) {
+            $this->incrementData[$variable] = 0;
         }
-        $this->data[$variable] += $value;
+        $this->incrementData[$variable] += $value;
     }
 
     /**
@@ -63,7 +67,10 @@ class InMemory implements Collector, GaugeableCollector
      */
     public function timing($variable, $time)
     {
-        $this->gauge($variable, $time);
+        if (!isset($this->timingData[$variable])) {
+            $this->timingData[$variable] = 0;
+        }
+        $this->timingData[$variable] = $time;
     }
 
     /**
@@ -71,7 +78,9 @@ class InMemory implements Collector, GaugeableCollector
      */
     public function flush()
     {
-        // TODO: Implement flush() method.
+        $this->timingData = [];
+        $this->gaugeData = [];
+        $this->incrementData = [];
     }
 
     /**
@@ -82,20 +91,59 @@ class InMemory implements Collector, GaugeableCollector
      */
     public function gauge($variable, $value)
     {
-        if (!isset($this->data[$variable])) {
-            $this->data[$variable] = 0;
+        $sign = substr($value, 0, 1);
+
+        if (in_array($sign, ['-', '+'])) {
+            $this->gaugeIncrement($variable, (int)$value);
+            return;
         }
-        $this->data[$variable] = $value;
+
+        $this->gaugeData[$variable] = $value;
     }
 
     /**
-     * Returns current value of variable
+     * Returns current value of incremented/decremented/measured variable
      *
      * @param string $variable
      * @return int
      */
-    public function get($variable)
+    public function getMeasure($variable)
     {
-        return $this->data[$variable];
+        return isset($this->incrementData[$variable]) ? $this->incrementData[$variable] : 0;
+    }
+
+    /**
+     * Returns current value of gauged variable
+     *
+     * @param string $variable
+     * @return int
+     */
+    public function getGauge($variable)
+    {
+        return isset($this->gaugeData[$variable]) ? $this->gaugeData[$variable] : 0;
+    }
+
+    /**
+     * Returns current value of timed variable
+     *
+     * @param string $variable
+     * @return int
+     */
+    public function getTiming($variable)
+    {
+        return isset($this->timingData[$variable]) ? $this->timingData[$variable] : 0;
+    }
+
+    /**
+     * @param string $variable
+     * @param int $value
+     */
+    private function gaugeIncrement($variable, $value)
+    {
+        if (!isset($this->gaugeData[$variable])) {
+            $this->gaugeData[$variable] = 0;
+        }
+
+        $this->gaugeData[$variable] += $value;
     }
 }

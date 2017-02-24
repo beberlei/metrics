@@ -27,18 +27,18 @@ class InMemoryTest extends \PHPUnit_Framework_TestCase
         $this->collector = new InMemory();
     }
 
-    public function test_increment()
+    public function testIncrement()
     {
         $this->collector->increment(self::VARIABLE_A);
         $this->collector->increment(self::VARIABLE_A);
 
         $this->collector->increment(self::VARIABLE_B);
 
-        $this->assertEquals(2, $this->collector->get(self::VARIABLE_A));
-        $this->assertEquals(1, $this->collector->get(self::VARIABLE_B));
+        $this->assertEquals(2, $this->collector->getMeasure(self::VARIABLE_A));
+        $this->assertEquals(1, $this->collector->getMeasure(self::VARIABLE_B));
     }
 
-    public function test_decrement()
+    public function testDecrement()
     {
         $this->collector->increment(self::VARIABLE_A);
         $this->collector->increment(self::VARIABLE_A);
@@ -47,22 +47,22 @@ class InMemoryTest extends \PHPUnit_Framework_TestCase
         $this->collector->decrement(self::VARIABLE_B);
         $this->collector->decrement(self::VARIABLE_B);
 
-        $this->assertEquals(1, $this->collector->get(self::VARIABLE_A));
-        $this->assertEquals(-2, $this->collector->get(self::VARIABLE_B));
+        $this->assertEquals(1, $this->collector->getMeasure(self::VARIABLE_A));
+        $this->assertEquals(-2, $this->collector->getMeasure(self::VARIABLE_B));
     }
 
-    public function test_timing()
+    public function testTiming()
     {
         $this->collector->timing(self::VARIABLE_A, 123);
 
         $this->collector->timing(self::VARIABLE_B, 111);
         $this->collector->timing(self::VARIABLE_B, 112);
 
-        $this->assertEquals(123, $this->collector->get(self::VARIABLE_A));
-        $this->assertEquals(112, $this->collector->get(self::VARIABLE_B));
+        $this->assertEquals(123, $this->collector->getTiming(self::VARIABLE_A));
+        $this->assertEquals(112, $this->collector->getTiming(self::VARIABLE_B));
     }
 
-    public function test_measure()
+    public function testMeasure()
     {
         $this->collector->measure(self::VARIABLE_A, 2);
         $this->collector->measure(self::VARIABLE_A, -5);
@@ -70,19 +70,53 @@ class InMemoryTest extends \PHPUnit_Framework_TestCase
         $this->collector->measure(self::VARIABLE_B, 123);
         $this->collector->measure(self::VARIABLE_B, 0);
 
-        $this->assertEquals(-3, $this->collector->get(self::VARIABLE_A));
-        $this->assertEquals(123, $this->collector->get(self::VARIABLE_B));
+        $this->assertEquals(-3, $this->collector->getMeasure(self::VARIABLE_A));
+        $this->assertEquals(123, $this->collector->getMeasure(self::VARIABLE_B));
     }
 
-    public function test_gauge()
+    public function testSettingGauge()
     {
         $this->collector->gauge(self::VARIABLE_A, 2);
-        $this->collector->gauge(self::VARIABLE_A, -5);
+        $this->collector->gauge(self::VARIABLE_A, 5);
+
 
         $this->collector->gauge(self::VARIABLE_B, 123);
         $this->collector->gauge(self::VARIABLE_B, 0);
 
-        $this->assertEquals(-5, $this->collector->get(self::VARIABLE_A));
-        $this->assertEquals(0, $this->collector->get(self::VARIABLE_B));
+        $this->assertEquals(5, $this->collector->getGauge(self::VARIABLE_A));
+        $this->assertEquals(0, $this->collector->getGauge(self::VARIABLE_B));
+    }
+
+    public function testIncrementingGauge()
+    {
+        $this->collector->gauge(self::VARIABLE_A, '10');
+        $this->collector->gauge(self::VARIABLE_A, '+2');
+        $this->collector->gauge(self::VARIABLE_A, '-3');
+
+        $this->assertEquals(9, $this->collector->getGauge(self::VARIABLE_A));
+    }
+
+    public function testTypesOfMetricsAreSeparate()
+    {
+        $this->collector->increment(self::VARIABLE_A);
+        $this->collector->gauge(self::VARIABLE_A, 2);
+        $this->collector->timing(self::VARIABLE_A, 3);
+
+        $this->assertEquals(1, $this->collector->getMeasure(self::VARIABLE_A));
+        $this->assertEquals(2, $this->collector->getGauge(self::VARIABLE_A));
+        $this->assertEquals(3, $this->collector->getTiming(self::VARIABLE_A));
+    }
+
+    public function testFlushClearsData()
+    {
+        $this->collector->increment(self::VARIABLE_A);
+        $this->collector->gauge(self::VARIABLE_A, 2);
+        $this->collector->timing(self::VARIABLE_A, 3);
+
+        $this->collector->flush();
+
+        $this->assertEquals(0, $this->collector->getMeasure(self::VARIABLE_A));
+        $this->assertEquals(0, $this->collector->getGauge(self::VARIABLE_A));
+        $this->assertEquals(0, $this->collector->getTiming(self::VARIABLE_A));
     }
 }
