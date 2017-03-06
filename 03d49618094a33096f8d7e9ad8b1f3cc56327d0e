@@ -1,0 +1,7 @@
+---------------------------------------------------------------------------
+
+by baartosz at 2017-02-24T18:28:45Z
+
+Thanks for feedback. Updated PR.
+A bit tricky is that gauge cannot be set to negative value without setting it to 0 first according to
+https://github.com/etsy/statsd/blob/master/docs/metric_types.md#gauges
