@@ -10,6 +10,7 @@
  * obtain it through the world-wide-web, please send an email
  * to kontakt@beberlei.de so I can send you a copy immediately.
  */
+
 namespace Beberlei\Bundle\MetricsBundle\Tests\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -49,7 +50,7 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
+     * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
      * The source has to be specified to use a Librato
      */
     public function testWithLibratoAndInvalidConfiguration()
@@ -335,8 +336,8 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
         $container = $this->createContainer(array(
             'collectors' => array(
                 'memory' => array(
-                    'type' => 'memory'
-                )
+                    'type' => 'memory',
+                ),
             ),
         ));
         $collector = $container->get('beberlei_metrics.collector.memory');

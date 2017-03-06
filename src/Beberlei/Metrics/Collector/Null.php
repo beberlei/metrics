@@ -1,6 +1,6 @@
 <?php
 /**
- * Beberlei Metrics
+ * Beberlei Metrics.
  *
  * LICENSE
  *
@@ -14,7 +14,7 @@
 namespace Beberlei\Metrics\Collector;
 
 /**
- * @deprecated for PHP7 compatibility, use NullCollector instead.
+ * @deprecated for PHP7 compatibility, use NullCollector instead
  */
 class Null extends NullCollector
 {

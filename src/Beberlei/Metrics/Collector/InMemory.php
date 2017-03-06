@@ -10,6 +10,7 @@
  * obtain it through the world-wide-web, please send an email
  * to kontakt@beberlei.de so I can send you a copy immediately.
  */
+
 namespace Beberlei\Metrics\Collector;
 
 /**
@@ -18,18 +19,18 @@ namespace Beberlei\Metrics\Collector;
  */
 class InMemory implements Collector, GaugeableCollector
 {
-    /** @var  int[] */
+    /** @var int[] */
     private $incrementData = [];
-    /** @var  int[] */
+    /** @var int[] */
     private $gaugeData = [];
-    /** @var  int[] */
+    /** @var int[] */
     private $timingData = [];
 
     /**
      * Updates a counter by some arbitrary amount.
      *
      * @param string $variable
-     * @param int $value The amount to increment the counter by
+     * @param int    $value    The amount to increment the counter by
      */
     public function measure($variable, $value)
     {
@@ -63,7 +64,7 @@ class InMemory implements Collector, GaugeableCollector
      * Records a timing.
      *
      * @param string $variable
-     * @param int $time The duration of the timing in milliseconds
+     * @param int    $time     The duration of the timing in milliseconds
      */
     public function timing($variable, $time)
     {
@@ -87,14 +88,15 @@ class InMemory implements Collector, GaugeableCollector
      * Updates a gauge by an arbitrary amount.
      *
      * @param string $variable
-     * @param int $value
+     * @param int    $value
      */
     public function gauge($variable, $value)
     {
         $sign = substr($value, 0, 1);
 
         if (in_array($sign, ['-', '+'])) {
-            $this->gaugeIncrement($variable, (int)$value);
+            $this->gaugeIncrement($variable, (int) $value);
+
             return;
         }
 
@@ -102,9 +104,10 @@ class InMemory implements Collector, GaugeableCollector
     }
 
     /**
-     * Returns current value of incremented/decremented/measured variable
+     * Returns current value of incremented/decremented/measured variable.
      *
      * @param string $variable
+     *
      * @return int
      */
     public function getMeasure($variable)
@@ -113,9 +116,10 @@ class InMemory implements Collector, GaugeableCollector
     }
 
     /**
-     * Returns current value of gauged variable
+     * Returns current value of gauged variable.
      *
      * @param string $variable
+     *
      * @return int
      */
     public function getGauge($variable)
@@ -124,9 +128,10 @@ class InMemory implements Collector, GaugeableCollector
     }
 
     /**
-     * Returns current value of timed variable
+     * Returns current value of timed variable.
      *
      * @param string $variable
+     *
      * @return int
      */
     public function getTiming($variable)
@@ -136,7 +141,7 @@ class InMemory implements Collector, GaugeableCollector
 
     /**
      * @param string $variable
-     * @param int $value
+     * @param int    $value
      */
     private function gaugeIncrement($variable, $value)
     {
