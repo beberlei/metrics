@@ -10,6 +10,7 @@
  * obtain it through the world-wide-web, please send an email
  * to kontakt@beberlei.de so I can send you a copy immediately.
  */
+
 namespace Beberlei\Metrics\Tests\Collector;
 
 use Beberlei\Metrics\Collector\InMemory;
@@ -19,7 +20,7 @@ class InMemoryTest extends \PHPUnit_Framework_TestCase
     const VARIABLE_A = 'variable_a';
     const VARIABLE_B = 'variable_b';
 
-    /** @var  InMemory */
+    /** @var InMemory */
     private $collector;
 
     public function setUp()
@@ -78,7 +79,6 @@ class InMemoryTest extends \PHPUnit_Framework_TestCase
     {
         $this->collector->gauge(self::VARIABLE_A, 2);
         $this->collector->gauge(self::VARIABLE_A, 5);
-
 
         $this->collector->gauge(self::VARIABLE_B, 123);
         $this->collector->gauge(self::VARIABLE_B, 0);

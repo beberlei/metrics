@@ -10,6 +10,7 @@
  * obtain it through the world-wide-web, please send an email
  * to kontakt@beberlei.de so I can send you a copy immediately.
  */
+
 namespace Beberlei\Metrics\Tests\Collector;
 
 use PHPUnit_Framework_MockObject_MockObject;
