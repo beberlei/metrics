@@ -78,6 +78,7 @@ class BeberleiMetricsExtension extends Extension
                 return $definition;
             case 'logger':
             case 'null':
+            case 'memory':
                 return $definition;
             case 'prometheus':
                 $definition->replaceArgument(0, new Reference($config['prometheus_collector_registry']));

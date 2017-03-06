@@ -330,6 +330,19 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('', $this->getProperty($collector, 'namespace'));
     }
 
+    public function testWithInMemory()
+    {
+        $container = $this->createContainer(array(
+            'collectors' => array(
+                'memory' => array(
+                    'type' => 'memory'
+                )
+            ),
+        ));
+        $collector = $container->get('beberlei_metrics.collector.memory');
+        $this->assertInstanceOf('Beberlei\Metrics\Collector\InMemory', $collector);
+    }
+
     public function testWithPrometheusAndWithNamespace()
     {
         $expectedNamespace = 'some_namespace';
