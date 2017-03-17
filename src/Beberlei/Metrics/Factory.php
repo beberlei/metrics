@@ -158,6 +158,13 @@ abstract class Factory
 
                 return new Collector\DoctrineDBAL($options['connection']);
 
+            case 'context_logger':
+                if (!isset($options['logger'])) {
+                    throw new MetricsException("Missing 'logger' key with logger service.");
+                }
+
+                return new Collector\ContextLogger($options['logger']);
+
             case 'logger':
                 if (!isset($options['logger'])) {
                     throw new MetricsException("Missing 'logger' key with logger service.");
