@@ -129,8 +129,6 @@ class PrometheusTest extends \PHPUnit_Framework_TestCase
 			;
 
         $this->collectorRegistryMock
-            ->expects($this->exactly(2));
-        $this->collectorRegistryMock
             ->expects($this->at(0))
             ->method('getGauge')
             ->with(self::TEST_NAMESPACE, self::TEST_VARIABLE_NAME)
@@ -233,9 +231,6 @@ class PrometheusTest extends \PHPUnit_Framework_TestCase
         ;
 
         $this->collectorRegistryMock
-            ->expects($this->exactly(2))
-            ->method('getGauge');
-        $this->collectorRegistryMock
             ->expects($this->at(0))
             ->method('getGauge')
             ->with(self::TEST_NAMESPACE, self::TEST_VARIABLE_NAME)
@@ -329,7 +324,7 @@ class PrometheusTest extends \PHPUnit_Framework_TestCase
         $gaugeMock
             ->expects($this->once())
             ->method('dec')
-            ->with(array_merge($globalTags, $inlineTags))
+            ->with(array_values(array_merge($globalTags, $inlineTags)))
 			;
         $gaugeMock2
             ->expects($this->once())
@@ -337,9 +332,6 @@ class PrometheusTest extends \PHPUnit_Framework_TestCase
             ->with(array_values($globalTags))
 			;
 
-        $this->collectorRegistryMock
-            ->expects($this->exactly(2))
-            ->method('getGauge');
         $this->collectorRegistryMock
             ->expects($this->at(0))
             ->method('getGauge')
@@ -448,16 +440,13 @@ class PrometheusTest extends \PHPUnit_Framework_TestCase
         ;
 
         $this->collectorRegistryMock
-            ->expects($this->exactly(2))
-            ->method('getGauge');
-        $this->collectorRegistryMock
             ->expects($this->at(0))
             ->method('getGauge')
             ->with(self::TEST_NAMESPACE, self::TEST_VARIABLE_NAME)
             ->willReturn($gaugeMock)
         ;
         $this->collectorRegistryMock
-            ->expects($this->at(0))
+            ->expects($this->at(1))
             ->method('getGauge')
             ->with(self::TEST_NAMESPACE, self::TEST_VARIABLE_NAME.'_2')
             ->willReturn($gaugeMock2)
