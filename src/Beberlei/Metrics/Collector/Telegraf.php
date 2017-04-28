@@ -142,7 +142,7 @@ class Telegraf implements Collector, TaggableCollector, TaggableGaugeableCollect
     private function buildTagString($tags)
     {
 		$tagString = http_build_query($tags, '', ',');
-        $tagString = (strlen($this->tags) > 0 ? ','.$this->tags : $this->tags);
+        $tagString = (strlen($tagString) > 0 ? ','.$tagString : $tagString);
 		return $tagString;
     }
 }
