@@ -18,7 +18,7 @@ namespace Beberlei\Metrics\Collector;
  * ad hoc implementation for the StatsD - Telegraf integration,
  * support tagging.
  */
-class Telegraf implements Collector, TaggableGaugeableCollector
+class Telegraf implements Collector, TaggableCollector, TaggableGaugeableCollector
 {
     /** @var string */
     private $host;
