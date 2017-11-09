@@ -13,7 +13,7 @@
 
 namespace Beberlei\Metrics\Collector;
 
-class DogStatsD implements Collector, InlineTaggableGaugeableCollector
+class DogStatsD implements Collector, TaggableCollector, TaggableGaugeableCollector, InlineTaggableGaugeableCollector
 {
     /** @var string */
     private $host;
@@ -26,6 +26,9 @@ class DogStatsD implements Collector, InlineTaggableGaugeableCollector
 
     /** @var array */
     private $data;
+
+    /** @var array */
+    private $tags = array();
 
     /**
      * @param string $host
@@ -107,6 +110,14 @@ class DogStatsD implements Collector, InlineTaggableGaugeableCollector
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function setTags($tags)
+    {
+        $this->tags = $tags;
+    }
+
+    /**
      * Given a key/value map of metric tags, builds them into a
      * DogStatsD tag string and returns the string.
      *
@@ -117,6 +128,8 @@ class DogStatsD implements Collector, InlineTaggableGaugeableCollector
     private function buildTagString($tags)
     {
         $results = array();
+
+        $tags = array_merge($this->tags, $tags);
 
         foreach ($tags as $key => $value) {
             $results[] = sprintf('%s:%s', $key, $value);

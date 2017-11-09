@@ -24,4 +24,40 @@ interface TaggableCollector
      * @param array $tags
      */
     public function setTags($tags);
+
+	/**
+     * Updates a counter by some arbitrary amount.
+     *
+     * @param string $variable
+     * @param int    $value    The amount to increment the counter by
+     * @param array  $tags     Tags to be attached to the metric
+     *
+     * @return
+     */
+    public function measure($variable, $value, $tags = array());
+
+    /**
+     * Increments a counter.
+     *
+     * @param string $variable
+     * @param array  $tags     Tags to be attached to the metric
+     */
+    public function increment($variable, $tags = array());
+
+    /**
+     * Decrements a counter.
+     *
+     * @param string $variable
+     * @param array  $tags     Tags to be attached to the metric
+     */
+    public function decrement($variable, $tags = array());
+
+    /**
+     * Records a timing.
+     *
+     * @param string $variable
+     * @param int    $time     The duration of the timing in milliseconds
+     * @param array  $tags     Tags to be attached to the metric
+     */
+    public function timing($variable, $time, $tags = array());
 }

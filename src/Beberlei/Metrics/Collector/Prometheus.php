@@ -52,42 +52,45 @@ class Prometheus implements Collector, TaggableCollector
     /**
      * {@inheritdoc}
      */
-    public function measure($variable, $value)
+    public function measure($variable, $value, $tags = array())
     {
         $this->data['gauges'][] = array(
             'name' => $variable,
             'value' => $value,
+            'tags' => $tags,
         );
     }
 
     /**
      * {@inheritdoc}
      */
-    public function increment($variable)
+    public function increment($variable, $tags = array())
     {
         $this->data['counters'][] = array(
             'name' => $variable,
             'value' => 1,
+			'tags' => $tags,
         );
     }
 
     /**
      * {@inheritdoc}
      */
-    public function decrement($variable)
+    public function decrement($variable, $tags = array())
     {
         $this->data['counters'][] = array(
             'name' => $variable,
             'value' => -1,
+			'tags' => $tags,
         );
     }
 
     /**
      * {@inheritdoc}
      */
-    public function timing($variable, $time)
+    public function timing($variable, $time, $tags = array())
     {
-        $this->measure($variable, $time);
+        $this->measure($variable, $time, $tags);
     }
 
     /**
@@ -99,22 +102,20 @@ class Prometheus implements Collector, TaggableCollector
             return;
         }
 
-        $tagsValues = array_values($this->tags);
-
         foreach ($this->data['counters'] as $counterData) {
-            $gauge = $this->getOrRegisterGaugeForVariable($counterData['name']);
+			$gauge = $this->getOrRegisterGaugeForVariable($counterData['name'], $counterData['tags']);
 
             if ($counterData['value'] > 0) {
-                $gauge->inc($tagsValues);
+                $gauge->inc(array_values(array_merge($this->tags, $counterData['tags'])));
             } elseif ($counterData['value'] < 0) {
-                $gauge->dec($tagsValues);
+                $gauge->dec(array_values(array_merge($this->tags, $counterData['tags'])));
             }
         }
 
         foreach ($this->data['gauges'] as $gaugeData) {
-            $gauge = $this->getOrRegisterGaugeForVariable($gaugeData['name']);
+			$gauge = $this->getOrRegisterGaugeForVariable($gaugeData['name'], $gaugeData['tags']);
 
-            $gauge->set($gaugeData['value'], $tagsValues);
+            $gauge->set($gaugeData['value'], array_values(array_merge($this->tags, $gaugeData['tags'])));
         }
 
         $this->data = array('counters' => array(), 'gauges' => array());
@@ -131,9 +132,10 @@ class Prometheus implements Collector, TaggableCollector
     /**
      * @param string $variable
      *
+     * @param array $tags
      * @return \Prometheus\Gauge
      */
-    private function getOrRegisterGaugeForVariable($variable)
+    private function getOrRegisterGaugeForVariable($variable, $tags = array())
     {
         try {
             $gauge = $this->collectorRegistry->getGauge($this->namespace, $variable);
@@ -142,7 +144,7 @@ class Prometheus implements Collector, TaggableCollector
                 $this->namespace,
                 $variable,
                 '',
-                array_keys($this->tags)
+                array_keys(array_merge($this->tags, $tags))
             );
         }
 

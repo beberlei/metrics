@@ -18,7 +18,7 @@ namespace Beberlei\Metrics\Collector;
  * ad hoc implementation for the StatsD - Telegraf integration,
  * support tagging.
  */
-class Telegraf implements Collector, GaugeableCollector, TaggableCollector
+class Telegraf implements Collector, TaggableCollector, TaggableGaugeableCollector, InlineTaggableGaugeableCollector
 {
     /** @var string */
     private $host;
@@ -32,8 +32,8 @@ class Telegraf implements Collector, GaugeableCollector, TaggableCollector
     /** @var array */
     private $data;
 
-    /** @var string */
-    private $tags = '';
+    /** @var array */
+    private $tags;
 
     /**
      * @param string $host
@@ -53,48 +53,47 @@ class Telegraf implements Collector, GaugeableCollector, TaggableCollector
      */
     public function setTags($tags)
     {
-        $this->tags = http_build_query($tags, '', ',');
-        $this->tags = (strlen($this->tags) > 0 ? ','.$this->tags : $this->tags);
+        $this->tags = $tags;
+	}
+
+    /**
+     * {@inheritdoc}
+     */
+    public function timing($variable, $time, $tags = array())
+    {
+        $this->data[] = sprintf('%s%s:%s|ms', $variable, $this->buildTagString(array_merge($this->tags, $tags)), $time);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function timing($variable, $time)
+    public function increment($variable, $tags = array())
     {
-        $this->data[] = sprintf('%s%s:%s|ms', $variable, $this->tags, $time);
+        $this->data[] = $variable.$this->buildTagString(array_merge($this->tags, $tags)).':1|c';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function increment($variable)
+    public function decrement($variable, $tags = array())
     {
-        $this->data[] = $variable.$this->tags.':1|c';
+        $this->data[] = $variable.$this->buildTagString(array_merge($this->tags, $tags)).':-1|c';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function decrement($variable)
+    public function measure($variable, $value, $tags = array())
     {
-        $this->data[] = $variable.$this->tags.':-1|c';
+        $this->data[] = sprintf('%s%s:%s|c', $variable, $this->buildTagString(array_merge($this->tags, $tags)), $value);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function measure($variable, $value)
+    public function gauge($variable, $value, $tags = array())
     {
-        $this->data[] = sprintf('%s%s:%s|c', $variable, $this->tags, $value);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function gauge($variable, $value)
-    {
-        $this->data[] = sprintf('%s%s:%s|g', $variable, $this->tags, $value);
+        $this->data[] = sprintf('%s%s:%s|g', $variable, $this->buildTagString(array_merge($this->tags, $tags)), $value);
     }
 
     /**
@@ -103,7 +102,7 @@ class Telegraf implements Collector, GaugeableCollector, TaggableCollector
      */
     public function set($variable, $value)
     {
-        $this->data[] = sprintf('%s%s:%s|s', $variable, $this->tags, $value);
+        $this->data[] = sprintf('%s%s:%s|s', $variable, $this->buildTagString(array_merge($this->tags, $tags)), $value);
     }
 
     /**
@@ -130,5 +129,20 @@ class Telegraf implements Collector, GaugeableCollector, TaggableCollector
         fclose($fp);
 
         $this->data = array();
+    }
+
+	/**
+     * Given a key/value map of metric tags, builds them into a
+     * telegraf statsd tag string and returns the string.
+     *
+     * @param $tags array
+     *
+     * @return string
+     */
+    private function buildTagString($tags)
+    {
+		$tagString = http_build_query($tags, '', ',');
+        $tagString = (strlen($tagString) > 0 ? ','.$tagString : $tagString);
+		return $tagString;
     }
 }

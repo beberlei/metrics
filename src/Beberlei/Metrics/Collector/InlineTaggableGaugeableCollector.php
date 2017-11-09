@@ -15,6 +15,7 @@ namespace Beberlei\Metrics\Collector;
 
 /**
  * InlineTaggableGaugeableCollector interface.
+ * @deprecated Replaced by TaggableCollector + TaggableGaugeableCollector
  */
 interface InlineTaggableGaugeableCollector
 {
