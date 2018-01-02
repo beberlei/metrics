@@ -30,9 +30,9 @@
         "jimdo/prometheus_client_php": "^0.5",
         "kriswallsmith/buzz": "*",
         "okitsu/zabbix-sender": "*@dev",
-        "symfony/config": "~2.3",
-        "symfony/dependency-injection": "~2.3",
-        "symfony/http-kernel": "~2.3"
+        "symfony/config": "~3.3 || ~4.0",
+        "symfony/dependency-injection": "~3.3 || ~4.0",
+        "symfony/http-kernel": "~3.3 || ~4.0"
     },
     "autoload": {
         "psr-4": {

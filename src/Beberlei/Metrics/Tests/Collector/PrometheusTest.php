@@ -14,9 +14,10 @@
 namespace Beberlei\Metrics\Tests\Collector;
 
 use Beberlei\Metrics\Collector\Prometheus;
+use PHPUnit\Framework\TestCase;
 use Prometheus\Exception\MetricNotFoundException;
 
-class PrometheusTest extends \PHPUnit_Framework_TestCase
+class PrometheusTest extends TestCase
 {
     const TEST_NAMESPACE = 'some_metric_namespace';
     const TEST_VARIABLE_NAME = 'some_variable_name';
