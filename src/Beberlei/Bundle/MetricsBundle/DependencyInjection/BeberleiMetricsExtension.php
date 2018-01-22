@@ -3,6 +3,7 @@
 namespace Beberlei\Bundle\MetricsBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\DefinitionDecorator;
@@ -36,7 +37,11 @@ class BeberleiMetricsExtension extends Extension
 
     private function createCollector($type, $config)
     {
-        $definition = new DefinitionDecorator('beberlei_metrics.collector_proto.'.$config['type']);
+        if (class_exists('Symfony\Component\DependencyInjection\ChildDefinition')) {
+            $definition = new ChildDefinition('beberlei_metrics.collector_proto.'.$config['type']);
+        } else {
+            $definition = new DefinitionDecorator('beberlei_metrics.collector_proto.'.$config['type']);
+        }
 
         // Theses listeners should be as late as possible
         $definition->addTag('kernel.event_listener', array(
