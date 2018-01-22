@@ -1,0 +1,11 @@
+---------------------------------------------------------------------------
+
+by nicoschoenmaker at 2018-01-02T13:03:55Z
+
+The failed php 7 and 7.1 builds are due to the existing usage of `\PHPUnit_Framework_TestCase`
+
+---------------------------------------------------------------------------
+
+by lyrixx at 2018-01-08T09:17:48Z
+
+:+1:
