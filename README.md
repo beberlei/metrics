@@ -111,44 +111,46 @@ class AppKernel extends Kernel
 
 Do Configuration:
 
-    # app/config/config.yml
-    beberlei_metrics:
-        default: foo
-        collectors:
-            foo:
-                type: statsd
-            bar:
-                type: zabbix
-                prefix: foo.beberlei.de
-                host: localhost
-                port: 10051
-            baz:
-                type: zabbix_file
-                prefix: foo.beberlei.de
-                file: /etc/zabbix/zabbix_agentd.conf
-            librato:
-                type: librato
-                username: foo
-                password: bar
-                source: hermes10
-            dbal:
-                type: doctrine_dbal
-                connection: metrics # using the connection named "metrics"
-            monolog:
-                type: monolog
-            influxdb:
-                type: influxdb
-                influxdb_client: influxdb_client_service # using the InfluxDB client service named "influxdb_client_service"
-                tags:
-                    dc: "west"
-                    node_instance: "hermes10"
-            prometheus:
-                type: prometheus
-                prometheus_collector_registry: prometheus_collector_registry_service # using the Prometheus collector registry service named "prometheus_collector_registry_service"
-                namespace: app_name # optional
-                tags:
-                    dc: "west"
-                    node_instance: "hermes10"
+```yaml
+# app/config/config.yml
+beberlei_metrics:
+    default: foo
+    collectors:
+        foo:
+            type: statsd
+        bar:
+            type: zabbix
+            prefix: foo.beberlei.de
+            host: localhost
+            port: 10051
+        baz:
+            type: zabbix_file
+            prefix: foo.beberlei.de
+            file: /etc/zabbix/zabbix_agentd.conf
+        librato:
+            type: librato
+            username: foo
+            password: bar
+            source: hermes10
+        dbal:
+            type: doctrine_dbal
+            connection: metrics # using the connection named "metrics"
+        monolog:
+            type: monolog
+        influxdb:
+            type: influxdb
+            influxdb_client: influxdb_client_service # using the InfluxDB client service named "influxdb_client_service"
+            tags:
+                dc: "west"
+                node_instance: "hermes10"
+        prometheus:
+            type: prometheus
+            prometheus_collector_registry: prometheus_collector_registry_service # using the Prometheus collector registry service named "prometheus_collector_registry_service"
+            namespace: app_name # optional
+            tags:
+                dc: "west"
+                node_instance: "hermes10"
+```
 
 This adds collectors to the Metrics registry. The functions are automatically
 included in the Bundle class so that in your code you can just start using the
