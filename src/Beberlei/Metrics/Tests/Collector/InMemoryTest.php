@@ -14,8 +14,9 @@
 namespace Beberlei\Metrics\Tests\Collector;
 
 use Beberlei\Metrics\Collector\InMemory;
+use PHPUnit\Framework\TestCase;
 
-class InMemoryTest extends \PHPUnit_Framework_TestCase
+class InMemoryTest extends TestCase
 {
     const VARIABLE_A = 'variable_a';
     const VARIABLE_B = 'variable_b';

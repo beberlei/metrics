@@ -13,11 +13,12 @@
 
 namespace Beberlei\Bundle\MetricsBundle\Tests\DependencyInjection;
 
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Beberlei\Bundle\MetricsBundle\DependencyInjection\BeberleiMetricsExtension;
 
-class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
+class BeberleiMetricsExtensionTest extends TestCase
 {
     public function testWithGraphite()
     {
@@ -34,6 +35,9 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
                     'protocol' => 'udp',
                 ),
             ),
+        ), array(
+            'beberlei_metrics.collector.simple',
+            'beberlei_metrics.collector.full'
         ));
 
         $collector = $container->get('beberlei_metrics.collector.simple');
@@ -61,7 +65,7 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
                     'type' => 'librato',
                 ),
             ),
-        ));
+        ), array('beberlei_metrics.collector.librato'));
 
         $this->assertInstanceOf('Beberlei\Metrics\Collector\Librato', $container->get('beberlei_metrics.collector.librato'));
     }
@@ -77,7 +81,7 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
                     'password' => 'bar',
                 ),
             ),
-        ));
+        ), array('beberlei_metrics.collector.full'));
 
         $collector = $container->get('beberlei_metrics.collector.full');
         $this->assertInstanceOf('Beberlei\Metrics\Collector\Librato', $collector);
@@ -94,7 +98,7 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
                     'type' => 'logger',
                 ),
             ),
-        ));
+        ), array('beberlei_metrics.collector.logger'));
 
         $this->assertInstanceOf('Beberlei\Metrics\Collector\Logger', $container->get('beberlei_metrics.collector.logger'));
     }
@@ -107,7 +111,7 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
                     'type' => 'null',
                 ),
             ),
-        ));
+        ), array('beberlei_metrics.collector.null'));
 
         $this->assertInstanceOf('Beberlei\Metrics\Collector\NullCollector', $container->get('beberlei_metrics.collector.null'));
     }
@@ -127,6 +131,9 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
                     'prefix' => 'application.com.symfony.',
                 ),
             ),
+        ), array(
+            'beberlei_metrics.collector.simple',
+            'beberlei_metrics.collector.full'
         ));
 
         $collector = $container->get('beberlei_metrics.collector.simple');
@@ -157,6 +164,9 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
                     'prefix' => 'application.com.symfony.',
                 ),
             ),
+        ), array(
+            'beberlei_metrics.collector.simple',
+            'beberlei_metrics.collector.full'
         ));
 
         $collector = $container->get('beberlei_metrics.collector.simple');
@@ -193,6 +203,9 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
                     'tags' => $expectedTags,
                 ),
             ),
+        ), array(
+            'beberlei_metrics.collector.simple',
+            'beberlei_metrics.collector.full'
         ));
 
         $collector = $container->get('beberlei_metrics.collector.simple');
@@ -230,6 +243,10 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
                     'file' => '/etc/zabbix/zabbix_agentd.conf',
                 ),
             ),
+        ), array(
+            'beberlei_metrics.collector.simple',
+            'beberlei_metrics.collector.full',
+            'beberlei_metrics.collector.file'
         ));
 
         $collector = $container->get('beberlei_metrics.collector.simple');
@@ -269,7 +286,7 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
                     'influxdb_client' => 'influxdb_client_mock',
                 ),
             ),
-        ), array(
+        ), array('beberlei_metrics.collector.influxdb'), array(
             'influxdb_client_mock' => $influxDBClientMock,
         ));
 
@@ -298,7 +315,7 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
                     'tags' => $expectedTags,
                 ),
             ),
-        ), array(
+        ), array('beberlei_metrics.collector.influxdb'), array(
             'influxdb_client_mock' => $influxDBClientMock,
         ));
 
@@ -321,7 +338,7 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
                     'prometheus_collector_registry' => 'prometheus_collector_registry_mock',
                 ),
             ),
-        ), array(
+        ), array('beberlei_metrics.collector.prometheus'), array(
             'prometheus_collector_registry_mock' => $prometheusCollectorRegistryMock,
         ));
 
@@ -339,7 +356,7 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
                     'type' => 'memory',
                 ),
             ),
-        ));
+        ), array('beberlei_metrics.collector.memory'));
         $collector = $container->get('beberlei_metrics.collector.memory');
         $this->assertInstanceOf('Beberlei\Metrics\Collector\InMemory', $collector);
     }
@@ -361,7 +378,7 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
                     'namespace' => $expectedNamespace,
                 ),
             ),
-        ), array(
+        ), array('beberlei_metrics.collector.prometheus'), array(
             'prometheus_collector_registry_mock' => $prometheusCollectorRegistryMock,
         ));
 
@@ -391,7 +408,7 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
                     'tags' => $expectedTags,
                 ),
             ),
-        ), array(
+        ), array('beberlei_metrics.collector.prometheus'), array(
             'prometheus_collector_registry_mock' => $prometheusCollectorRegistryMock,
         ));
 
@@ -415,7 +432,7 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
         ));
     }
 
-    private function createContainer($configs, $additionalServices = array())
+    private function createContainer($configs, $publicServices = array(), $additionalServices = array())
     {
         $container = new ContainerBuilder();
 
@@ -426,6 +443,10 @@ class BeberleiMetricsExtensionTest extends \PHPUnit_Framework_TestCase
 
         foreach ($additionalServices as $serviceId => $additionalService) {
             $container->set($serviceId, $additionalService);
+        }
+
+        foreach($publicServices as $serviceId) {
+            $container->getDefinition($serviceId)->setPublic(true);
         }
 
         $container->compile();

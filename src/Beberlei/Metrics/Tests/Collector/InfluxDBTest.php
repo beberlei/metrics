@@ -13,10 +13,11 @@
 
 namespace Beberlei\Metrics\Tests\Collector;
 
+use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
 use Beberlei\Metrics\Collector\InfluxDB;
 
-class InfluxDBTest extends \PHPUnit_Framework_TestCase
+class InfluxDBTest extends TestCase
 {
     /**
      * @var PHPUnit_Framework_MockObject_MockObject

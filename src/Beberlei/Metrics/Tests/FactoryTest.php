@@ -3,9 +3,10 @@
 namespace Beberlei\Metrics\Tests;
 
 use Beberlei\Metrics\Factory;
+use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
-class FactoryTest extends \PHPUnit_Framework_TestCase
+class FactoryTest extends TestCase
 {
     public function getCreateValidMetricTests()
     {
