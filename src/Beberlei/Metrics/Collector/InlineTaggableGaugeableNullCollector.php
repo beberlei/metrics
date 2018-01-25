@@ -12,7 +12,7 @@
  */
 namespace Beberlei\Metrics\Collector;
 
-class TaggableNullCollector implements Collector, InlineTaggableGaugeableCollector
+class InlineTaggableGaugeableNullCollector implements Collector, InlineTaggableGaugeableCollector
 {
     /**
      * {@inheritdoc}
