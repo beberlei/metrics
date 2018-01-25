@@ -175,6 +175,9 @@ abstract class Factory
             case 'null':
                 return new Collector\NullCollector();
 
+            case 'null_inlinetaggable':
+                return new Collector\InlineTaggableGaugeableNullCollector();
+
             case 'prometheus':
                 if (!isset($options['collector_registry'])) {
                     throw new MetricsException('Missing \'collector_registry\' key for Prometheus collector.');
