@@ -99,8 +99,9 @@ class Telegraf implements Collector, TaggableCollector, TaggableGaugeableCollect
     /**
      * @param $variable
      * @param $value
+     * @param array $tags
      */
-    public function set($variable, $value)
+    public function set($variable, $value, $tags = array())
     {
         $this->data[] = sprintf('%s%s:%s|s', $variable, $this->buildTagString(array_merge($this->tags, $tags)), $value);
     }
