@@ -25,7 +25,7 @@
         "psr/log": "~1.0"
     },
     "require-dev": {
-        "corley/influxdb-sdk": "^0.5.1",
+        "influxdb/influxdb-php": "^1.0",
         "doctrine/dbal": "~2.0",
         "jimdo/prometheus_client_php": "^0.5",
         "kriswallsmith/buzz": "*",

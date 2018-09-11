@@ -166,11 +166,11 @@ abstract class Factory
                 return new Collector\Logger($options['logger']);
 
             case 'influxdb':
-                if (!isset($options['client'])) {
-                    throw new MetricsException('Missing \'client\' key for InfluxDB collector.');
+                if (!isset($options['database'])) {
+                    throw new MetricsException('Missing \'database\' key for InfluxDB collector.');
                 }
 
-                return new Collector\InfluxDB($options['client']);
+                return new Collector\InfluxDB($options['database']);
 
             case 'null':
                 return new Collector\NullCollector();
