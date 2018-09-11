@@ -13,6 +13,8 @@
 
 namespace Beberlei\Metrics\Tests\Collector;
 
+use InfluxDB\Database;
+use InfluxDB\Point;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
 use Beberlei\Metrics\Collector\InfluxDB;
@@ -22,7 +24,7 @@ class InfluxDBTest extends TestCase
     /**
      * @var PHPUnit_Framework_MockObject_MockObject
      */
-    private $client;
+    private $database;
 
     /**
      * @var InfluxDB
@@ -31,27 +33,30 @@ class InfluxDBTest extends TestCase
 
     protected function setUp()
     {
-        $this->client = $this->getMockBuilder('\\InfluxDB\\Client')
+        $this->database  = $this->getMockBuilder('\\InfluxDB\\Database')
             ->disableOriginalConstructor()
-            ->getMock();
-        $this->collector = new InfluxDB($this->client);
+            ->getMock()
+        ;
+        $this->collector = new InfluxDB($this->database);
     }
 
     public function testCollectIncrement()
     {
+        $time         = new \DateTime();
         $expectedArgs = array(
-            'points' => array(
-                array(
-                    'measurement' => 'series-name',
-                    'fields' => array('value' => 1),
-                ),
+            new Point(
+                'series-name',
+                1,
+                array(),
+                array(),
+                $time->getTimestamp()
             ),
-            'tags' => array(),
         );
 
-        $this->client->expects($this->once())
-            ->method('mark')
-            ->with($expectedArgs);
+        $this->database->expects($this->once())
+            ->method('writePoints')
+            ->with($expectedArgs)
+        ;
 
         $this->collector->increment('series-name');
         $this->collector->flush();
@@ -59,19 +64,21 @@ class InfluxDBTest extends TestCase
 
     public function testCollectDecrement()
     {
+        $time         = new \DateTime();
         $expectedArgs = array(
-            'points' => array(
-                array(
-                    'measurement' => 'series-name',
-                    'fields' => array('value' => -1),
-                ),
+            new Point(
+                'series-name',
+                -1,
+                array(),
+                array(),
+                $time->getTimestamp()
             ),
-            'tags' => array(),
         );
 
-        $this->client->expects($this->once())
-            ->method('mark')
-            ->with($expectedArgs);
+        $this->database->expects($this->once())
+            ->method('writePoints')
+            ->with($expectedArgs, Database::PRECISION_SECONDS)
+        ;
 
         $this->collector->decrement('series-name');
         $this->collector->flush();
@@ -79,19 +86,21 @@ class InfluxDBTest extends TestCase
 
     public function testCollectTiming()
     {
+        $time         = new \DateTime();
         $expectedArgs = array(
-            'points' => array(
-                array(
-                    'measurement' => 'series-name',
-                    'fields' => array('value' => 47.11),
-                ),
+            new Point(
+                'series-name',
+                47.11,
+                array(),
+                array(),
+                $time->getTimestamp()
             ),
-            'tags' => array(),
         );
 
-        $this->client->expects($this->once())
-            ->method('mark')
-            ->with($expectedArgs);
+        $this->database->expects($this->once())
+            ->method('writePoints')
+            ->with($expectedArgs, Database::PRECISION_SECONDS)
+        ;
 
         $this->collector->timing('series-name', 47.11);
         $this->collector->flush();
@@ -99,19 +108,21 @@ class InfluxDBTest extends TestCase
 
     public function testCollectMeasure()
     {
+        $time         = new \DateTime();
         $expectedArgs = array(
-            'points' => array(
-                array(
-                    'measurement' => 'series-name',
-                    'fields' => array('value' => 47.11),
-                ),
+            new Point(
+                'series-name',
+                47.11,
+                array(),
+                array(),
+                $time->getTimestamp()
             ),
-            'tags' => array(),
         );
 
-        $this->client->expects($this->once())
-            ->method('mark')
-            ->with($expectedArgs);
+        $this->database->expects($this->once())
+            ->method('writePoints')
+            ->with($expectedArgs, Database::PRECISION_SECONDS)
+        ;
 
         $this->collector->measure('series-name', 47.11);
         $this->collector->flush();
@@ -120,23 +131,25 @@ class InfluxDBTest extends TestCase
     public function testCollectMeasureWithTags()
     {
         $expectedTags = array(
-            'dc' => 'west',
+            'dc'   => 'west',
             'node' => 'nemesis101',
         );
-
+        $time         = new \DateTime();
         $expectedArgs = array(
-            'points' => array(
-                array(
-                    'measurement' => 'series-name',
-                    'fields' => array('value' => 47.11),
-                ),
+            new Point(
+                'series-name',
+                47.11,
+                $expectedTags,
+                array(),
+                $time->getTimestamp()
             ),
-            'tags' => $expectedTags,
         );
 
-        $this->client->expects($this->once())
-            ->method('mark')
-            ->with($expectedArgs);
+
+        $this->database->expects($this->once())
+            ->method('writePoints')
+            ->with($expectedArgs, Database::PRECISION_SECONDS)
+        ;
 
         $this->collector->setTags($expectedTags);
         $this->collector->measure('series-name', 47.11);

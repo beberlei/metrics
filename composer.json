@@ -16,7 +16,7 @@
     ],
     "license": "MIT",
     "suggest": {
-        "corley/influxdb-sdk": "For InfluxDB integration",
+        "influxdb/influxdb-php": "For InfluxDB integration",
         "okitsu/zabbix-sender": "For zabbix integration",
         "kriswallsmith/buzz": "For Librato integration",
         "jimdo/prometheus_client_php": "For Prometheus integration"
