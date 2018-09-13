@@ -22,4 +22,9 @@ interface GaugeableCollector
      * @param int    $value
      */
     public function gauge($variable, $value);
+
+    /**
+     * Sends the metrics to the adapter backend.
+     */
+    public function flush();
 }
