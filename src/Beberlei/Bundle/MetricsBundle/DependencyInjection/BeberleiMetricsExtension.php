@@ -2,6 +2,7 @@
 
 namespace Beberlei\Bundle\MetricsBundle\DependencyInjection;
 
+use Beberlei\Metrics\Collector\Collector;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -25,13 +26,14 @@ class BeberleiMetricsExtension extends Extension
             $container->setDefinition('beberlei_metrics.collector.'.$name, $definition);
         }
 
-        if (!$config['default'] && 1 === count($config['collectors'])) {
-            $container->setAlias('beberlei_metrics.collector', 'beberlei_metrics.collector.'.$name);
-        } elseif ($container->hasDefinition('beberlei_metrics.collector.'.$config['default'])) {
-            $container->setAlias('beberlei_metrics.collector', 'beberlei_metrics.collector.'.$config['default']);
-        } else {
+        if ($config['default'] && $container->hasDefinition('beberlei_metrics.collector.'.$config['default'])) {
+            $name = $config['default'];
+        } elseif (1 !== count($config['collectors'])) {
             throw new \LogicException('You should select a default collector');
         }
+
+        $container->setAlias('beberlei_metrics.collector', 'beberlei_metrics.collector.'.$name);
+        $container->setAlias(Collector::class, 'beberlei_metrics.collector');
     }
 
     private function createCollector($type, $config)
