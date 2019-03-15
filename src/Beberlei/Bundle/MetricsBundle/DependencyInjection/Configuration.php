@@ -37,6 +37,7 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('protocol')->defaultNull()->end()
                             ->scalarNode('source')->defaultNull()->end()
                             ->scalarNode('username')->defaultNull()->end()
+                            ->scalarNode('influxdb_client')->defaultNull()->end()
                             ->scalarNode('influxdb_database')->defaultNull()->end()
                             ->scalarNode('prometheus_collector_registry')->defaultNull()->info('It must to contain service id for Prometheus\\CollectorRegistry class instance.')->end()
                             ->scalarNode('namespace')->defaultValue('')->end()

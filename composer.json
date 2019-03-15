@@ -16,7 +16,8 @@
     ],
     "license": "MIT",
     "suggest": {
-        "influxdb/influxdb-php": "For InfluxDB integration",
+        "corley/influxdb-sdk": "For InfluxDB integration",
+        "influxdb/influxdb-php": "For Official InfluxDB integration",
         "okitsu/zabbix-sender": "For zabbix integration",
         "kriswallsmith/buzz": "For Librato integration",
         "jimdo/prometheus_client_php": "For Prometheus integration"
@@ -25,14 +26,15 @@
         "psr/log": "~1.0"
     },
     "require-dev": {
-        "influxdb/influxdb-php": "^1.0",
+        "corley/influxdb-sdk": "^0.5.1",
         "doctrine/dbal": "~2.0",
         "jimdo/prometheus_client_php": "^0.5",
         "kriswallsmith/buzz": "*",
         "okitsu/zabbix-sender": "*@dev",
         "symfony/config": "~3.3 || ~4.0",
         "symfony/dependency-injection": "~3.3 || ~4.0",
-        "symfony/http-kernel": "~3.3 || ~4.0"
+        "symfony/http-kernel": "~3.3 || ~4.0",
+        "phpunit/phpunit": "^6"
     },
     "autoload": {
         "psr-4": {

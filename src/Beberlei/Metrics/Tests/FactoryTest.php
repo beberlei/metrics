@@ -28,7 +28,7 @@ class FactoryTest extends TestCase
             array('Beberlei\Metrics\Collector\DoctrineDBAL', 'doctrine_dbal', array('connection' => $this->getMockBuilder('Doctrine\DBAL\Connection')->disableOriginalConstructor()->getMock())),
             array('Beberlei\Metrics\Collector\Logger', 'logger', array('logger' => new NullLogger())),
             array('Beberlei\Metrics\Collector\NullCollector', 'null'),
-            array('Beberlei\Metrics\Collector\InfluxDB', 'influxdb', array('database' => $this->getMockBuilder('\\InfluxDB\\Database')->disableOriginalConstructor()->getMock())),
+            array('Beberlei\Metrics\Collector\InfluxDB', 'influxdb', array('client' => $this->getMockBuilder('\\InfluxDB\\Client')->disableOriginalConstructor()->getMock())),
             array('Beberlei\Metrics\Collector\Prometheus', 'prometheus', array('collector_registry' => $this->getMockBuilder('\\Prometheus\\CollectorRegistry')->disableOriginalConstructor()->getMock())),
             array('Beberlei\Metrics\Collector\Prometheus', 'prometheus', array('collector_registry' => $this->getMockBuilder('\\Prometheus\\CollectorRegistry')->disableOriginalConstructor()->getMock(), 'namespace' => 'some_namespace')),
         );
@@ -63,7 +63,7 @@ class FactoryTest extends TestCase
             array('No password given for librato collector.', 'librato', array('hostname' => 'foobar.com', 'username' => 'username')),
             array('connection is required for Doctrine DBAL collector.', 'doctrine_dbal'),
             array('Missing \'logger\' key with logger service.', 'logger'),
-            array('Missing \'database\' key for InfluxDB collector.', 'influxdb'),
+            array('Missing \'client\' key for InfluxDB collector.', 'influxdb'),
             array('Missing \'collector_registry\' key for Prometheus collector.', 'prometheus'),
         );
     }

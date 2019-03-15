@@ -89,6 +89,10 @@ $librato = \Beberlei\Metrics\Factory::create('librato', array(
 ));
 
 $influxdb = \Beberlei\Metrics\Factory::create('influxdb', array(
+    'client' => $influxdbClient
+));
+
+$influxdb_official = \Beberlei\Metrics\Factory::create('influxdb_official', array(
     'database' => $influxdbDatabase
 ));
 
@@ -143,6 +147,12 @@ beberlei_metrics:
             type: monolog
         influxdb:
             type: influxdb
+            influxdb_client: influxdb_client_service # using the InfluxDB client service named "influxdb_client_service"
+            tags:
+                dc: "west"
+                node_instance: "hermes10"
+        influxdb_official:
+            type: influxdb_official
             influxdb_database: influxdb_database_service # using the InfluxDB database service named "influxdb_database_service", if you are using algatux/influxdb-bundle: algatux_influx_db.connection.default.http
             tags:
                 dc: "west"

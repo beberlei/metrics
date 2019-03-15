@@ -13,13 +13,12 @@
 
 namespace Beberlei\Metrics\Collector;
 
-use InfluxDB\Database;
-use InfluxDB\Point;
+use InfluxDB\Client;
 
 class InfluxDB implements Collector, TaggableCollector
 {
-    /** @var \InfluxDB\Database */
-    private $database;
+    /** @var \InfluxDB\Client */
+    private $client;
 
     /** @var array */
     private $data = array();
@@ -28,11 +27,11 @@ class InfluxDB implements Collector, TaggableCollector
     private $tags = array();
 
     /**
-     * @param Database $database
+     * @param Client $client
      */
-    public function __construct(Database $database)
+    public function __construct(Client $client)
     {
-        $this->database = $database;
+        $this->client = $client;
     }
 
     /**
@@ -73,19 +72,15 @@ class InfluxDB implements Collector, TaggableCollector
     public function flush()
     {
         foreach ($this->data as $data) {
-            $time = new \DateTime();
-            $this->database->writePoints(
-                array(
-                    new Point(
-                        $data[0],
-                        $data[1],
-                        $this->tags,
-                        array(),
-                        $time->getTimestamp()
+            $this->client->mark(array(
+                'points' => array(
+                    array(
+                        'measurement' => $data[0],
+                        'fields' => array('value' => $data[1]),
                     ),
                 ),
-                Database::PRECISION_SECONDS
-            );
+                'tags' => $this->tags,
+            ));
         }
 
         $this->data = array();

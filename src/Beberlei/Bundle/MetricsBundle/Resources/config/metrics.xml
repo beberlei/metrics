@@ -23,9 +23,11 @@
             <argument /> <!-- protocol, set by the extension -->
         </service>
         <service id="beberlei_metrics.collector_proto.influxdb" class="Beberlei\Metrics\Collector\InfluxDB" abstract="true">
+            <argument /> <!-- InfluxDB client, set by the extension -->
+        </service>
+        <service id="beberlei_metrics.collector_proto.influxdb_official" class="Beberlei\Metrics\Collector\InfluxDBOfficial" abstract="true">
             <argument /> <!-- InfluxDB database, set by the extension -->
         </service>
-
         <service id="beberlei_metrics.collector_proto.librato" class="Beberlei\Metrics\Collector\Librato" abstract="true">
             <argument type="service" id="beberlei_metrics.util.buzz.browser" />
             <argument /> <!-- host, set by the extension -->

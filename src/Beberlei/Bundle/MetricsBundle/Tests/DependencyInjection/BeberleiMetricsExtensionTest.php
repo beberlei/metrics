@@ -274,7 +274,7 @@ class BeberleiMetricsExtensionTest extends TestCase
 
     public function testWithInfluxDB()
     {
-        $influxDBDatabaseMock = $this->getMockBuilder('InfluxDB\Database')
+        $influxDBClientMock = $this->getMockBuilder('InfluxDB\Client')
             ->disableOriginalConstructor()
             ->getMock()
         ;
@@ -283,16 +283,16 @@ class BeberleiMetricsExtensionTest extends TestCase
             'collectors' => array(
                 'influxdb' => array(
                     'type' => 'influxdb',
-                    'influxdb_database' => 'influxdb_database_mock',
+                    'influxdb_client' => 'influxdb_client_mock',
                 ),
             ),
         ), array('beberlei_metrics.collector.influxdb'), array(
-            'influxdb_database_mock' => $influxDBDatabaseMock,
+            'influxdb_client_mock' => $influxDBClientMock,
         ));
 
         $collector = $container->get('beberlei_metrics.collector.influxdb');
         $this->assertInstanceOf('Beberlei\Metrics\Collector\InfluxDB', $collector);
-        $this->assertSame($influxDBDatabaseMock, $this->getProperty($collector, 'database'));
+        $this->assertSame($influxDBClientMock, $this->getProperty($collector, 'client'));
     }
 
     public function testWithInfluxDBAndWithTags()
@@ -302,7 +302,7 @@ class BeberleiMetricsExtensionTest extends TestCase
             'int_tag' => 123,
         );
 
-        $influxDBDatabaseMock = $this->getMockBuilder('InfluxDB\Database')
+        $influxDBClientMock = $this->getMockBuilder('InfluxDB\Client')
             ->disableOriginalConstructor()
             ->getMock()
         ;
@@ -311,12 +311,12 @@ class BeberleiMetricsExtensionTest extends TestCase
             'collectors' => array(
                 'influxdb' => array(
                     'type' => 'influxdb',
-                    'influxdb_database' => 'influxdb_database_mock',
+                    'influxdb_client' => 'influxdb_client_mock',
                     'tags' => $expectedTags,
                 ),
             ),
         ), array('beberlei_metrics.collector.influxdb'), array(
-            'influxdb_database_mock' => $influxDBDatabaseMock,
+            'influxdb_client_mock' => $influxDBClientMock,
         ));
 
         $collector = $container->get('beberlei_metrics.collector.influxdb');
