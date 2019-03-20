@@ -16,7 +16,7 @@ namespace Beberlei\Metrics\Collector;
 use InfluxDB\Database;
 use InfluxDB\Point;
 
-class InfluxDBOfficial implements Collector, InlineTaggableCollector
+class InfluxDBOfficial implements Collector, TaggableCollector, InlineTaggableCollector
 {
     private $database;
 
