@@ -16,7 +16,7 @@ namespace Beberlei\Metrics\Collector;
 use InfluxDB\Database;
 use InfluxDB\Point;
 
-class InfluxDBOfficial implements Collector, TaggableCollector
+class InfluxDBOfficial implements Collector, InlineTaggableCollector
 {
     private $database;
 
@@ -39,33 +39,33 @@ class InfluxDBOfficial implements Collector, TaggableCollector
     /**
      * {@inheritdoc}
      */
-    public function increment($variable)
+    public function increment($variable, $tags = [])
     {
-        $this->data[] = array($variable, 1, $this->getCurrentTimestamp());
+        $this->data[] = array($variable, 1, $this->getCurrentTimestamp(), $tags);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function decrement($variable)
+    public function decrement($variable, $tags = [])
     {
-        $this->data[] = array($variable, -1, $this->getCurrentTimestamp());
+        $this->data[] = array($variable, -1, $this->getCurrentTimestamp(), $tags);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function timing($variable, $time)
+    public function timing($variable, $time, $tags = [])
     {
-        $this->data[] = array($variable, $time, $this->getCurrentTimestamp());
+        $this->data[] = array($variable, $time, $this->getCurrentTimestamp(), $tags);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function measure($variable, $value)
+    public function measure($variable, $value, $tags = [])
     {
-        $this->data[] = array($variable, $value, $this->getCurrentTimestamp());
+        $this->data[] = array($variable, $value, $this->getCurrentTimestamp(), $tags);
     }
 
     /**
@@ -79,7 +79,7 @@ class InfluxDBOfficial implements Collector, TaggableCollector
                     new Point(
                         $data[0],
                         $data[1],
-                        $this->tags,
+                        is_array($data[3]) ? array_merge($this->tags, $data[3]) : $this->tags,
                         array(),
                         $data[2]
                     ),
