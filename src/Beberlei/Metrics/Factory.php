@@ -105,8 +105,11 @@ abstract class Factory
                 if (!isset($options['host']) && isset($options['port'])) {
                     throw new MetricsException('You should specified a host if you specified a port.');
                 }
+                if (!isset($options['timeout'])) {
+                    $options['timeout'] = null;
+                }
 
-                return new Collector\Graphite($options['host'], $options['port']);
+                return new Collector\Graphite($options['host'], $options['port'], $options['timeout']);
 
             case 'zabbix':
                 if (!isset($options['hostname'])) {
