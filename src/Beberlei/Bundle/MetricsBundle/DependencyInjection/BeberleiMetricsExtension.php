@@ -4,6 +4,7 @@ namespace Beberlei\Bundle\MetricsBundle\DependencyInjection;
 
 use Beberlei\Metrics\Collector\Collector;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -73,6 +74,10 @@ class BeberleiMetricsExtension extends Extension
 
                 return $definition;
             case 'librato':
+                if (!class_exists(HttpClient::class)) {
+                    $definition->replaceArgument(0, new Reference('beberlei_metrics.util.buzz.browser'));
+                }
+
                 $definition->replaceArgument(1, $config['source']);
                 $definition->replaceArgument(2, $config['username']);
                 $definition->replaceArgument(3, $config['password']);

@@ -13,6 +13,10 @@
             <argument type="service" id="beberlei_metrics.util.buzz.curl" />
         </service>
 
+        <service id="beberlei_metrics.util.http_client" class="Symfony\Contracts\HttpClient\HttpClientInterface" public="false">
+            <factory class="Symfony\Component\HttpClient\HttpClient" method="create" />
+        </service>
+
         <!-- Prototype / Collector -->
         <service id="beberlei_metrics.collector_proto.doctrine_dbal" class="Beberlei\Metrics\Collector\DoctrineDBAL" abstract="true">
             <argument /> <!-- Doctrine DBAL connection, set by the extension -->
@@ -26,7 +30,7 @@
             <argument /> <!-- InfluxDB client, set by the extension -->
         </service>
         <service id="beberlei_metrics.collector_proto.librato" class="Beberlei\Metrics\Collector\Librato" abstract="true">
-            <argument type="service" id="beberlei_metrics.util.buzz.browser" />
+            <argument type="service" id="beberlei_metrics.util.http_client" />
             <argument /> <!-- host, set by the extension -->
             <argument /> <!-- port, set by the extension -->
             <argument /> <!-- protocol, set by the extension -->
