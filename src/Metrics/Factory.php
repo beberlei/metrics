@@ -13,8 +13,6 @@
 
 namespace Beberlei\Metrics;
 
-use Net\Zabbix\Sender;
-use Net\Zabbix\Agent\Config;
 use Buzz\Browser;
 use Buzz\Client\Curl;
 
@@ -107,34 +105,6 @@ abstract class Factory
                 }
 
                 return new Collector\Graphite($options['host'], $options['port']);
-
-            case 'zabbix':
-                if (!isset($options['hostname'])) {
-                    throw new MetricsException('Hostname is required for zabbix collector.');
-                }
-
-                if (!isset($options['server']) && !isset($options['port'])) {
-                    $sender = new Sender();
-                } elseif (isset($options['server']) && !isset($options['port'])) {
-                    $sender = new Sender($options['server']);
-                } elseif (!isset($options['server']) && isset($options['port'])) {
-                    throw new MetricsException('You should specified a server if you specified a port.');
-                } else {
-                    $sender = new Sender($options['server'], $options['port']);
-                }
-
-                return new Collector\Zabbix($sender, $options['hostname']);
-
-            case 'zabbix_file':
-                if (!isset($options['hostname'])) {
-                    throw new MetricsException('Hostname is required for zabbix collector.');
-                }
-
-                $file = isset($options['file']) ? $options['file'] : null;
-                $sender = new Sender();
-                $sender->importAgentConfig(new Config($file));
-
-                return new Collector\Zabbix($sender, $options['hostname']);
 
             case 'librato':
                 if (!isset($options['hostname'])) {

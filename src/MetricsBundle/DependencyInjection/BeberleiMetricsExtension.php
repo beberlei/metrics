@@ -103,21 +103,6 @@ class BeberleiMetricsExtension extends Extension
                 $definition->replaceArgument(2, (string) $config['prefix']);
 
                 return $definition;
-            case 'zabbix':
-                $sender = new Definition('Net\Zabbix\Sender');
-                if ($config['file']) {
-                    $senderConfig = new Definition('Net\Zabbix\Agent\Config');
-                    $senderConfig->addArgument($config['file']);
-                    $sender->addMethodCall('importAgentConfig', array($senderConfig));
-                } else {
-                    $sender->addArgument($config['host'] ?: 'localhost');
-                    $sender->addArgument((int) $config['port'] ?: 10051);
-                }
-
-                $definition->replaceArgument(0, $sender);
-                $definition->replaceArgument(1, $config['prefix']);
-
-                return $definition;
             default:
                 throw new \InvalidArgumentException(sprintf('The type "%s" is not supported', $type));
         }

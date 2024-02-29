@@ -56,10 +56,6 @@
             <argument /> <!-- port, set by the extension -->
             <argument /> <!-- prefix, set by the extension -->
         </service>
-        <service id="beberlei_metrics.collector_proto.zabbix" class="Beberlei\Metrics\Collector\Zabbix" abstract="true">
-            <argument /> <!-- sender, set by the extension -->
-            <argument /> <!-- host, set by the extension -->
-        </service>
         <service id="beberlei_metrics.collector_proto.memory" class="Beberlei\Metrics\Collector\InMemory" abstract="true">
         </service>
     </services>

@@ -19,7 +19,6 @@ Currently supported backends:
 * Null (Dummy that does nothing)
 * Prometheus
 * StatsD
-* Zabbix
 * DogStatsD
 
 ## Installation
@@ -71,17 +70,6 @@ $collector->flush();
 <?php
 $statsd = \Beberlei\Metrics\Factory::create('statsd');
 
-$zabbix = \Beberlei\Metrics\Factory::create('zabbix', array(
-    'hostname' => 'foo.beberlei.de',
-    'server'   => 'localhost',
-    'port'     => 10051,
-));
-
-$zabbixConfig = \Beberlei\Metrics\Factory::create('zabbix_file', array(
-    'hostname' => 'foo.beberlei.de',
-    'file'     => '/etc/zabbix/zabbix_agentd.conf'
-));
-
 $librato = \Beberlei\Metrics\Factory::create('librato', array(
     'hostname' => 'foo.beberlei.de',
     'username' => 'foo',
@@ -118,15 +106,6 @@ beberlei_metrics:
     collectors:
         foo:
             type: statsd
-        bar:
-            type: zabbix
-            prefix: foo.beberlei.de
-            host: localhost
-            port: 10051
-        baz:
-            type: zabbix_file
-            prefix: foo.beberlei.de
-            file: /etc/zabbix/zabbix_agentd.conf
         librato:
             type: librato
             username: foo

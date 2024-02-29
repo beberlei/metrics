@@ -23,7 +23,6 @@
         "doctrine/dbal": "~2.0",
         "jimdo/prometheus_client_php": "^0.5",
         "kriswallsmith/buzz": "*",
-        "okitsu/zabbix-sender": "*@dev",
         "symfony/config": "~3.3 || ~4.0",
         "symfony/dependency-injection": "~3.3 || ~4.0",
         "symfony/http-kernel": "~3.3 || ~4.0",
@@ -42,7 +41,6 @@
     },
     "suggest": {
         "corley/influxdb-sdk": "For InfluxDB integration",
-        "okitsu/zabbix-sender": "For zabbix integration",
         "kriswallsmith/buzz": "For Librato integration",
         "jimdo/prometheus_client_php": "For Prometheus integration"
     },

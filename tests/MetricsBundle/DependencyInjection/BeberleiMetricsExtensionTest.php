@@ -223,55 +223,6 @@ class BeberleiMetricsExtensionTest extends TestCase
         $this->assertEquals(',string_tag=first_value,int_tag=123', $this->getProperty($collector, 'tags'));
     }
 
-    public function testWithZabbix()
-    {
-        $container = $this->createContainer(array(
-            'default' => 'simple',
-            'collectors' => array(
-                'simple' => array(
-                    'type' => 'zabbix',
-                ),
-                'full' => array(
-                    'type' => 'zabbix',
-                    'prefix' => 'foo.beberlei.de',
-                    'host' => 'zabbix.localhost',
-                    'port' => 1234,
-                ),
-                'file' => array(
-                    'type' => 'zabbix',
-                    'prefix' => 'foo.beberlei.de',
-                    'file' => '/etc/zabbix/zabbix_agentd.conf',
-                ),
-            ),
-        ), array(
-            'beberlei_metrics.collector.simple',
-            'beberlei_metrics.collector.full',
-            'beberlei_metrics.collector.file'
-        ));
-
-        $collector = $container->get('beberlei_metrics.collector.simple');
-        $this->assertInstanceOf('Beberlei\Metrics\Collector\Zabbix', $collector);
-        $this->assertSame(gethostname(), $this->getProperty($collector, 'prefix'));
-        $sender = $this->getProperty($collector, 'sender');
-        $this->assertInstanceOf('Net\Zabbix\Sender', $sender);
-        $this->assertSame('localhost', $this->getProperty($sender, '_servername'));
-        $this->assertSame(10051, $this->getProperty($sender, '_serverport'));
-
-        $collector = $container->get('beberlei_metrics.collector.full');
-        $this->assertInstanceOf('Beberlei\Metrics\Collector\Zabbix', $collector);
-        $this->assertSame('foo.beberlei.de', $this->getProperty($collector, 'prefix'));
-        $sender = $this->getProperty($collector, 'sender');
-        $this->assertInstanceOf('Net\Zabbix\Sender', $sender);
-        $this->assertSame('zabbix.localhost', $this->getProperty($sender, '_servername'));
-        $this->assertSame(1234, $this->getProperty($sender, '_serverport'));
-
-        $collector = $container->get('beberlei_metrics.collector.file');
-        $this->assertInstanceOf('Beberlei\Metrics\Collector\Zabbix', $collector);
-        $this->assertSame('foo.beberlei.de', $this->getProperty($collector, 'prefix'));
-        $sender = $this->getProperty($collector, 'sender');
-        $this->assertInstanceOf('Net\Zabbix\Sender', $sender);
-    }
-
     public function testWithInfluxDB()
     {
         $influxDBClientMock = $this->getMockBuilder('InfluxDB\Client')
