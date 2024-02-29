@@ -30,8 +30,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Beberlei\\Metrics\\": "src/Beberlei/Metrics",
-            "Beberlei\\Bundle\\MetricsBundle\\": "src/Beberlei/Bundle/MetricsBundle"
+            "Beberlei\\Metrics\\": "src/Metrics",
+            "Beberlei\\Bundle\\MetricsBundle\\": "src/MetricsBundle"
         }
     },
     "suggest": {
