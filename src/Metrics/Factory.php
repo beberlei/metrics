@@ -13,6 +13,7 @@
 
 namespace Beberlei\Metrics;
 
+use Beberlei\Metrics\Collector\CollectorInterface;
 use Beberlei\Metrics\Collector\DoctrineDBAL;
 use Beberlei\Metrics\Collector\DogStatsD;
 use Beberlei\Metrics\Collector\Graphite;
@@ -27,23 +28,14 @@ use Beberlei\Metrics\Collector\Telegraf;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-/**
- * Static factory for Metrics Collectors.
- */
 abstract class Factory
 {
     private static HttpClientInterface $httpClient;
 
     /**
-     * Create Metrics Collector Instance.
-     *
-     * @param string $type
-     *
-     * @return Collector\Collector
-     *
      * @throws MetricsException
      */
-    public static function create($type, array $options = [])
+    public static function create(string $type, array $options = []): CollectorInterface
     {
         switch ($type) {
             case 'statsd':
@@ -162,9 +154,6 @@ abstract class Factory
 
             case 'null':
                 return new NullCollector();
-
-            case 'null_inlinetaggable':
-                return new InlineTaggableGaugeableNullCollector();
 
             case 'prometheus':
                 if (!isset($options['collector_registry'])) {

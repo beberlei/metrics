@@ -14,14 +14,8 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder('beberlei_metrics');
-        if (method_exists($treeBuilder, 'getRootNode')) {
-            $rootNode = $treeBuilder->getRootNode();
-        } else {
-            $rootNode = $treeBuilder->root('beberlei_metrics');
-        }
-
-        $rootNode
+        return (new TreeBuilder('beberlei_metrics'))
+            ->getRootNode()
             ->children()
                 ->scalarNode('default')
                     ->defaultNull()
@@ -69,7 +63,5 @@ class Configuration implements ConfigurationInterface
                 ->end()
             ->end()
         ;
-
-        return $treeBuilder;
     }
 }

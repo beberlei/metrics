@@ -1,0 +1,11 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Variable \\$name might not be defined\\.$#"
+			count: 1
+			path: src/MetricsBundle/DependencyInjection/BeberleiMetricsExtension.php
+
+		-
+			message: "#^Call to an undefined method Symfony\\\\Component\\\\Config\\\\Definition\\\\Builder\\\\NodeDefinition\\:\\:children\\(\\)\\.$#"
+			count: 1
+			path: src/MetricsBundle/DependencyInjection/Configuration.php

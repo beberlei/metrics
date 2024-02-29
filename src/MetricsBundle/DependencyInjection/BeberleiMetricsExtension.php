@@ -3,6 +3,7 @@
 namespace Beberlei\Bundle\MetricsBundle\DependencyInjection;
 
 use Beberlei\Metrics\Collector\Collector;
+use Beberlei\Metrics\Collector\CollectorInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -14,7 +15,7 @@ class BeberleiMetricsExtension extends Extension
 {
     public function load(array $configs, ContainerBuilder $container): void
     {
-        $configuration = $this->getConfiguration($configs, $container);
+        $configuration = $this->getConfiguration($configs, $container) ?? throw new \LogicException('Expected configuration to be set');
         $config = $this->processConfiguration($configuration, $configs);
 
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
@@ -32,10 +33,10 @@ class BeberleiMetricsExtension extends Extension
         }
 
         $container->setAlias('beberlei_metrics.collector', 'beberlei_metrics.collector.' . $name);
-        $container->setAlias(Collector::class, 'beberlei_metrics.collector');
+        $container->setAlias(CollectorInterface::class, 'beberlei_metrics.collector');
     }
 
-    private function createCollector($type, array $config)
+    private function createCollector(string $type, array $config): ChildDefinition
     {
         $definition = new ChildDefinition('beberlei_metrics.collector_proto.' . $config['type']);
 
