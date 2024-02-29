@@ -2,6 +2,7 @@
     "name": "beberlei/metrics",
     "description": "Simple library to talk to metrics collector services.",
     "keywords": ["metrics", "logging"],
+    "license": "MIT",
     "authors": [
         {
             "name": "Benjamin Eberlei",
@@ -14,13 +15,6 @@
             "role": "Lead Developer"
         }
     ],
-    "license": "MIT",
-    "suggest": {
-        "corley/influxdb-sdk": "For InfluxDB integration",
-        "okitsu/zabbix-sender": "For zabbix integration",
-        "kriswallsmith/buzz": "For Librato integration",
-        "jimdo/prometheus_client_php": "For Prometheus integration"
-    },
     "require": {
         "psr/log": "^1.0 || ^2.0 || ^3.0"
     },
@@ -39,5 +33,14 @@
             "Beberlei\\Metrics\\": "src/Beberlei/Metrics",
             "Beberlei\\Bundle\\MetricsBundle\\": "src/Beberlei/Bundle/MetricsBundle"
         }
+    },
+    "suggest": {
+        "corley/influxdb-sdk": "For InfluxDB integration",
+        "okitsu/zabbix-sender": "For zabbix integration",
+        "kriswallsmith/buzz": "For Librato integration",
+        "jimdo/prometheus_client_php": "For Prometheus integration"
+    },
+    "config": {
+        "sort-packages": true
     }
 }
