@@ -1,0 +1,38 @@
+version: '3.7'
+
+volumes:
+    postgres-data: {}
+
+services:
+    router:
+        build: services/router
+        volumes:
+            - "/var/run/docker.sock:/var/run/docker.sock"
+            - "./services/router/certs:/etc/ssl/certs"
+        network_mode: host
+
+    frontend:
+        build:
+            context: services/php
+            target: frontend
+        depends_on:
+            - postgres
+        volumes:
+            - "../..:/var/www:cached"
+        environment:
+            - "PHP_VERSION=${PHP_VERSION}"
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.${PROJECT_NAME}-frontend.rule=Host(${PROJECT_DOMAINS})"
+            - "traefik.http.routers.${PROJECT_NAME}-frontend.tls=true"
+            - "traefik.http.routers.${PROJECT_NAME}-frontend-unsecure.rule=Host(${PROJECT_DOMAINS})"
+            # Comment the next line to be able to access frontend via HTTP instead of HTTPS
+            - "traefik.http.routers.${PROJECT_NAME}-frontend-unsecure.middlewares=redirect-to-https@file"
+
+    postgres:
+        image: postgres:16
+        environment:
+            - POSTGRES_USER=app
+            - POSTGRES_PASSWORD=app
+        volumes:
+            - postgres-data:/var/lib/postgresql/data
