@@ -13,11 +13,11 @@
 
 namespace Beberlei\Metrics\Tests\Collector;
 
-use Prometheus\CollectorRegistry;
-use Prometheus\Gauge;
 use Beberlei\Metrics\Collector\Prometheus;
 use PHPUnit\Framework\TestCase;
+use Prometheus\CollectorRegistry;
 use Prometheus\Exception\MetricNotFoundException;
+use Prometheus\Gauge;
 
 class PrometheusTest extends TestCase
 {

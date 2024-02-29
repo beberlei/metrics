@@ -34,12 +34,12 @@ class StatsD implements CollectorInterface, GaugeableCollectorInterface
 
     public function increment(string $variable, array $tags = []): void
     {
-        $this->data[] = $variable.':1|c';
+        $this->data[] = $variable . ':1|c';
     }
 
     public function decrement(string $variable, array $tags = []): void
     {
-        $this->data[] = $variable.':-1|c';
+        $this->data[] = $variable . ':-1|c';
     }
 
     public function measure(string $variable, int $value, array $tags = []): void
@@ -58,7 +58,7 @@ class StatsD implements CollectorInterface, GaugeableCollectorInterface
             return;
         }
 
-        $fp = fsockopen('udp://'.$this->host, $this->port, $errno, $errstr, 1.0);
+        $fp = fsockopen('udp://' . $this->host, $this->port, $errno, $errstr, 1.0);
 
         if (!$fp) {
             return;
@@ -66,7 +66,7 @@ class StatsD implements CollectorInterface, GaugeableCollectorInterface
 
         $level = error_reporting(0);
         foreach ($this->data as $line) {
-            fwrite($fp, $this->prefix.$line);
+            fwrite($fp, $this->prefix . $line);
         }
 
         error_reporting($level);

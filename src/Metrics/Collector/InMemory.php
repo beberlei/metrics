@@ -65,7 +65,6 @@ class InMemory implements CollectorInterface, GaugeableCollectorInterface
         $this->incrementData = [];
     }
 
-
     public function getMeasure(string $variable): int
     {
         return $this->incrementData[$variable] ?? 0;

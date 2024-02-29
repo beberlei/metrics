@@ -37,12 +37,12 @@ class Telegraf implements CollectorInterface, GaugeableCollectorInterface, Tagga
 
     public function increment(string $variable, array $tags = []): void
     {
-        $this->data[] = $variable.$this->tags.':1|c';
+        $this->data[] = $variable . $this->tags . ':1|c';
     }
 
     public function decrement(string $variable, array $tags = []): void
     {
-        $this->data[] = $variable.$this->tags.':-1|c';
+        $this->data[] = $variable . $this->tags . ':-1|c';
     }
 
     public function timing(string $variable, int $time, array $tags = []): void
@@ -66,7 +66,7 @@ class Telegraf implements CollectorInterface, GaugeableCollectorInterface, Tagga
             return;
         }
 
-        $fp = fsockopen('udp://'.$this->host, $this->port, $errno, $errstr, 1.0);
+        $fp = fsockopen('udp://' . $this->host, $this->port, $errno, $errstr, 1.0);
 
         if (!$fp) {
             return;
@@ -74,7 +74,7 @@ class Telegraf implements CollectorInterface, GaugeableCollectorInterface, Tagga
 
         $level = error_reporting(0);
         foreach ($this->data as $line) {
-            fwrite($fp, $this->prefix.$line);
+            fwrite($fp, $this->prefix . $line);
         }
 
         error_reporting($level);
@@ -87,6 +87,6 @@ class Telegraf implements CollectorInterface, GaugeableCollectorInterface, Tagga
     public function setTags(array $tags): void
     {
         $this->tags = http_build_query($tags, '', ',');
-        $this->tags = strlen($this->tags) > 0 ? ','.$this->tags : $this->tags;
+        $this->tags = \strlen($this->tags) > 0 ? ',' . $this->tags : $this->tags;
     }
 }

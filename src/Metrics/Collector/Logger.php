@@ -29,12 +29,12 @@ class Logger implements CollectorInterface, GaugeableCollectorInterface
 
     public function increment(string $variable, array $tags = []): void
     {
-        $this->logger->debug('increment:'.$variable);
+        $this->logger->debug('increment:' . $variable);
     }
 
     public function decrement(string $variable, array $tags = []): void
     {
-        $this->logger->debug('decrement:'.$variable);
+        $this->logger->debug('decrement:' . $variable);
     }
 
     public function timing(string $variable, int $time, array $tags = []): void

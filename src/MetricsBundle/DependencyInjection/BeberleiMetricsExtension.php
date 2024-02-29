@@ -6,7 +6,6 @@ use Beberlei\Metrics\Collector\Collector;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
@@ -18,33 +17,33 @@ class BeberleiMetricsExtension extends Extension
         $configuration = $this->getConfiguration($configs, $container);
         $config = $this->processConfiguration($configuration, $configs);
 
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('metrics.xml');
 
         foreach ($config['collectors'] as $name => $colConfig) {
             $definition = $this->createCollector($colConfig['type'], $colConfig);
-            $container->setDefinition('beberlei_metrics.collector.'.$name, $definition);
+            $container->setDefinition('beberlei_metrics.collector.' . $name, $definition);
         }
 
-        if ($config['default'] && $container->hasDefinition('beberlei_metrics.collector.'.$config['default'])) {
+        if ($config['default'] && $container->hasDefinition('beberlei_metrics.collector.' . $config['default'])) {
             $name = $config['default'];
-        } elseif (1 !== count($config['collectors'])) {
+        } elseif (1 !== \count($config['collectors'])) {
             throw new \LogicException('You should select a default collector');
         }
 
-        $container->setAlias('beberlei_metrics.collector', 'beberlei_metrics.collector.'.$name);
+        $container->setAlias('beberlei_metrics.collector', 'beberlei_metrics.collector.' . $name);
         $container->setAlias(Collector::class, 'beberlei_metrics.collector');
     }
 
     private function createCollector($type, array $config)
     {
-        $definition = new ChildDefinition('beberlei_metrics.collector_proto.'.$config['type']);
+        $definition = new ChildDefinition('beberlei_metrics.collector_proto.' . $config['type']);
 
         // Theses listeners should be as late as possible
         $definition->addTag('kernel.event_listener', ['method' => 'flush', 'priority' => -1024, 'event' => 'kernel.terminate']);
         $definition->addTag('kernel.event_listener', ['method' => 'flush', 'priority' => -1024, 'event' => 'console.terminate']);
 
-        if (count($config['tags']) > 0) {
+        if (\count($config['tags']) > 0) {
             $definition->addMethodCall('setTags', [$config['tags']]);
         }
 

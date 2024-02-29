@@ -13,8 +13,6 @@
 
 namespace Beberlei\Metrics\Collector;
 
-use Exception;
-
 /**
  * Sends statistics to the stats daemon over UDP or TCP.
  */
@@ -33,7 +31,6 @@ class Graphite implements CollectorInterface
     {
         $this->push($variable, $value);
     }
-
 
     public function increment(string $variable, array $tags = []): void
     {
@@ -57,7 +54,7 @@ class Graphite implements CollectorInterface
         }
 
         try {
-            $fp = fsockopen($this->protocol.'://'.$this->host, $this->port);
+            $fp = fsockopen($this->protocol . '://' . $this->host, $this->port);
 
             if (!$fp) {
                 return;
@@ -68,7 +65,7 @@ class Graphite implements CollectorInterface
             }
 
             fclose($fp);
-        } catch (Exception) {
+        } catch (\Exception) {
         }
 
         $this->data = [];
@@ -77,7 +74,7 @@ class Graphite implements CollectorInterface
     public function push(string $variable, int|float $value, ?int $time = null): void
     {
         $this->data[] = sprintf(
-            is_float($value) ? "%s %.18f %d\n" : "%s %d %d\n",
+            \is_float($value) ? "%s %.18f %d\n" : "%s %d %d\n",
             $variable,
             $value,
             $time ?: time()

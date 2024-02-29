@@ -13,23 +13,23 @@
 
 namespace Beberlei\Bundle\MetricsBundle\Tests\DependencyInjection;
 
+use Beberlei\Bundle\MetricsBundle\DependencyInjection\BeberleiMetricsExtension;
+use Beberlei\Metrics\Collector\DogStatsD;
 use Beberlei\Metrics\Collector\Graphite;
+use Beberlei\Metrics\Collector\InfluxDB;
+use Beberlei\Metrics\Collector\InMemory;
 use Beberlei\Metrics\Collector\Librato;
 use Beberlei\Metrics\Collector\Logger;
 use Beberlei\Metrics\Collector\NullCollector;
+use Beberlei\Metrics\Collector\Prometheus;
 use Beberlei\Metrics\Collector\StatsD;
-use Beberlei\Metrics\Collector\DogStatsD;
 use Beberlei\Metrics\Collector\Telegraf;
 use InfluxDB\Client;
-use Beberlei\Metrics\Collector\InfluxDB;
-use Prometheus\CollectorRegistry;
-use Beberlei\Metrics\Collector\Prometheus;
-use Beberlei\Metrics\Collector\InMemory;
-use Psr\Log\NullLogger;
 use PHPUnit\Framework\TestCase;
+use Prometheus\CollectorRegistry;
+use Psr\Log\NullLogger;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Beberlei\Bundle\MetricsBundle\DependencyInjection\BeberleiMetricsExtension;
 
 class BeberleiMetricsExtensionTest extends TestCase
 {
@@ -228,6 +228,7 @@ class BeberleiMetricsExtensionTest extends TestCase
 
     /**
      * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
+     *
      * @expectedExceptionMessage The prometheus_collector_registry has to be specified to use a Prometheus
      */
     public function testValidationWhenTypeIsPrometheusAndPrometheusCollectorRegistryIsNotSpecified(): void
@@ -248,7 +249,7 @@ class BeberleiMetricsExtensionTest extends TestCase
             $container->set($serviceId, $additionalService);
         }
 
-        foreach($publicServices as $serviceId) {
+        foreach ($publicServices as $serviceId) {
             $container->getDefinition($serviceId)->setPublic(true);
         }
 

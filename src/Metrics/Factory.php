@@ -13,17 +13,17 @@
 
 namespace Beberlei\Metrics;
 
-use Beberlei\Metrics\Collector\StatsD;
-use Beberlei\Metrics\Collector\DogStatsD;
-use Beberlei\Metrics\Collector\Telegraf;
-use Beberlei\Metrics\Collector\Graphite;
-use Beberlei\Metrics\Collector\Librato;
 use Beberlei\Metrics\Collector\DoctrineDBAL;
-use Beberlei\Metrics\Collector\Logger;
+use Beberlei\Metrics\Collector\DogStatsD;
+use Beberlei\Metrics\Collector\Graphite;
 use Beberlei\Metrics\Collector\InfluxDB;
-use Beberlei\Metrics\Collector\NullCollector;
 use Beberlei\Metrics\Collector\InlineTaggableGaugeableNullCollector;
+use Beberlei\Metrics\Collector\Librato;
+use Beberlei\Metrics\Collector\Logger;
+use Beberlei\Metrics\Collector\NullCollector;
 use Beberlei\Metrics\Collector\Prometheus;
+use Beberlei\Metrics\Collector\StatsD;
+use Beberlei\Metrics\Collector\Telegraf;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -39,8 +39,9 @@ abstract class Factory
      *
      * @param string $type
      *
-     * @throws MetricsException
      * @return Collector\Collector
+     *
+     * @throws MetricsException
      */
     public static function create($type, array $options = [])
     {

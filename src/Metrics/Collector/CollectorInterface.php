@@ -33,7 +33,7 @@ interface CollectorInterface
     /**
      * Records a timing.
      *
-     * @param int    $time     The duration of the timing in milliseconds
+     * @param int $time The duration of the timing in milliseconds
      */
     public function timing(string $variable, int $time, array $tags = []): void;
 

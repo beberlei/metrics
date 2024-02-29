@@ -99,9 +99,9 @@ class InMemoryTest extends TestCase
 
     public function testSettingGaugeToNegativeValue(): void
     {
-        $this->collector->gauge(self::VARIABLE_A, 1); //sets to 1
-        $this->collector->gauge(self::VARIABLE_A, 2); //sets to 2
-        $this->collector->gauge(self::VARIABLE_A, -5); //decreases by 5
+        $this->collector->gauge(self::VARIABLE_A, 1); // sets to 1
+        $this->collector->gauge(self::VARIABLE_A, 2); // sets to 2
+        $this->collector->gauge(self::VARIABLE_A, -5); // decreases by 5
         $this->assertEquals(-3, $this->collector->getGauge(self::VARIABLE_A));
 
         $this->collector->gauge(self::VARIABLE_A, 0);

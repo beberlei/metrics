@@ -14,7 +14,6 @@
 namespace Beberlei\Metrics\Collector;
 
 use Doctrine\DBAL\Connection;
-use Exception;
 
 /**
  * Sends statistics to a relational database.
@@ -77,7 +76,7 @@ class DoctrineDBAL implements CollectorInterface
             }
 
             $this->conn->commit();
-        } catch (Exception) {
+        } catch (\Exception) {
             $this->conn->rollback();
         }
 

@@ -13,15 +13,14 @@
 
 namespace Beberlei\Metrics\Tests\Collector;
 
+use Beberlei\Metrics\Collector\InfluxDB;
 use InfluxDB\Client;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
-use Beberlei\Metrics\Collector\InfluxDB;
 
 class InfluxDBTest extends TestCase
 {
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject
+     * @var \PHPUnit_Framework_MockObject_MockObject
      */
     private $client;
 
@@ -31,7 +30,8 @@ class InfluxDBTest extends TestCase
     {
         $this->client = $this->getMockBuilder(Client::class)
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
         $this->collector = new InfluxDB($this->client);
     }
 
@@ -41,7 +41,8 @@ class InfluxDBTest extends TestCase
 
         $this->client->expects($this->once())
             ->method('mark')
-            ->with($expectedArgs);
+            ->with($expectedArgs)
+        ;
 
         $this->collector->increment('series-name');
         $this->collector->flush();
@@ -53,7 +54,8 @@ class InfluxDBTest extends TestCase
 
         $this->client->expects($this->once())
             ->method('mark')
-            ->with($expectedArgs);
+            ->with($expectedArgs)
+        ;
 
         $this->collector->decrement('series-name');
         $this->collector->flush();
@@ -65,7 +67,8 @@ class InfluxDBTest extends TestCase
 
         $this->client->expects($this->once())
             ->method('mark')
-            ->with($expectedArgs);
+            ->with($expectedArgs)
+        ;
 
         $this->collector->timing('series-name', 47.11);
         $this->collector->flush();
@@ -77,7 +80,8 @@ class InfluxDBTest extends TestCase
 
         $this->client->expects($this->once())
             ->method('mark')
-            ->with($expectedArgs);
+            ->with($expectedArgs)
+        ;
 
         $this->collector->measure('series-name', 47.11);
         $this->collector->flush();
@@ -91,7 +95,8 @@ class InfluxDBTest extends TestCase
 
         $this->client->expects($this->once())
             ->method('mark')
-            ->with($expectedArgs);
+            ->with($expectedArgs)
+        ;
 
         $this->collector->setTags($expectedTags);
         $this->collector->measure('series-name', 47.11);

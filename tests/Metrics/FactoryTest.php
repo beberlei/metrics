@@ -2,22 +2,22 @@
 
 namespace Beberlei\Metrics\Tests;
 
-use Beberlei\Metrics\Collector\StatsD;
+use Beberlei\Metrics\Collector\DoctrineDBAL;
 use Beberlei\Metrics\Collector\DogStatsD;
 use Beberlei\Metrics\Collector\Graphite;
+use Beberlei\Metrics\Collector\InfluxDB;
+use Beberlei\Metrics\Collector\InlineTaggableGaugeableNullCollector;
 use Beberlei\Metrics\Collector\Librato;
-use Beberlei\Metrics\Collector\DoctrineDBAL;
-use Doctrine\DBAL\Connection;
 use Beberlei\Metrics\Collector\Logger;
 use Beberlei\Metrics\Collector\NullCollector;
-use Beberlei\Metrics\Collector\InlineTaggableGaugeableNullCollector;
-use Beberlei\Metrics\Collector\InfluxDB;
-use InfluxDB\Client;
 use Beberlei\Metrics\Collector\Prometheus;
-use Prometheus\CollectorRegistry;
-use Beberlei\Metrics\MetricsException;
+use Beberlei\Metrics\Collector\StatsD;
 use Beberlei\Metrics\Factory;
+use Beberlei\Metrics\MetricsException;
+use Doctrine\DBAL\Connection;
+use InfluxDB\Client;
 use PHPUnit\Framework\TestCase;
+use Prometheus\CollectorRegistry;
 use Psr\Log\NullLogger;
 
 class FactoryTest extends TestCase

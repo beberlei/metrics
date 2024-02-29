@@ -13,9 +13,9 @@
 
 namespace Beberlei\Metrics\Collector;
 
-use Prometheus\Gauge;
 use Prometheus\CollectorRegistry;
 use Prometheus\Exception\MetricNotFoundException;
+use Prometheus\Gauge;
 
 class Prometheus implements CollectorInterface, TaggableCollectorInterface
 {
