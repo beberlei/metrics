@@ -34,6 +34,11 @@
             "Beberlei\\Bundle\\MetricsBundle\\": "src/MetricsBundle"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Beberlei\\Bundle\\MetricsBundle\\": "src/MetricsBundle"
+        }
+    },
     "suggest": {
         "corley/influxdb-sdk": "For InfluxDB integration",
         "okitsu/zabbix-sender": "For zabbix integration",
