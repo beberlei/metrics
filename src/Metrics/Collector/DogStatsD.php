@@ -61,7 +61,6 @@ class DogStatsD implements CollectorInterface, GaugeableCollectorInterface
 
     private function doFlush(): void
     {
-
         $fp = fsockopen('udp://' . $this->host, $this->port, $errno, $errstr, 1.0);
 
         if (!$fp) {

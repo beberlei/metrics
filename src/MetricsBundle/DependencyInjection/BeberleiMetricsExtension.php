@@ -3,9 +3,11 @@
 namespace Beberlei\Bundle\MetricsBundle\DependencyInjection;
 
 use Beberlei\Metrics\Collector\CollectorInterface;
+use Prometheus\Collector;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
@@ -20,19 +22,31 @@ class BeberleiMetricsExtension extends Extension
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('metrics.xml');
 
+        if (!$config['collectors']) {
+            $config['collectors']['null'] = [
+                'type' => 'null',
+            ];
+        }
         foreach ($config['collectors'] as $name => $colConfig) {
             $definition = $this->createCollector($colConfig['type'], $colConfig);
             $container->setDefinition('beberlei_metrics.collector.' . $name, $definition);
+            $container->registerAliasForArgument('beberlei_metrics.collector.' . $name, CollectorInterface::class, $name);
         }
 
-        if ($config['default'] && $container->hasDefinition('beberlei_metrics.collector.' . $config['default'])) {
+        if ($config['default']) {
+            if (!$container->hasDefinition('beberlei_metrics.collector.' . $config['default'])) {
+                throw new InvalidArgumentException(sprintf('The default collector "%s" does not exist.', $config['default']));
+            }
             $name = $config['default'];
-        } elseif (1 !== \count($config['collectors'])) {
-            throw new \LogicException('You should select a default collector');
+        } elseif (1 === \count($config['collectors'])) {
+            $name = key($config['collectors']);
+        } else {
+            throw new InvalidArgumentException('No default collector is configured and there is more than one collector. Please define a default collector');
         }
 
-        $container->setAlias('beberlei_metrics.collector', 'beberlei_metrics.collector.' . $name);
-        $container->setAlias(CollectorInterface::class, 'beberlei_metrics.collector');
+        if ($name) {
+            $container->setAlias(CollectorInterface::class, 'beberlei_metrics.collector.' . $name);
+        }
     }
 
     private function createCollector(string $type, array $config): ChildDefinition
@@ -42,8 +56,9 @@ class BeberleiMetricsExtension extends Extension
         // Theses listeners should be as late as possible
         $definition->addTag('kernel.event_listener', ['method' => 'flush', 'priority' => -1024, 'event' => 'kernel.terminate']);
         $definition->addTag('kernel.event_listener', ['method' => 'flush', 'priority' => -1024, 'event' => 'console.terminate']);
+        $definition->addTag(CollectorInterface::class);
 
-        if (\count($config['tags']) > 0) {
+        if ($config['tags'] ?? []) {
             $definition->addMethodCall('setTags', [$config['tags']]);
         }
 
@@ -54,9 +69,9 @@ class BeberleiMetricsExtension extends Extension
 
                 return $definition;
             case 'graphite':
-                $definition->replaceArgument(0, $config['host'] ?: 'localhost');
-                $definition->replaceArgument(1, $config['port'] ?: 2003);
-                $definition->replaceArgument(2, $config['protocol'] ?: 'tcp');
+                $definition->replaceArgument(0, $config['host'] ?? 'localhost');
+                $definition->replaceArgument(1, $config['port'] ?? 2003);
+                $definition->replaceArgument(2, $config['protocol'] ?? 'tcp');
 
                 return $definition;
             case 'influxdb':
@@ -64,7 +79,7 @@ class BeberleiMetricsExtension extends Extension
 
                 return $definition;
             case 'librato':
-                $definition->replaceArgument(1, $config['source']);
+                $definition->replaceArgument(1, $config['host']);
                 $definition->replaceArgument(2, $config['username']);
                 $definition->replaceArgument(3, $config['password']);
 
@@ -80,19 +95,19 @@ class BeberleiMetricsExtension extends Extension
                 return $definition;
             case 'statsd':
             case 'dogstatsd':
-                $definition->replaceArgument(0, $config['host'] ?: 'localhost');
-                $definition->replaceArgument(1, $config['port'] ?: 8125);
+                $definition->replaceArgument(0, $config['host'] ?? 'localhost');
+                $definition->replaceArgument(1, $config['port'] ?? 8125);
                 $definition->replaceArgument(2, (string) $config['prefix']);
 
                 return $definition;
             case 'telegraf':
-                $definition->replaceArgument(0, $config['host'] ?: 'localhost');
-                $definition->replaceArgument(1, $config['port'] ?: 8125);
+                $definition->replaceArgument(0, $config['host'] ?? 'localhost');
+                $definition->replaceArgument(1, $config['port'] ?? 8125);
                 $definition->replaceArgument(2, (string) $config['prefix']);
 
                 return $definition;
             default:
-                throw new \InvalidArgumentException(sprintf('The type "%s" is not supported', $type));
+                throw new \InvalidArgumentException(sprintf('The type "%s" is not supported.', $type));
         }
     }
 }

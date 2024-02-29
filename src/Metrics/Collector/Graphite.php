@@ -58,6 +58,16 @@ class Graphite implements CollectorInterface
         Box::box($this->doFlush(...));
     }
 
+    public function push(string $variable, int|float $value, ?int $time = null): void
+    {
+        $this->data[] = sprintf(
+            \is_float($value) ? "%s %.18f %d\n" : "%s %d %d\n",
+            $variable,
+            $value,
+            $time ?: time()
+        );
+    }
+
     private function doFlush(): void
     {
         $fp = fsockopen($this->protocol . '://' . $this->host, $this->port);
@@ -73,15 +83,5 @@ class Graphite implements CollectorInterface
         fclose($fp);
 
         $this->data = [];
-    }
-
-    public function push(string $variable, int|float $value, ?int $time = null): void
-    {
-        $this->data[] = sprintf(
-            \is_float($value) ? "%s %.18f %d\n" : "%s %d %d\n",
-            $variable,
-            $value,
-            $time ?: time()
-        );
     }
 }

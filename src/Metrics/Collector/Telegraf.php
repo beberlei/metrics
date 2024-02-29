@@ -71,9 +71,14 @@ class Telegraf implements CollectorInterface, GaugeableCollectorInterface, Tagga
         Box::box($this->doFlush(...));
     }
 
+    public function setTags(array $tags): void
+    {
+        $this->tags = http_build_query($tags, '', ',');
+        $this->tags = \strlen($this->tags) > 0 ? ',' . $this->tags : $this->tags;
+    }
+
     private function doFlush(): void
     {
-
         $fp = fsockopen('udp://' . $this->host, $this->port, $errno, $errstr, 1.0);
 
         if (!$fp) {
@@ -87,11 +92,5 @@ class Telegraf implements CollectorInterface, GaugeableCollectorInterface, Tagga
         fclose($fp);
 
         $this->data = [];
-    }
-
-    public function setTags(array $tags): void
-    {
-        $this->tags = http_build_query($tags, '', ',');
-        $this->tags = \strlen($this->tags) > 0 ? ',' . $this->tags : $this->tags;
     }
 }

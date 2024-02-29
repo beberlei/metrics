@@ -15,5 +15,7 @@ final class Box
         } finally {
             restore_error_handler();
         }
+
+        return null;
     }
 }
