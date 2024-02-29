@@ -13,6 +13,8 @@
 
 namespace Beberlei\Metrics\Collector;
 
+use Beberlei\Metrics\Utils\Box;
+
 /**
  * Sends statistics to the StatsD daemon over UDP,
  * ad hoc implementation for the StatsD - Telegraf integration,
@@ -66,18 +68,21 @@ class Telegraf implements CollectorInterface, GaugeableCollectorInterface, Tagga
             return;
         }
 
+        Box::box($this->doFlush(...));
+    }
+
+    private function doFlush(): void
+    {
+
         $fp = fsockopen('udp://' . $this->host, $this->port, $errno, $errstr, 1.0);
 
         if (!$fp) {
             return;
         }
 
-        $level = error_reporting(0);
         foreach ($this->data as $line) {
             fwrite($fp, $this->prefix . $line);
         }
-
-        error_reporting($level);
 
         fclose($fp);
 

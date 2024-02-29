@@ -13,6 +13,8 @@
 
 namespace Beberlei\Metrics\Collector;
 
+use Beberlei\Metrics\Utils\Box;
+
 class DogStatsD implements CollectorInterface, GaugeableCollectorInterface
 {
     private array $data = [];
@@ -54,6 +56,11 @@ class DogStatsD implements CollectorInterface, GaugeableCollectorInterface
         if (!$this->data) {
             return;
         }
+        Box::box($this->doFlush(...));
+    }
+
+    private function doFlush(): void
+    {
 
         $fp = fsockopen('udp://' . $this->host, $this->port, $errno, $errstr, 1.0);
 
@@ -61,12 +68,9 @@ class DogStatsD implements CollectorInterface, GaugeableCollectorInterface
             return;
         }
 
-        $level = error_reporting(0);
         foreach ($this->data as $line) {
             fwrite($fp, $this->prefix . $line);
         }
-
-        error_reporting($level);
 
         fclose($fp);
 

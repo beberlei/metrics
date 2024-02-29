@@ -48,7 +48,11 @@ class InfluxDB implements CollectorInterface, TaggableCollectorInterface
     public function flush(): void
     {
         foreach ($this->data as $data) {
-            $this->client->mark(['points' => [['measurement' => $data[0], 'fields' => ['value' => $data[1]]]], 'tags' => $data[2] + $this->tags]);
+            try {
+                $this->client->mark(['points' => [['measurement' => $data[0], 'fields' => ['value' => $data[1]]]], 'tags' => $data[2] + $this->tags]);
+            } catch (\Exception) {
+                continue;
+            }
         }
 
         $this->data = [];

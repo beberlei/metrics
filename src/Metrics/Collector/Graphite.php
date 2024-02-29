@@ -13,6 +13,8 @@
 
 namespace Beberlei\Metrics\Collector;
 
+use Beberlei\Metrics\Utils\Box;
+
 /**
  * Sends statistics to the stats daemon over UDP or TCP.
  */
@@ -53,20 +55,22 @@ class Graphite implements CollectorInterface
             return;
         }
 
-        try {
-            $fp = fsockopen($this->protocol . '://' . $this->host, $this->port);
+        Box::box($this->doFlush(...));
+    }
 
-            if (!$fp) {
-                return;
-            }
+    private function doFlush(): void
+    {
+        $fp = fsockopen($this->protocol . '://' . $this->host, $this->port);
 
-            foreach ($this->data as $line) {
-                fwrite($fp, (string) $line);
-            }
-
-            fclose($fp);
-        } catch (\Exception) {
+        if (!$fp) {
+            return;
         }
+
+        foreach ($this->data as $line) {
+            fwrite($fp, (string) $line);
+        }
+
+        fclose($fp);
 
         $this->data = [];
     }
