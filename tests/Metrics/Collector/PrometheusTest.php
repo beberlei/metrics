@@ -14,6 +14,7 @@
 namespace Beberlei\Metrics\Tests\Collector;
 
 use Beberlei\Metrics\Collector\Prometheus;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Prometheus\CollectorRegistry;
 use Prometheus\Exception\MetricNotFoundException;
@@ -25,10 +26,7 @@ class PrometheusTest extends TestCase
 
     public const TEST_VARIABLE_NAME = 'some_variable_name';
 
-    /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
-     */
-    private $collectorRegistryMock;
+    private MockObject&CollectorRegistry $collectorRegistryMock;
 
     private Prometheus $collector;
 
@@ -296,14 +294,14 @@ class PrometheusTest extends TestCase
             ->getMock()
         ;
         $gaugeMock
-            ->expects($this->at(0))
+            ->expects($matcher = $this->exactly(2))
             ->method('set')
-            ->with($firstExpectedVariableValue, [])
-        ;
-        $gaugeMock
-            ->expects($this->at(1))
-            ->method('set')
-            ->with($secondExpectedVariableValue, [])
+            ->willReturnCallback(function ($value) use ($matcher) {
+                match ($matcher->getInvocationCount()) {
+                    1 => $this->assertEquals(123, $value),
+                    2 => $this->assertEquals(321, $value),
+                };
+            })
         ;
 
         $this->collectorRegistryMock

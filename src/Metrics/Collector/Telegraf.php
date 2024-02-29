@@ -50,7 +50,7 @@ class Telegraf implements CollectorInterface, GaugeableCollectorInterface, Tagga
         $this->data[] = sprintf('%s%s:%s|ms', $variable, $this->tags, $time);
     }
 
-    public function gauge(string $variable, int $value, array $tags = []): void
+    public function gauge(string $variable, string|int $value, array $tags = []): void
     {
         $this->data[] = sprintf('%s%s:%s|g', $variable, $this->tags, $value);
     }

@@ -2,7 +2,6 @@
 
 namespace Beberlei\Bundle\MetricsBundle\DependencyInjection;
 
-use Beberlei\Metrics\Collector\Collector;
 use Beberlei\Metrics\Collector\CollectorInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ChildDefinition;

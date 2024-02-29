@@ -90,7 +90,7 @@ class InMemoryTest extends TestCase
 
     public function testIncrementingGauge(): void
     {
-        $this->collector->gauge(self::VARIABLE_A, '10');
+        $this->collector->gauge(self::VARIABLE_A, 10);
         $this->collector->gauge(self::VARIABLE_A, '+2');
         $this->collector->gauge(self::VARIABLE_A, '-3');
 
@@ -101,11 +101,11 @@ class InMemoryTest extends TestCase
     {
         $this->collector->gauge(self::VARIABLE_A, 1); // sets to 1
         $this->collector->gauge(self::VARIABLE_A, 2); // sets to 2
-        $this->collector->gauge(self::VARIABLE_A, -5); // decreases by 5
+        $this->collector->gauge(self::VARIABLE_A, '-5'); // decreases by 5
         $this->assertEquals(-3, $this->collector->getGauge(self::VARIABLE_A));
 
         $this->collector->gauge(self::VARIABLE_A, 0);
-        $this->collector->gauge(self::VARIABLE_A, -5);
+        $this->collector->gauge(self::VARIABLE_A, '-5');
         $this->assertEquals(-5, $this->collector->getGauge(self::VARIABLE_A));
     }
 

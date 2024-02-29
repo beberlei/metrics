@@ -44,7 +44,7 @@ class DogStatsD implements CollectorInterface, GaugeableCollectorInterface
         $this->data[] = sprintf('%s:%s|ms%s', $variable, $time, $this->buildTagString($tags));
     }
 
-    public function gauge(string $variable, int $value, array $tags = []): void
+    public function gauge(string $variable, string|int $value, array $tags = []): void
     {
         $this->data[] = sprintf('%s:%s|g%s', $variable, $value, $this->buildTagString($tags));
     }

@@ -6,7 +6,6 @@ use Beberlei\Metrics\Collector\DoctrineDBAL;
 use Beberlei\Metrics\Collector\DogStatsD;
 use Beberlei\Metrics\Collector\Graphite;
 use Beberlei\Metrics\Collector\InfluxDB;
-use Beberlei\Metrics\Collector\InlineTaggableGaugeableNullCollector;
 use Beberlei\Metrics\Collector\Librato;
 use Beberlei\Metrics\Collector\Logger;
 use Beberlei\Metrics\Collector\NullCollector;
@@ -22,9 +21,25 @@ use Psr\Log\NullLogger;
 
 class FactoryTest extends TestCase
 {
-    public function getCreateValidMetricTests(): array
+    public function getCreateValidMetricTests(): iterable
     {
-        return [[StatsD::class, 'statsd'], [StatsD::class, 'statsd', ['host' => 'localhost', 'port' => 1234, 'prefix' => 'prefix']], [StatsD::class, 'statsd', ['host' => 'localhost', 'port' => 1234]], [StatsD::class, 'statsd', ['host' => 'localhost']], [DogStatsD::class, 'dogstatsd'], [DogStatsD::class, 'dogstatsd', ['host' => 'localhost', 'port' => 1234, 'prefix' => 'prefix']], [DogStatsD::class, 'dogstatsd', ['host' => 'localhost', 'port' => 1234]], [DogStatsD::class, 'dogstatsd', ['host' => 'localhost']], [Graphite::class, 'graphite'], [Graphite::class, 'graphite', ['host' => 'localhost', 'port' => 1234]], [Librato::class, 'librato', ['hostname' => 'foobar.com', 'username' => 'username', 'password' => 'password']], [DoctrineDBAL::class, 'doctrine_dbal', ['connection' => $this->getMockBuilder(Connection::class)->disableOriginalConstructor()->getMock()]], [Logger::class, 'logger', ['logger' => new NullLogger()]], [NullCollector::class, 'null'], [InlineTaggableGaugeableNullCollector::class, 'null_inlinetaggable'], [InfluxDB::class, 'influxdb', ['client' => $this->getMockBuilder(Client::class)->disableOriginalConstructor()->getMock()]], [Prometheus::class, 'prometheus', ['collector_registry' => $this->getMockBuilder(CollectorRegistry::class)->disableOriginalConstructor()->getMock()]], [Prometheus::class, 'prometheus', ['collector_registry' => $this->getMockBuilder(CollectorRegistry::class)->disableOriginalConstructor()->getMock(), 'namespace' => 'some_namespace']]];
+        yield [StatsD::class, 'statsd'];
+        yield [StatsD::class, 'statsd', ['host' => 'localhost', 'port' => 1234, 'prefix' => 'prefix']];
+        yield [StatsD::class, 'statsd', ['host' => 'localhost', 'port' => 1234]];
+        yield [StatsD::class, 'statsd', ['host' => 'localhost']];
+        yield [DogStatsD::class, 'dogstatsd'];
+        yield [DogStatsD::class, 'dogstatsd', ['host' => 'localhost', 'port' => 1234, 'prefix' => 'prefix']];
+        yield [DogStatsD::class, 'dogstatsd', ['host' => 'localhost', 'port' => 1234]];
+        yield [DogStatsD::class, 'dogstatsd', ['host' => 'localhost']];
+        yield [Graphite::class, 'graphite'];
+        yield [Graphite::class, 'graphite', ['host' => 'localhost', 'port' => 1234]];
+        yield [Librato::class, 'librato', ['hostname' => 'foobar.com', 'username' => 'username', 'password' => 'password']];
+        yield [DoctrineDBAL::class, 'doctrine_dbal', ['connection' => $this->getMockBuilder(Connection::class)->disableOriginalConstructor()->getMock()]];
+        yield [Logger::class, 'logger', ['logger' => new NullLogger()]];
+        yield [NullCollector::class, 'null'];
+        yield [InfluxDB::class, 'influxdb', ['client' => $this->getMockBuilder(Client::class)->disableOriginalConstructor()->getMock()]];
+        yield [Prometheus::class, 'prometheus', ['collector_registry' => $this->getMockBuilder(CollectorRegistry::class)->disableOriginalConstructor()->getMock()]];
+        yield [Prometheus::class, 'prometheus', ['collector_registry' => $this->getMockBuilder(CollectorRegistry::class)->disableOriginalConstructor()->getMock(), 'namespace' => 'some_namespace']];
     }
 
     /**
@@ -35,9 +50,24 @@ class FactoryTest extends TestCase
         $this->assertInstanceOf($expectedClass, Factory::create($type, $options));
     }
 
-    public function getCreateThrowExceptionIfOptionsAreInvalidTests(): array
+    public function getCreateThrowExceptionIfOptionsAreInvalidTests(): iterable
     {
-        return [['You should specified a host if you specified a port.', 'statsd', ['port' => '1234']], ['You should specified a host and a port if you specified a prefix.', 'statsd', ['prefix' => 'prefix']], ['You should specified a host and a port if you specified a prefix.', 'statsd', ['port' => '1234', 'prefix' => 'prefix']], ['You should specified a host and a port if you specified a prefix.', 'statsd', ['hostname' => 'foobar.com', 'prefix' => 'prefix']], ['You should specified a host if you specified a port.', 'dogstatsd', ['port' => '1234']], ['You should specified a host and a port if you specified a prefix.', 'dogstatsd', ['prefix' => 'prefix']], ['You should specified a host and a port if you specified a prefix.', 'dogstatsd', ['port' => '1234', 'prefix' => 'prefix']], ['You should specified a host and a port if you specified a prefix.', 'dogstatsd', ['hostname' => 'foobar.com', 'prefix' => 'prefix']], ['You should specified a host if you specified a port.', 'graphite', ['port' => '1234']], ['Hostname is required for librato collector.', 'librato'], ['No username given for librato collector.', 'librato', ['hostname' => 'foobar.com']], ['No password given for librato collector.', 'librato', ['hostname' => 'foobar.com', 'username' => 'username']], ['connection is required for Doctrine DBAL collector.', 'doctrine_dbal'], ["Missing 'logger' key with logger service.", 'logger'], ["Missing 'client' key for InfluxDB collector.", 'influxdb'], ["Missing 'collector_registry' key for Prometheus collector.", 'prometheus']];
+        yield ['You should specified a host if you specified a port.', 'statsd', ['port' => '1234']];
+        yield ['You should specified a host and a port if you specified a prefix.', 'statsd', ['prefix' => 'prefix']];
+        yield ['You should specified a host and a port if you specified a prefix.', 'statsd', ['port' => '1234', 'prefix' => 'prefix']];
+        yield ['You should specified a host and a port if you specified a prefix.', 'statsd', ['hostname' => 'foobar.com', 'prefix' => 'prefix']];
+        yield ['You should specified a host if you specified a port.', 'dogstatsd', ['port' => '1234']];
+        yield ['You should specified a host and a port if you specified a prefix.', 'dogstatsd', ['prefix' => 'prefix']];
+        yield ['You should specified a host and a port if you specified a prefix.', 'dogstatsd', ['port' => '1234', 'prefix' => 'prefix']];
+        yield ['You should specified a host and a port if you specified a prefix.', 'dogstatsd', ['hostname' => 'foobar.com', 'prefix' => 'prefix']];
+        yield ['You should specified a host if you specified a port.', 'graphite', ['port' => '1234']];
+        yield ['Hostname is required for librato collector.', 'librato'];
+        yield ['No username given for librato collector.', 'librato', ['hostname' => 'foobar.com']];
+        yield ['No password given for librato collector.', 'librato', ['hostname' => 'foobar.com', 'username' => 'username']];
+        yield ['connection is required for Doctrine DBAL collector.', 'doctrine_dbal'];
+        yield ["Missing 'logger' key with logger service.", 'logger'];
+        yield ["Missing 'client' key for InfluxDB collector.", 'influxdb'];
+        yield ["Missing 'collector_registry' key for Prometheus collector.", 'prometheus'];
     }
 
     /**

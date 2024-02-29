@@ -31,7 +31,7 @@ class NullCollector implements CollectorInterface, GaugeableCollectorInterface, 
     {
     }
 
-    public function gauge(string $variable, int $value, array $tags = []): void
+    public function gauge(string $variable, string|int $value, array $tags = []): void
     {
     }
 

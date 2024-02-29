@@ -63,27 +63,27 @@ class InfluxDBTest extends TestCase
 
     public function testCollectTiming(): void
     {
-        $expectedArgs = ['points' => [['measurement' => 'series-name', 'fields' => ['value' => 47.11]]], 'tags' => []];
+        $expectedArgs = ['points' => [['measurement' => 'series-name', 'fields' => ['value' => 47]]], 'tags' => []];
 
         $this->client->expects($this->once())
             ->method('mark')
             ->with($expectedArgs)
         ;
 
-        $this->collector->timing('series-name', 47.11);
+        $this->collector->timing('series-name', 47);
         $this->collector->flush();
     }
 
     public function testCollectMeasure(): void
     {
-        $expectedArgs = ['points' => [['measurement' => 'series-name', 'fields' => ['value' => 47.11]]], 'tags' => []];
+        $expectedArgs = ['points' => [['measurement' => 'series-name', 'fields' => ['value' => 47]]], 'tags' => []];
 
         $this->client->expects($this->once())
             ->method('mark')
             ->with($expectedArgs)
         ;
 
-        $this->collector->measure('series-name', 47.11);
+        $this->collector->measure('series-name', 47);
         $this->collector->flush();
     }
 
@@ -91,7 +91,7 @@ class InfluxDBTest extends TestCase
     {
         $expectedTags = ['dc' => 'west', 'node' => 'nemesis101'];
 
-        $expectedArgs = ['points' => [['measurement' => 'series-name', 'fields' => ['value' => 47.11]]], 'tags' => $expectedTags];
+        $expectedArgs = ['points' => [['measurement' => 'series-name', 'fields' => ['value' => 47]]], 'tags' => $expectedTags];
 
         $this->client->expects($this->once())
             ->method('mark')
@@ -99,7 +99,7 @@ class InfluxDBTest extends TestCase
         ;
 
         $this->collector->setTags($expectedTags);
-        $this->collector->measure('series-name', 47.11);
+        $this->collector->measure('series-name', 47);
         $this->collector->flush();
     }
 }

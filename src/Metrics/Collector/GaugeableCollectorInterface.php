@@ -18,5 +18,5 @@ interface GaugeableCollectorInterface
     /**
      * Updates a gauge by an arbitrary amount.
      */
-    public function gauge(string $variable, int $value, array $tags = []): void;
+    public function gauge(string $variable, string|int $value, array $tags = []): void;
 }

@@ -47,7 +47,7 @@ class StatsD implements CollectorInterface, GaugeableCollectorInterface
         $this->data[] = sprintf('%s:%s|c', $variable, $value);
     }
 
-    public function gauge(string $variable, int $value, array $tags = []): void
+    public function gauge(string $variable, string|int $value, array $tags = []): void
     {
         $this->data[] = sprintf('%s:%s|g', $variable, $value);
     }

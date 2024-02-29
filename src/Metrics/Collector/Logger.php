@@ -42,7 +42,7 @@ class Logger implements CollectorInterface, GaugeableCollectorInterface
         $this->logger->debug(sprintf('timing:%s:%s', $variable, $time));
     }
 
-    public function gauge(string $variable, int $value, array $tags = []): void
+    public function gauge(string $variable, string|int $value, array $tags = []): void
     {
         $this->logger->debug(sprintf('gauge:%s:%s', $variable, $value));
     }

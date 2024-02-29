@@ -28,6 +28,7 @@ use InfluxDB\Client;
 use PHPUnit\Framework\TestCase;
 use Prometheus\CollectorRegistry;
 use Psr\Log\NullLogger;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 
@@ -51,11 +52,12 @@ class BeberleiMetricsExtensionTest extends TestCase
     }
 
     /**
-     * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
-     * The source has to be specified to use a Librato
+     * The source has to be specified to use a Librato.
      */
     public function testWithLibratoAndInvalidConfiguration(): void
     {
+        $this->expectException(InvalidConfigurationException::class);
+
         $container = $this->createContainer(['collectors' => ['simple' => ['type' => 'librato']]], ['beberlei_metrics.collector.librato']);
 
         $this->assertInstanceOf(Librato::class, $container->get('beberlei_metrics.collector.librato'));
@@ -226,13 +228,10 @@ class BeberleiMetricsExtensionTest extends TestCase
         $this->assertEquals($expectedTags, $this->getProperty($collector, 'tags'));
     }
 
-    /**
-     * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
-     *
-     * @expectedExceptionMessage The prometheus_collector_registry has to be specified to use a Prometheus
-     */
     public function testValidationWhenTypeIsPrometheusAndPrometheusCollectorRegistryIsNotSpecified(): void
     {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('The prometheus_collector_registry has to be specified to use a Prometheus');
         $this->createContainer(['collectors' => ['prometheus' => ['type' => 'prometheus']]]);
     }
 

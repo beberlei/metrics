@@ -46,16 +46,24 @@ class InMemory implements CollectorInterface, GaugeableCollectorInterface
 
     public function timing(string $variable, int $time, array $tags = []): void
     {
-        if (!isset($this->timingData[$variable])) {
-            $this->timingData[$variable] = 0;
-        }
-
+        $this->timingData[$variable] ??= 0;
         $this->timingData[$variable] = $time;
     }
 
-    public function gauge(string $variable, int $value, array $tags = []): void
+    public function gauge(string $variable, string|int $value, array $tags = []): void
     {
-        $this->gaugeData[$variable] = $value;
+        if (\is_int($value)) {
+            $this->gaugeData[$variable] = $value;
+
+            return;
+        }
+
+        $sign = substr($value, 0, 1);
+        if (!\in_array($sign, ['-', '+'], true)) {
+            throw new \InvalidArgumentException('Gauge value must be an integer or a string starting with + or -.');
+        }
+        $this->gaugeData[$variable] ??= 0;
+        $this->gaugeData[$variable] += (int) $value;
     }
 
     public function flush(): void
