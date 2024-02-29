@@ -39,10 +39,5 @@
             "Beberlei\\Metrics\\": "src/Beberlei/Metrics",
             "Beberlei\\Bundle\\MetricsBundle\\": "src/Beberlei/Bundle/MetricsBundle"
         }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "2.x-dev"
-        }
     }
 }
