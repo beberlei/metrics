@@ -13,9 +13,7 @@
 
 namespace Beberlei\Metrics\Collector;
 
-/**
- * @deprecated for PHP7 compatibility, use NullCollector instead
- */
-class Null extends NullCollector
+interface TaggableCollectorInterface
 {
+    public function setTags(array $tags): void;
 }

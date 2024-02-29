@@ -15,81 +15,46 @@ namespace Beberlei\Metrics\Collector;
 
 use InfluxDB\Client;
 
-class InfluxDB implements Collector, TaggableCollector
+class InfluxDB implements CollectorInterface, TaggableCollectorInterface
 {
-    /** @var \InfluxDB\Client */
-    private $client;
+    private array $data = [];
 
-    /** @var array */
-    private $data = array();
-
-    /** @var array */
-    private $tags = array();
-
-    /**
-     * @param Client $client
-     */
-    public function __construct(Client $client)
-    {
-        $this->client = $client;
+    public function __construct(
+        private readonly Client $client,
+        private array $tags = [],
+    ) {
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function increment($variable)
+    public function measure(string $variable, int $value, array $tags = []): void
     {
-        $this->data[] = array($variable, 1);
+        $this->data[] = [$variable, $value, $tags];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function decrement($variable)
+    public function increment(string $variable, array $tags = []): void
     {
-        $this->data[] = array($variable, -1);
+        $this->data[] = [$variable, 1, $tags];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function timing($variable, $time)
+    public function decrement(string $variable, array $tags = []): void
     {
-        $this->data[] = array($variable, $time);
+        $this->data[] = [$variable, -1, $tags];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function measure($variable, $value)
+    public function timing(string $variable, int $time, array $tags = []): void
     {
-        $this->data[] = array($variable, $value);
+        $this->data[] = [$variable, $time, $tags];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function flush()
+    public function flush(): void
     {
         foreach ($this->data as $data) {
-            $this->client->mark(array(
-                'points' => array(
-                    array(
-                        'measurement' => $data[0],
-                        'fields' => array('value' => $data[1]),
-                    ),
-                ),
-                'tags' => $this->tags,
-            ));
+            $this->client->mark(['points' => [['measurement' => $data[0], 'fields' => ['value' => $data[1]]]], 'tags' => $data[2] + $this->tags]);
         }
 
-        $this->data = array();
+        $this->data = [];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setTags($tags)
+    public function setTags(array $tags): void
     {
         $this->tags = $tags;
     }

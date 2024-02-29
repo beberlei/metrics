@@ -18,18 +18,18 @@ use PHPUnit\Framework\TestCase;
 
 class InMemoryTest extends TestCase
 {
-    const VARIABLE_A = 'variable_a';
-    const VARIABLE_B = 'variable_b';
+    public const VARIABLE_A = 'variable_a';
 
-    /** @var InMemory */
-    private $collector;
+    public const VARIABLE_B = 'variable_b';
+
+    private InMemory $collector;
 
     protected function setUp(): void
     {
         $this->collector = new InMemory();
     }
 
-    public function testIncrement()
+    public function testIncrement(): void
     {
         $this->collector->increment(self::VARIABLE_A);
         $this->collector->increment(self::VARIABLE_A);
@@ -40,7 +40,7 @@ class InMemoryTest extends TestCase
         $this->assertEquals(1, $this->collector->getMeasure(self::VARIABLE_B));
     }
 
-    public function testDecrement()
+    public function testDecrement(): void
     {
         $this->collector->increment(self::VARIABLE_A);
         $this->collector->increment(self::VARIABLE_A);
@@ -53,7 +53,7 @@ class InMemoryTest extends TestCase
         $this->assertEquals(-2, $this->collector->getMeasure(self::VARIABLE_B));
     }
 
-    public function testTiming()
+    public function testTiming(): void
     {
         $this->collector->timing(self::VARIABLE_A, 123);
 
@@ -64,7 +64,7 @@ class InMemoryTest extends TestCase
         $this->assertEquals(112, $this->collector->getTiming(self::VARIABLE_B));
     }
 
-    public function testMeasure()
+    public function testMeasure(): void
     {
         $this->collector->measure(self::VARIABLE_A, 2);
         $this->collector->measure(self::VARIABLE_A, -5);
@@ -76,7 +76,7 @@ class InMemoryTest extends TestCase
         $this->assertEquals(123, $this->collector->getMeasure(self::VARIABLE_B));
     }
 
-    public function testSettingGauge()
+    public function testSettingGauge(): void
     {
         $this->collector->gauge(self::VARIABLE_A, 2);
         $this->collector->gauge(self::VARIABLE_A, 5);
@@ -88,7 +88,7 @@ class InMemoryTest extends TestCase
         $this->assertEquals(0, $this->collector->getGauge(self::VARIABLE_B));
     }
 
-    public function testIncrementingGauge()
+    public function testIncrementingGauge(): void
     {
         $this->collector->gauge(self::VARIABLE_A, '10');
         $this->collector->gauge(self::VARIABLE_A, '+2');
@@ -97,7 +97,7 @@ class InMemoryTest extends TestCase
         $this->assertEquals(9, $this->collector->getGauge(self::VARIABLE_A));
     }
 
-    public function testSettingGaugeToNegativeValue()
+    public function testSettingGaugeToNegativeValue(): void
     {
         $this->collector->gauge(self::VARIABLE_A, 1); //sets to 1
         $this->collector->gauge(self::VARIABLE_A, 2); //sets to 2
@@ -109,7 +109,7 @@ class InMemoryTest extends TestCase
         $this->assertEquals(-5, $this->collector->getGauge(self::VARIABLE_A));
     }
 
-    public function testTypesOfMetricsAreSeparate()
+    public function testTypesOfMetricsAreSeparate(): void
     {
         $this->collector->increment(self::VARIABLE_A);
         $this->collector->gauge(self::VARIABLE_A, 2);
@@ -120,7 +120,7 @@ class InMemoryTest extends TestCase
         $this->assertEquals(3, $this->collector->getTiming(self::VARIABLE_A));
     }
 
-    public function testFlushClearsData()
+    public function testFlushClearsData(): void
     {
         $this->collector->increment(self::VARIABLE_A);
         $this->collector->gauge(self::VARIABLE_A, 2);

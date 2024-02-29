@@ -13,77 +13,43 @@
 
 namespace Beberlei\Metrics\Collector;
 
-class DogStatsD implements Collector, InlineTaggableGaugeableCollector
+class DogStatsD implements CollectorInterface, GaugeableCollectorInterface
 {
-    /** @var string */
-    private $host;
+    private array $data = [];
 
-    /** @var string */
-    private $port;
-
-    /** @var string */
-    private $prefix;
-
-    /** @var array */
-    private $data;
-
-    /**
-     * @param string $host
-     * @param string $port
-     * @param string $prefix
-     */
-    public function __construct($host = 'localhost', $port = '8125', $prefix = '')
-    {
-        $this->host = $host;
-        $this->port = $port;
-        $this->prefix = $prefix;
-        $this->data = array();
+    public function __construct(
+        private readonly string $host = 'localhost',
+        private readonly int $port = 8125,
+        private readonly string $prefix = '',
+    ) {
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function measure($variable, $value, $tags = array())
+    public function measure(string $variable, int $value, array $tags = []): void
     {
         $this->data[] = sprintf('%s:%s|c%s', $variable, $value, $this->buildTagString($tags));
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function increment($variable, $tags = array())
+    public function increment(string $variable, array $tags = []): void
     {
         $this->data[] = $variable.':1|c'.$this->buildTagString($tags);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function decrement($variable, $tags = array())
+    public function decrement(string $variable, array $tags = []): void
     {
         $this->data[] = $variable.':-1|c'.$this->buildTagString($tags);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function timing($variable, $time, $tags = array())
+    public function timing(string $variable, int $time, array $tags = []): void
     {
         $this->data[] = sprintf('%s:%s|ms%s', $variable, $time, $this->buildTagString($tags));
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function gauge($variable, $value, $tags = array())
+    public function gauge(string $variable, int $value, array $tags = []): void
     {
         $this->data[] = sprintf('%s:%s|g%s', $variable, $value, $this->buildTagString($tags));
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function flush()
+    public function flush(): void
     {
         if (!$this->data) {
             return;
@@ -99,24 +65,21 @@ class DogStatsD implements Collector, InlineTaggableGaugeableCollector
         foreach ($this->data as $line) {
             fwrite($fp, $this->prefix.$line);
         }
+
         error_reporting($level);
 
         fclose($fp);
 
-        $this->data = array();
+        $this->data = [];
     }
 
     /**
      * Given a key/value map of metric tags, builds them into a
      * DogStatsD tag string and returns the string.
-     *
-     * @param $tags array
-     *
-     * @return string
      */
-    private function buildTagString($tags)
+    private function buildTagString(array $tags): string
     {
-        $results = array();
+        $results = [];
 
         foreach ($tags as $key => $value) {
             $results[] = sprintf('%s:%s', $key, $value);

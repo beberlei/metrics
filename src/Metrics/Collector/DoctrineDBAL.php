@@ -29,58 +29,36 @@ use Exception;
  * The Primary key can either be a surrogate (id) or
  * has to span all 3 columns.
  */
-class DoctrineDBAL implements Collector
+class DoctrineDBAL implements CollectorInterface
 {
-    /** @var \Doctrine\DBAL\Connection */
-    private $conn;
+    private array $data = [];
 
-    /** @var array */
-    private $data;
-
-    /**
-     * @param \Doctrine\DBAL\Connection $conn
-     */
-    public function __construct(Connection $conn)
-    {
-        $this->conn = $conn;
+    public function __construct(
+        private readonly Connection $conn
+    ) {
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function timing($stat, $time)
+    public function measure(string $variable, int $value, array $tags = []): void
     {
-        $this->data[] = array($stat, $time, date('Y-m-d'));
+        $this->data[] = [$variable, $value, date('Y-m-d')];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function increment($stats)
+    public function increment(string $variable, array $tags = []): void
     {
-        $this->data[] = array($stats, 1, date('Y-m-d'));
+        $this->data[] = [$variable, 1, date('Y-m-d')];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function decrement($stats)
+    public function decrement(string $variable, array $tags = []): void
     {
-        $this->data[] = array($stats, -1, date('Y-m-d'));
+        $this->data[] = [$variable, -1, date('Y-m-d')];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function measure($variable, $value)
+    public function timing(string $variable, int $time, array $tags = []): void
     {
-        $this->data[] = array($variable, $value, date('Y-m-d'));
+        $this->data[] = [$variable, $time, date('Y-m-d')];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function flush()
+    public function flush(): void
     {
         if (!$this->data) {
             return;
@@ -95,14 +73,14 @@ class DoctrineDBAL implements Collector
                 $stmt->bindParam(1, $measurement[0]);
                 $stmt->bindParam(2, $measurement[1]);
                 $stmt->bindParam(3, $measurement[2]);
-                $stmt->execute();
+                $stmt->executeStatement();
             }
 
             $this->conn->commit();
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->conn->rollback();
         }
 
-        $this->data = array();
+        $this->data = [];
     }
 }

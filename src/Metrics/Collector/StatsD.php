@@ -16,77 +16,43 @@ namespace Beberlei\Metrics\Collector;
 /**
  * Sends statistics to the stats daemon over UDP.
  */
-class StatsD implements Collector, GaugeableCollector
+class StatsD implements CollectorInterface, GaugeableCollectorInterface
 {
-    /** @var string */
-    private $host;
+    private array $data = [];
 
-    /** @var string */
-    private $port;
-
-    /** @var string */
-    private $prefix;
-
-    /** @var array */
-    private $data;
-
-    /**
-     * @param string $host
-     * @param string $port
-     * @param string $prefix
-     */
-    public function __construct($host = 'localhost', $port = '8125', $prefix = '')
-    {
-        $this->host = $host;
-        $this->port = $port;
-        $this->prefix = $prefix;
-        $this->data = array();
+    public function __construct(
+        private readonly string $host = 'localhost',
+        private readonly int $port = 8125,
+        private readonly string $prefix = '',
+    ) {
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function timing($variable, $time)
+    public function timing(string $variable, int $time, array $tags = []): void
     {
         $this->data[] = sprintf('%s:%s|ms', $variable, $time);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function increment($variable)
+    public function increment(string $variable, array $tags = []): void
     {
         $this->data[] = $variable.':1|c';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function decrement($variable)
+    public function decrement(string $variable, array $tags = []): void
     {
         $this->data[] = $variable.':-1|c';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function measure($variable, $value)
+    public function measure(string $variable, int $value, array $tags = []): void
     {
         $this->data[] = sprintf('%s:%s|c', $variable, $value);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function gauge($variable, $value)
+    public function gauge(string $variable, int $value, array $tags = []): void
     {
         $this->data[] = sprintf('%s:%s|g', $variable, $value);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function flush()
+    public function flush(): void
     {
         if (!$this->data) {
             return;
@@ -102,10 +68,11 @@ class StatsD implements Collector, GaugeableCollector
         foreach ($this->data as $line) {
             fwrite($fp, $this->prefix.$line);
         }
+
         error_reporting($level);
 
         fclose($fp);
 
-        $this->data = array();
+        $this->data = [];
     }
 }

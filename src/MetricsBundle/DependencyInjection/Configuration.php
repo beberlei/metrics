@@ -45,32 +45,24 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('prometheus_collector_registry')->defaultNull()->info('It must to contain service id for Prometheus\\CollectorRegistry class instance.')->end()
                             ->scalarNode('namespace')->defaultValue('')->end()
                             ->arrayNode('tags')
-                                ->defaultValue(array())
+                                ->defaultValue([])
                                 ->prototype('scalar')->end()
                             ->end()
                         ->end()
                         ->validate()
-                            ->ifTrue(function ($v) {
-                                return 'librato' === $v['type'] && empty($v['source']);
-                            })
+                            ->ifTrue(static fn($v): bool => 'librato' === $v['type'] && empty($v['source']))
                             ->thenInvalid('The source has to be specified to use a Librato')
                         ->end()
                         ->validate()
-                            ->ifTrue(function ($v) {
-                                return 'librato' === $v['type'] && empty($v['username']);
-                            })
+                            ->ifTrue(static fn($v): bool => 'librato' === $v['type'] && empty($v['username']))
                             ->thenInvalid('The username has to be specified to use a Librato')
                         ->end()
                         ->validate()
-                            ->ifTrue(function ($v) {
-                                return 'librato' === $v['type'] && empty($v['password']);
-                            })
+                            ->ifTrue(static fn($v): bool => 'librato' === $v['type'] && empty($v['password']))
                             ->thenInvalid('The password has to be specified to use a Librato')
                         ->end()
                         ->validate()
-                            ->ifTrue(function ($v) {
-                                return 'prometheus' === $v['type'] && empty($v['prometheus_collector_registry']);
-                            })
+                            ->ifTrue(static fn($v): bool => 'prometheus' === $v['type'] && empty($v['prometheus_collector_registry']))
                             ->thenInvalid('The prometheus_collector_registry has to be specified to use a Prometheus')
                         ->end()
                     ->end()

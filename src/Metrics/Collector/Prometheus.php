@@ -13,87 +13,42 @@
 
 namespace Beberlei\Metrics\Collector;
 
+use Prometheus\Gauge;
 use Prometheus\CollectorRegistry;
 use Prometheus\Exception\MetricNotFoundException;
 
-class Prometheus implements Collector, TaggableCollector
+class Prometheus implements CollectorInterface, TaggableCollectorInterface
 {
-    /**
-     * @var CollectorRegistry
-     */
-    private $collectorRegistry;
+    private array $data = ['counters' => [], 'gauges' => []];
 
-    /**
-     * @var string
-     */
-    private $namespace = '';
-
-    /** @var array */
-    private $data = array(
-        'counters' => array(),
-        'gauges' => array(),
-    );
-
-    /**
-     * @var array
-     */
-    private $tags = array();
-
-    /**
-     * @param CollectorRegistry $collectorRegistry
-     * @param string            $namespace
-     */
-    public function __construct(CollectorRegistry $collectorRegistry, $namespace = '')
-    {
-        $this->collectorRegistry = $collectorRegistry;
-        $this->namespace = $namespace;
+    public function __construct(
+        private readonly CollectorRegistry $collectorRegistry,
+        private readonly string $namespace = '',
+        private array $tags = [],
+    ) {
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function measure($variable, $value)
+    public function measure(string $variable, int $value, array $tags = []): void
     {
-        $this->data['gauges'][] = array(
-            'name' => $variable,
-            'value' => $value,
-        );
+        $this->data['gauges'][] = ['name' => $variable, 'value' => $value];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function increment($variable)
+    public function increment(string $variable, array $tags = []): void
     {
-        $this->data['counters'][] = array(
-            'name' => $variable,
-            'value' => 1,
-        );
+        $this->data['counters'][] = ['name' => $variable, 'value' => 1];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function decrement($variable)
+    public function decrement(string $variable, array $tags = []): void
     {
-        $this->data['counters'][] = array(
-            'name' => $variable,
-            'value' => -1,
-        );
+        $this->data['counters'][] = ['name' => $variable, 'value' => -1];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function timing($variable, $time)
+    public function timing(string $variable, int $time, array $tags = []): void
     {
         $this->measure($variable, $time);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function flush()
+    public function flush(): void
     {
         if (!$this->data['gauges'] && !$this->data['counters']) {
             return;
@@ -117,27 +72,19 @@ class Prometheus implements Collector, TaggableCollector
             $gauge->set($gaugeData['value'], $tagsValues);
         }
 
-        $this->data = array('counters' => array(), 'gauges' => array());
+        $this->data = ['counters' => [], 'gauges' => []];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setTags($tags)
+    public function setTags(array $tags): void
     {
         $this->tags = $tags;
     }
 
-    /**
-     * @param string $variable
-     *
-     * @return \Prometheus\Gauge
-     */
-    private function getOrRegisterGaugeForVariable($variable)
+    private function getOrRegisterGaugeForVariable(string $variable): Gauge
     {
         try {
             $gauge = $this->collectorRegistry->getGauge($this->namespace, $variable);
-        } catch (MetricNotFoundException $e) {
+        } catch (MetricNotFoundException) {
             $gauge = $this->collectorRegistry->registerGauge(
                 $this->namespace,
                 $variable,

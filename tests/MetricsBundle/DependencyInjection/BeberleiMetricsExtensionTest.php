@@ -13,6 +13,19 @@
 
 namespace Beberlei\Bundle\MetricsBundle\Tests\DependencyInjection;
 
+use Beberlei\Metrics\Collector\Graphite;
+use Beberlei\Metrics\Collector\Librato;
+use Beberlei\Metrics\Collector\Logger;
+use Beberlei\Metrics\Collector\NullCollector;
+use Beberlei\Metrics\Collector\StatsD;
+use Beberlei\Metrics\Collector\DogStatsD;
+use Beberlei\Metrics\Collector\Telegraf;
+use InfluxDB\Client;
+use Beberlei\Metrics\Collector\InfluxDB;
+use Prometheus\CollectorRegistry;
+use Beberlei\Metrics\Collector\Prometheus;
+use Beberlei\Metrics\Collector\InMemory;
+use Psr\Log\NullLogger;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -20,34 +33,18 @@ use Beberlei\Bundle\MetricsBundle\DependencyInjection\BeberleiMetricsExtension;
 
 class BeberleiMetricsExtensionTest extends TestCase
 {
-    public function testWithGraphite()
+    public function testWithGraphite(): void
     {
-        $container = $this->createContainer(array(
-            'default' => 'simple',
-            'collectors' => array(
-                'simple' => array(
-                    'type' => 'graphite',
-                ),
-                'full' => array(
-                    'type' => 'graphite',
-                    'host' => 'graphite.localhost',
-                    'port' => 1234,
-                    'protocol' => 'udp',
-                ),
-            ),
-        ), array(
-            'beberlei_metrics.collector.simple',
-            'beberlei_metrics.collector.full'
-        ));
+        $container = $this->createContainer(['default' => 'simple', 'collectors' => ['simple' => ['type' => 'graphite'], 'full' => ['type' => 'graphite', 'host' => 'graphite.localhost', 'port' => 1234, 'protocol' => 'udp']]], ['beberlei_metrics.collector.simple', 'beberlei_metrics.collector.full']);
 
         $collector = $container->get('beberlei_metrics.collector.simple');
-        $this->assertInstanceOf('Beberlei\Metrics\Collector\Graphite', $collector);
+        $this->assertInstanceOf(Graphite::class, $collector);
         $this->assertSame('tcp', $this->getProperty($collector, 'protocol'));
         $this->assertSame('localhost', $this->getProperty($collector, 'host'));
         $this->assertSame(2003, $this->getProperty($collector, 'port'));
 
         $collector = $container->get('beberlei_metrics.collector.full');
-        $this->assertInstanceOf('Beberlei\Metrics\Collector\Graphite', $collector);
+        $this->assertInstanceOf(Graphite::class, $collector);
         $this->assertSame('udp', $this->getProperty($collector, 'protocol'));
         $this->assertSame('graphite.localhost', $this->getProperty($collector, 'host'));
         $this->assertSame(1234, $this->getProperty($collector, 'port'));
@@ -57,165 +54,86 @@ class BeberleiMetricsExtensionTest extends TestCase
      * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
      * The source has to be specified to use a Librato
      */
-    public function testWithLibratoAndInvalidConfiguration()
+    public function testWithLibratoAndInvalidConfiguration(): void
     {
-        $container = $this->createContainer(array(
-            'collectors' => array(
-                'simple' => array(
-                    'type' => 'librato',
-                ),
-            ),
-        ), array('beberlei_metrics.collector.librato'));
+        $container = $this->createContainer(['collectors' => ['simple' => ['type' => 'librato']]], ['beberlei_metrics.collector.librato']);
 
-        $this->assertInstanceOf('Beberlei\Metrics\Collector\Librato', $container->get('beberlei_metrics.collector.librato'));
+        $this->assertInstanceOf(Librato::class, $container->get('beberlei_metrics.collector.librato'));
     }
 
-    public function testWithLibrato()
+    public function testWithLibrato(): void
     {
-        $container = $this->createContainer(array(
-            'collectors' => array(
-                'full' => array(
-                    'type' => 'librato',
-                    'source' => 'foo.beberlei.de',
-                    'username' => 'foo',
-                    'password' => 'bar',
-                ),
-            ),
-        ), array('beberlei_metrics.collector.full'));
+        $container = $this->createContainer(['collectors' => ['full' => ['type' => 'librato', 'source' => 'foo.beberlei.de', 'username' => 'foo', 'password' => 'bar']]], ['beberlei_metrics.collector.full']);
 
         $collector = $container->get('beberlei_metrics.collector.full');
-        $this->assertInstanceOf('Beberlei\Metrics\Collector\Librato', $collector);
+        $this->assertInstanceOf(Librato::class, $collector);
         $this->assertSame('foo.beberlei.de', $this->getProperty($collector, 'source'));
         $this->assertSame('foo', $this->getProperty($collector, 'username'));
         $this->assertSame('bar', $this->getProperty($collector, 'password'));
     }
 
-    public function testWithLogger()
+    public function testWithLogger(): void
     {
-        $container = $this->createContainer(array(
-            'collectors' => array(
-                'logger' => array(
-                    'type' => 'logger',
-                ),
-            ),
-        ), array('beberlei_metrics.collector.logger'));
+        $container = $this->createContainer(['collectors' => ['logger' => ['type' => 'logger']]], ['beberlei_metrics.collector.logger']);
 
-        $this->assertInstanceOf('Beberlei\Metrics\Collector\Logger', $container->get('beberlei_metrics.collector.logger'));
+        $this->assertInstanceOf(Logger::class, $container->get('beberlei_metrics.collector.logger'));
     }
 
-    public function testWithNullCollector()
+    public function testWithNullCollector(): void
     {
-        $container = $this->createContainer(array(
-            'collectors' => array(
-                'null' => array(
-                    'type' => 'null',
-                ),
-            ),
-        ), array('beberlei_metrics.collector.null'));
+        $container = $this->createContainer(['collectors' => ['null' => ['type' => 'null']]], ['beberlei_metrics.collector.null']);
 
-        $this->assertInstanceOf('Beberlei\Metrics\Collector\NullCollector', $container->get('beberlei_metrics.collector.null'));
+        $this->assertInstanceOf(NullCollector::class, $container->get('beberlei_metrics.collector.null'));
     }
 
-    public function testWithStatsD()
+    public function testWithStatsD(): void
     {
-        $container = $this->createContainer(array(
-            'default' => 'simple',
-            'collectors' => array(
-                'simple' => array(
-                    'type' => 'statsd',
-                ),
-                'full' => array(
-                    'type' => 'statsd',
-                    'host' => 'statsd.localhost',
-                    'port' => 1234,
-                    'prefix' => 'application.com.symfony.',
-                ),
-            ),
-        ), array(
-            'beberlei_metrics.collector.simple',
-            'beberlei_metrics.collector.full'
-        ));
+        $container = $this->createContainer(['default' => 'simple', 'collectors' => ['simple' => ['type' => 'statsd'], 'full' => ['type' => 'statsd', 'host' => 'statsd.localhost', 'port' => 1234, 'prefix' => 'application.com.symfony.']]], ['beberlei_metrics.collector.simple', 'beberlei_metrics.collector.full']);
 
         $collector = $container->get('beberlei_metrics.collector.simple');
-        $this->assertInstanceOf('Beberlei\Metrics\Collector\StatsD', $collector);
+        $this->assertInstanceOf(StatsD::class, $collector);
         $this->assertSame('localhost', $this->getProperty($collector, 'host'));
         $this->assertSame(8125, $this->getProperty($collector, 'port'));
         $this->assertSame('', $this->getProperty($collector, 'prefix'));
 
         $collector = $container->get('beberlei_metrics.collector.full');
-        $this->assertInstanceOf('Beberlei\Metrics\Collector\StatsD', $collector);
+        $this->assertInstanceOf(StatsD::class, $collector);
         $this->assertSame('statsd.localhost', $this->getProperty($collector, 'host'));
         $this->assertSame(1234, $this->getProperty($collector, 'port'));
         $this->assertSame('application.com.symfony.', $this->getProperty($collector, 'prefix'));
     }
 
-    public function testWithDogStatsD()
+    public function testWithDogStatsD(): void
     {
-        $container = $this->createContainer(array(
-            'default' => 'simple',
-            'collectors' => array(
-                'simple' => array(
-                    'type' => 'dogstatsd',
-                ),
-                'full' => array(
-                    'type' => 'dogstatsd',
-                    'host' => 'dogstatsd.localhost',
-                    'port' => 1234,
-                    'prefix' => 'application.com.symfony.',
-                ),
-            ),
-        ), array(
-            'beberlei_metrics.collector.simple',
-            'beberlei_metrics.collector.full'
-        ));
+        $container = $this->createContainer(['default' => 'simple', 'collectors' => ['simple' => ['type' => 'dogstatsd'], 'full' => ['type' => 'dogstatsd', 'host' => 'dogstatsd.localhost', 'port' => 1234, 'prefix' => 'application.com.symfony.']]], ['beberlei_metrics.collector.simple', 'beberlei_metrics.collector.full']);
 
         $collector = $container->get('beberlei_metrics.collector.simple');
-        $this->assertInstanceOf('Beberlei\Metrics\Collector\DogStatsD', $collector);
+        $this->assertInstanceOf(DogStatsD::class, $collector);
         $this->assertSame('localhost', $this->getProperty($collector, 'host'));
         $this->assertSame(8125, $this->getProperty($collector, 'port'));
         $this->assertSame('', $this->getProperty($collector, 'prefix'));
 
         $collector = $container->get('beberlei_metrics.collector.full');
-        $this->assertInstanceOf('Beberlei\Metrics\Collector\DogStatsD', $collector);
+        $this->assertInstanceOf(DogStatsD::class, $collector);
         $this->assertSame('dogstatsd.localhost', $this->getProperty($collector, 'host'));
         $this->assertSame(1234, $this->getProperty($collector, 'port'));
         $this->assertSame('application.com.symfony.', $this->getProperty($collector, 'prefix'));
     }
 
-    public function testWithTelegraf()
+    public function testWithTelegraf(): void
     {
-        $expectedTags = array(
-            'string_tag' => 'first_value',
-            'int_tag' => 123,
-        );
+        $expectedTags = ['string_tag' => 'first_value', 'int_tag' => 123];
 
-        $container = $this->createContainer(array(
-            'default' => 'simple',
-            'collectors' => array(
-                'simple' => array(
-                    'type' => 'telegraf',
-                ),
-                'full' => array(
-                    'type' => 'telegraf',
-                    'host' => 'telegraf.localhost',
-                    'port' => 1234,
-                    'prefix' => 'application.com.symfony.',
-                    'tags' => $expectedTags,
-                ),
-            ),
-        ), array(
-            'beberlei_metrics.collector.simple',
-            'beberlei_metrics.collector.full'
-        ));
+        $container = $this->createContainer(['default' => 'simple', 'collectors' => ['simple' => ['type' => 'telegraf'], 'full' => ['type' => 'telegraf', 'host' => 'telegraf.localhost', 'port' => 1234, 'prefix' => 'application.com.symfony.', 'tags' => $expectedTags]]], ['beberlei_metrics.collector.simple', 'beberlei_metrics.collector.full']);
 
         $collector = $container->get('beberlei_metrics.collector.simple');
-        $this->assertInstanceOf('Beberlei\Metrics\Collector\Telegraf', $collector);
+        $this->assertInstanceOf(Telegraf::class, $collector);
         $this->assertSame('localhost', $this->getProperty($collector, 'host'));
         $this->assertSame(8125, $this->getProperty($collector, 'port'));
         $this->assertSame('', $this->getProperty($collector, 'prefix'));
 
         $collector = $container->get('beberlei_metrics.collector.full');
-        $this->assertInstanceOf('Beberlei\Metrics\Collector\Telegraf', $collector);
+        $this->assertInstanceOf(Telegraf::class, $collector);
         $this->assertSame('telegraf.localhost', $this->getProperty($collector, 'host'));
         $this->assertSame(1234, $this->getProperty($collector, 'port'));
         $this->assertSame('application.com.symfony.', $this->getProperty($collector, 'prefix'));
@@ -223,148 +141,88 @@ class BeberleiMetricsExtensionTest extends TestCase
         $this->assertEquals(',string_tag=first_value,int_tag=123', $this->getProperty($collector, 'tags'));
     }
 
-    public function testWithInfluxDB()
+    public function testWithInfluxDB(): void
     {
-        $influxDBClientMock = $this->getMockBuilder('InfluxDB\Client')
+        $influxDBClientMock = $this->getMockBuilder(Client::class)
             ->disableOriginalConstructor()
             ->getMock()
         ;
 
-        $container = $this->createContainer(array(
-            'collectors' => array(
-                'influxdb' => array(
-                    'type' => 'influxdb',
-                    'influxdb_client' => 'influxdb_client_mock',
-                ),
-            ),
-        ), array('beberlei_metrics.collector.influxdb'), array(
-            'influxdb_client_mock' => $influxDBClientMock,
-        ));
+        $container = $this->createContainer(['collectors' => ['influxdb' => ['type' => 'influxdb', 'influxdb_client' => 'influxdb_client_mock']]], ['beberlei_metrics.collector.influxdb'], ['influxdb_client_mock' => $influxDBClientMock]);
 
         $collector = $container->get('beberlei_metrics.collector.influxdb');
-        $this->assertInstanceOf('Beberlei\Metrics\Collector\InfluxDB', $collector);
+        $this->assertInstanceOf(InfluxDB::class, $collector);
         $this->assertSame($influxDBClientMock, $this->getProperty($collector, 'client'));
     }
 
-    public function testWithInfluxDBAndWithTags()
+    public function testWithInfluxDBAndWithTags(): void
     {
-        $expectedTags = array(
-            'string_tag' => 'first_value',
-            'int_tag' => 123,
-        );
+        $expectedTags = ['string_tag' => 'first_value', 'int_tag' => 123];
 
-        $influxDBClientMock = $this->getMockBuilder('InfluxDB\Client')
+        $influxDBClientMock = $this->getMockBuilder(Client::class)
             ->disableOriginalConstructor()
             ->getMock()
         ;
 
-        $container = $this->createContainer(array(
-            'collectors' => array(
-                'influxdb' => array(
-                    'type' => 'influxdb',
-                    'influxdb_client' => 'influxdb_client_mock',
-                    'tags' => $expectedTags,
-                ),
-            ),
-        ), array('beberlei_metrics.collector.influxdb'), array(
-            'influxdb_client_mock' => $influxDBClientMock,
-        ));
+        $container = $this->createContainer(['collectors' => ['influxdb' => ['type' => 'influxdb', 'influxdb_client' => 'influxdb_client_mock', 'tags' => $expectedTags]]], ['beberlei_metrics.collector.influxdb'], ['influxdb_client_mock' => $influxDBClientMock]);
 
         $collector = $container->get('beberlei_metrics.collector.influxdb');
-        $this->assertInstanceOf('Beberlei\Metrics\Collector\InfluxDB', $collector);
+        $this->assertInstanceOf(InfluxDB::class, $collector);
         $this->assertEquals($expectedTags, $this->getProperty($collector, 'tags'));
     }
 
-    public function testWithPrometheus()
+    public function testWithPrometheus(): void
     {
-        $prometheusCollectorRegistryMock = $this->getMockBuilder('\\Prometheus\\CollectorRegistry')
+        $prometheusCollectorRegistryMock = $this->getMockBuilder(CollectorRegistry::class)
             ->disableOriginalConstructor()
             ->getMock()
         ;
 
-        $container = $this->createContainer(array(
-            'collectors' => array(
-                'prometheus' => array(
-                    'type' => 'prometheus',
-                    'prometheus_collector_registry' => 'prometheus_collector_registry_mock',
-                ),
-            ),
-        ), array('beberlei_metrics.collector.prometheus'), array(
-            'prometheus_collector_registry_mock' => $prometheusCollectorRegistryMock,
-        ));
+        $container = $this->createContainer(['collectors' => ['prometheus' => ['type' => 'prometheus', 'prometheus_collector_registry' => 'prometheus_collector_registry_mock']]], ['beberlei_metrics.collector.prometheus'], ['prometheus_collector_registry_mock' => $prometheusCollectorRegistryMock]);
 
         $collector = $container->get('beberlei_metrics.collector.prometheus');
-        $this->assertInstanceOf('Beberlei\Metrics\Collector\Prometheus', $collector);
+        $this->assertInstanceOf(Prometheus::class, $collector);
         $this->assertSame($prometheusCollectorRegistryMock, $this->getProperty($collector, 'collectorRegistry'));
         $this->assertSame('', $this->getProperty($collector, 'namespace'));
     }
 
-    public function testWithInMemory()
+    public function testWithInMemory(): void
     {
-        $container = $this->createContainer(array(
-            'collectors' => array(
-                'memory' => array(
-                    'type' => 'memory',
-                ),
-            ),
-        ), array('beberlei_metrics.collector.memory'));
+        $container = $this->createContainer(['collectors' => ['memory' => ['type' => 'memory']]], ['beberlei_metrics.collector.memory']);
         $collector = $container->get('beberlei_metrics.collector.memory');
-        $this->assertInstanceOf('Beberlei\Metrics\Collector\InMemory', $collector);
+        $this->assertInstanceOf(InMemory::class, $collector);
     }
 
-    public function testWithPrometheusAndWithNamespace()
+    public function testWithPrometheusAndWithNamespace(): void
     {
         $expectedNamespace = 'some_namespace';
 
-        $prometheusCollectorRegistryMock = $this->getMockBuilder('\\Prometheus\\CollectorRegistry')
+        $prometheusCollectorRegistryMock = $this->getMockBuilder(CollectorRegistry::class)
             ->disableOriginalConstructor()
             ->getMock()
         ;
 
-        $container = $this->createContainer(array(
-            'collectors' => array(
-                'prometheus' => array(
-                    'type' => 'prometheus',
-                    'prometheus_collector_registry' => 'prometheus_collector_registry_mock',
-                    'namespace' => $expectedNamespace,
-                ),
-            ),
-        ), array('beberlei_metrics.collector.prometheus'), array(
-            'prometheus_collector_registry_mock' => $prometheusCollectorRegistryMock,
-        ));
+        $container = $this->createContainer(['collectors' => ['prometheus' => ['type' => 'prometheus', 'prometheus_collector_registry' => 'prometheus_collector_registry_mock', 'namespace' => $expectedNamespace]]], ['beberlei_metrics.collector.prometheus'], ['prometheus_collector_registry_mock' => $prometheusCollectorRegistryMock]);
 
         $collector = $container->get('beberlei_metrics.collector.prometheus');
-        $this->assertInstanceOf('Beberlei\Metrics\Collector\Prometheus', $collector);
+        $this->assertInstanceOf(Prometheus::class, $collector);
         $this->assertSame($prometheusCollectorRegistryMock, $this->getProperty($collector, 'collectorRegistry'));
         $this->assertSame($expectedNamespace, $this->getProperty($collector, 'namespace'));
     }
 
-    public function testWithPrometheusAndWithTags()
+    public function testWithPrometheusAndWithTags(): void
     {
-        $expectedTags = array(
-            'string_tag' => 'first_value',
-            'int_tag' => 123,
-        );
+        $expectedTags = ['string_tag' => 'first_value', 'int_tag' => 123];
 
-        $prometheusCollectorRegistryMock = $this->getMockBuilder('\\Prometheus\\CollectorRegistry')
+        $prometheusCollectorRegistryMock = $this->getMockBuilder(CollectorRegistry::class)
             ->disableOriginalConstructor()
             ->getMock()
         ;
 
-        $container = $this->createContainer(array(
-            'collectors' => array(
-                'prometheus' => array(
-                    'type' => 'prometheus',
-                    'prometheus_collector_registry' => 'prometheus_collector_registry_mock',
-                    'tags' => $expectedTags,
-                ),
-            ),
-        ), array('beberlei_metrics.collector.prometheus'), array(
-            'prometheus_collector_registry_mock' => $prometheusCollectorRegistryMock,
-        ));
+        $container = $this->createContainer(['collectors' => ['prometheus' => ['type' => 'prometheus', 'prometheus_collector_registry' => 'prometheus_collector_registry_mock', 'tags' => $expectedTags]]], ['beberlei_metrics.collector.prometheus'], ['prometheus_collector_registry_mock' => $prometheusCollectorRegistryMock]);
 
         $collector = $container->get('beberlei_metrics.collector.prometheus');
-        $this->assertInstanceOf('Beberlei\Metrics\Collector\Prometheus', $collector);
+        $this->assertInstanceOf(Prometheus::class, $collector);
         $this->assertEquals($expectedTags, $this->getProperty($collector, 'tags'));
     }
 
@@ -372,25 +230,19 @@ class BeberleiMetricsExtensionTest extends TestCase
      * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
      * @expectedExceptionMessage The prometheus_collector_registry has to be specified to use a Prometheus
      */
-    public function testValidationWhenTypeIsPrometheusAndPrometheusCollectorRegistryIsNotSpecified()
+    public function testValidationWhenTypeIsPrometheusAndPrometheusCollectorRegistryIsNotSpecified(): void
     {
-        $this->createContainer(array(
-            'collectors' => array(
-                'prometheus' => array(
-                    'type' => 'prometheus',
-                ),
-            ),
-        ));
+        $this->createContainer(['collectors' => ['prometheus' => ['type' => 'prometheus']]]);
     }
 
-    private function createContainer($configs, $publicServices = array(), $additionalServices = array())
+    private function createContainer($configs, array $publicServices = [], array $additionalServices = []): ContainerBuilder
     {
         $container = new ContainerBuilder();
 
         $extension = new BeberleiMetricsExtension();
-        $extension->load(array($configs), $container);
+        $extension->load([$configs], $container);
         // Needed for logger collector
-        $container->setDefinition('logger', new Definition('Psr\Log\NullLogger'));
+        $container->setDefinition('logger', new Definition(NullLogger::class));
 
         foreach ($additionalServices as $serviceId => $additionalService) {
             $container->set($serviceId, $additionalService);
@@ -405,9 +257,9 @@ class BeberleiMetricsExtensionTest extends TestCase
         return $container;
     }
 
-    private function getProperty($object, $property)
+    private function getProperty(?object $object, string $property)
     {
-        $reflectionProperty = new \ReflectionProperty(get_class($object), $property);
+        $reflectionProperty = new \ReflectionProperty($object::class, $property);
         $reflectionProperty->setAccessible(true);
 
         return $reflectionProperty->getValue($object);

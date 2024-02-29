@@ -2,78 +2,56 @@
 
 namespace Beberlei\Metrics\Tests;
 
+use Beberlei\Metrics\Collector\StatsD;
+use Beberlei\Metrics\Collector\DogStatsD;
+use Beberlei\Metrics\Collector\Graphite;
+use Beberlei\Metrics\Collector\Librato;
+use Beberlei\Metrics\Collector\DoctrineDBAL;
+use Doctrine\DBAL\Connection;
+use Beberlei\Metrics\Collector\Logger;
+use Beberlei\Metrics\Collector\NullCollector;
+use Beberlei\Metrics\Collector\InlineTaggableGaugeableNullCollector;
+use Beberlei\Metrics\Collector\InfluxDB;
+use InfluxDB\Client;
+use Beberlei\Metrics\Collector\Prometheus;
+use Prometheus\CollectorRegistry;
+use Beberlei\Metrics\MetricsException;
 use Beberlei\Metrics\Factory;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
 class FactoryTest extends TestCase
 {
-    public function getCreateValidMetricTests()
+    public function getCreateValidMetricTests(): array
     {
-        return array(
-            array('Beberlei\Metrics\Collector\StatsD', 'statsd'),
-            array('Beberlei\Metrics\Collector\StatsD', 'statsd', array('host' => 'localhost', 'port' => 1234, 'prefix' => 'prefix')),
-            array('Beberlei\Metrics\Collector\StatsD', 'statsd', array('host' => 'localhost', 'port' => 1234)),
-            array('Beberlei\Metrics\Collector\StatsD', 'statsd', array('host' => 'localhost')),
-            array('Beberlei\Metrics\Collector\DogStatsD', 'dogstatsd'),
-            array('Beberlei\Metrics\Collector\DogStatsD', 'dogstatsd', array('host' => 'localhost', 'port' => 1234, 'prefix' => 'prefix')),
-            array('Beberlei\Metrics\Collector\DogStatsD', 'dogstatsd', array('host' => 'localhost', 'port' => 1234)),
-            array('Beberlei\Metrics\Collector\DogStatsD', 'dogstatsd', array('host' => 'localhost')),
-            array('Beberlei\Metrics\Collector\Graphite', 'graphite'),
-            array('Beberlei\Metrics\Collector\Graphite', 'graphite', array('host' => 'localhost', 'port' => 1234)),
-            array('Beberlei\Metrics\Collector\Librato', 'librato', array('hostname' => 'foobar.com', 'username' => 'username', 'password' => 'password')),
-            array('Beberlei\Metrics\Collector\DoctrineDBAL', 'doctrine_dbal', array('connection' => $this->getMockBuilder('Doctrine\DBAL\Connection')->disableOriginalConstructor()->getMock())),
-            array('Beberlei\Metrics\Collector\Logger', 'logger', array('logger' => new NullLogger())),
-            array('Beberlei\Metrics\Collector\NullCollector', 'null'),
-            array('Beberlei\Metrics\Collector\InlineTaggableGaugeableNullCollector', 'null_inlinetaggable'),
-            array('Beberlei\Metrics\Collector\InfluxDB', 'influxdb', array('client' => $this->getMockBuilder('\\InfluxDB\\Client')->disableOriginalConstructor()->getMock())),
-            array('Beberlei\Metrics\Collector\Prometheus', 'prometheus', array('collector_registry' => $this->getMockBuilder('\\Prometheus\\CollectorRegistry')->disableOriginalConstructor()->getMock())),
-            array('Beberlei\Metrics\Collector\Prometheus', 'prometheus', array('collector_registry' => $this->getMockBuilder('\\Prometheus\\CollectorRegistry')->disableOriginalConstructor()->getMock(), 'namespace' => 'some_namespace')),
-        );
+        return [[StatsD::class, 'statsd'], [StatsD::class, 'statsd', ['host' => 'localhost', 'port' => 1234, 'prefix' => 'prefix']], [StatsD::class, 'statsd', ['host' => 'localhost', 'port' => 1234]], [StatsD::class, 'statsd', ['host' => 'localhost']], [DogStatsD::class, 'dogstatsd'], [DogStatsD::class, 'dogstatsd', ['host' => 'localhost', 'port' => 1234, 'prefix' => 'prefix']], [DogStatsD::class, 'dogstatsd', ['host' => 'localhost', 'port' => 1234]], [DogStatsD::class, 'dogstatsd', ['host' => 'localhost']], [Graphite::class, 'graphite'], [Graphite::class, 'graphite', ['host' => 'localhost', 'port' => 1234]], [Librato::class, 'librato', ['hostname' => 'foobar.com', 'username' => 'username', 'password' => 'password']], [DoctrineDBAL::class, 'doctrine_dbal', ['connection' => $this->getMockBuilder(Connection::class)->disableOriginalConstructor()->getMock()]], [Logger::class, 'logger', ['logger' => new NullLogger()]], [NullCollector::class, 'null'], [InlineTaggableGaugeableNullCollector::class, 'null_inlinetaggable'], [InfluxDB::class, 'influxdb', ['client' => $this->getMockBuilder(Client::class)->disableOriginalConstructor()->getMock()]], [Prometheus::class, 'prometheus', ['collector_registry' => $this->getMockBuilder(CollectorRegistry::class)->disableOriginalConstructor()->getMock()]], [Prometheus::class, 'prometheus', ['collector_registry' => $this->getMockBuilder(CollectorRegistry::class)->disableOriginalConstructor()->getMock(), 'namespace' => 'some_namespace']]];
     }
 
     /**
      * @dataProvider getCreateValidMetricTests
      */
-    public function testCreateValidMetric($expectedClass, $type, $options = array())
+    public function testCreateValidMetric(string $expectedClass, string $type, array $options = []): void
     {
         $this->assertInstanceOf($expectedClass, Factory::create($type, $options));
     }
 
-    public function getCreateThrowExceptionIfOptionsAreInvalidTests()
+    public function getCreateThrowExceptionIfOptionsAreInvalidTests(): array
     {
-        return array(
-            array('You should specified a host if you specified a port.', 'statsd', array('port' => '1234')),
-            array('You should specified a host and a port if you specified a prefix.', 'statsd', array('prefix' => 'prefix')),
-            array('You should specified a host and a port if you specified a prefix.', 'statsd', array('port' => '1234', 'prefix' => 'prefix')),
-            array('You should specified a host and a port if you specified a prefix.', 'statsd', array('hostname' => 'foobar.com', 'prefix' => 'prefix')),
-            array('You should specified a host if you specified a port.', 'dogstatsd', array('port' => '1234')),
-            array('You should specified a host and a port if you specified a prefix.', 'dogstatsd', array('prefix' => 'prefix')),
-            array('You should specified a host and a port if you specified a prefix.', 'dogstatsd', array('port' => '1234', 'prefix' => 'prefix')),
-            array('You should specified a host and a port if you specified a prefix.', 'dogstatsd', array('hostname' => 'foobar.com', 'prefix' => 'prefix')),
-            array('You should specified a host if you specified a port.', 'graphite', array('port' => '1234')),
-            array('Hostname is required for librato collector.', 'librato'),
-            array('No username given for librato collector.', 'librato', array('hostname' => 'foobar.com')),
-            array('No password given for librato collector.', 'librato', array('hostname' => 'foobar.com', 'username' => 'username')),
-            array('connection is required for Doctrine DBAL collector.', 'doctrine_dbal'),
-            array('Missing \'logger\' key with logger service.', 'logger'),
-            array('Missing \'client\' key for InfluxDB collector.', 'influxdb'),
-            array('Missing \'collector_registry\' key for Prometheus collector.', 'prometheus'),
-        );
+        return [['You should specified a host if you specified a port.', 'statsd', ['port' => '1234']], ['You should specified a host and a port if you specified a prefix.', 'statsd', ['prefix' => 'prefix']], ['You should specified a host and a port if you specified a prefix.', 'statsd', ['port' => '1234', 'prefix' => 'prefix']], ['You should specified a host and a port if you specified a prefix.', 'statsd', ['hostname' => 'foobar.com', 'prefix' => 'prefix']], ['You should specified a host if you specified a port.', 'dogstatsd', ['port' => '1234']], ['You should specified a host and a port if you specified a prefix.', 'dogstatsd', ['prefix' => 'prefix']], ['You should specified a host and a port if you specified a prefix.', 'dogstatsd', ['port' => '1234', 'prefix' => 'prefix']], ['You should specified a host and a port if you specified a prefix.', 'dogstatsd', ['hostname' => 'foobar.com', 'prefix' => 'prefix']], ['You should specified a host if you specified a port.', 'graphite', ['port' => '1234']], ['Hostname is required for librato collector.', 'librato'], ['No username given for librato collector.', 'librato', ['hostname' => 'foobar.com']], ['No password given for librato collector.', 'librato', ['hostname' => 'foobar.com', 'username' => 'username']], ['connection is required for Doctrine DBAL collector.', 'doctrine_dbal'], ["Missing 'logger' key with logger service.", 'logger'], ["Missing 'client' key for InfluxDB collector.", 'influxdb'], ["Missing 'collector_registry' key for Prometheus collector.", 'prometheus']];
     }
 
     /**
      * @dataProvider getCreateThrowExceptionIfOptionsAreInvalidTests
      */
-    public function testCreateThrowExceptionIfOptionsAreInvalid($expectedMessage, $type, $options = array())
+    public function testCreateThrowExceptionIfOptionsAreInvalid(string $expectedMessage, string $type, array $options = []): void
     {
         try {
             Factory::create($type, $options);
 
             $this->fail('An expected exception (MetricsException) has not been raised.');
-        } catch (\Exception $e) {
-            $this->assertInstanceOf('Beberlei\Metrics\MetricsException', $e);
-            $this->assertSame($expectedMessage, $e->getMessage());
+        } catch (\Exception $exception) {
+            $this->assertInstanceOf(MetricsException::class, $exception);
+            $this->assertSame($expectedMessage, $exception->getMessage());
         }
     }
 }

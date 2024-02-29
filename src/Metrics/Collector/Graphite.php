@@ -18,68 +18,39 @@ use Exception;
 /**
  * Sends statistics to the stats daemon over UDP or TCP.
  */
-class Graphite implements Collector
+class Graphite implements CollectorInterface
 {
-    /** @var string */
-    private $protocol;
+    private array $data = [];
 
-    /** @var string */
-    private $host;
-
-    /** @var int */
-    private $port;
-
-    /** @var array */
-    private $data = array();
-
-    /**
-     * @param string $host
-     * @param int    $port
-     * @param string $protocol
-     */
-    public function __construct($host = 'localhost', $port = 2003, $protocol = 'tcp')
-    {
-        $this->host = $host;
-        $this->port = $port;
-        $this->protocol = $protocol;
+    public function __construct(
+        private readonly string $host = 'localhost',
+        private readonly int $port = 2003,
+        private readonly string $protocol = 'tcp'
+    ) {
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function timing($variable, $time)
-    {
-        $this->push($variable, $time);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function increment($variable)
-    {
-        $this->push($variable, 1);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function decrement($variable)
-    {
-        $this->push($variable, -1);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function measure($variable, $value)
+    public function measure(string $variable, int $value, array $tags = []): void
     {
         $this->push($variable, $value);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function flush()
+
+    public function increment(string $variable, array $tags = []): void
+    {
+        $this->push($variable, 1);
+    }
+
+    public function decrement(string $variable, array $tags = []): void
+    {
+        $this->push($variable, -1);
+    }
+
+    public function timing(string $variable, int $time, array $tags = []): void
+    {
+        $this->push($variable, $time);
+    }
+
+    public function flush(): void
     {
         if (!$this->data) {
             return;
@@ -93,21 +64,21 @@ class Graphite implements Collector
             }
 
             foreach ($this->data as $line) {
-                fwrite($fp, $line);
+                fwrite($fp, (string) $line);
             }
 
             fclose($fp);
-        } catch (Exception $e) {
+        } catch (Exception) {
         }
 
-        $this->data = array();
+        $this->data = [];
     }
 
-    public function push($stat, $value, $time = null)
+    public function push(string $variable, int|float $value, ?int $time = null): void
     {
         $this->data[] = sprintf(
             is_float($value) ? "%s %.18f %d\n" : "%s %d %d\n",
-            $stat,
+            $variable,
             $value,
             $time ?: time()
         );

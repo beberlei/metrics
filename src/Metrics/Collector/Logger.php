@@ -15,63 +15,39 @@ namespace Beberlei\Metrics\Collector;
 
 use Psr\Log\LoggerInterface;
 
-class Logger implements Collector, GaugeableCollector
+class Logger implements CollectorInterface, GaugeableCollectorInterface
 {
-    /** @var \Psr\Log\LoggerInterface */
-    private $logger;
-
-    /**
-     * @param \Psr\Log\LoggerInterface $logger
-     */
-    public function __construct(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
+    public function __construct(
+        private readonly LoggerInterface $logger,
+    ) {
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function increment($variable)
-    {
-        $this->logger->debug('increment:'.$variable);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function decrement($variable)
-    {
-        $this->logger->debug('decrement:'.$variable);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function timing($variable, $time)
-    {
-        $this->logger->debug(sprintf('timing:%s:%s', $variable, $time));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function measure($variable, $value)
+    public function measure(string $variable, int $value, array $tags = []): void
     {
         $this->logger->debug(sprintf('measure:%s:%s', $variable, $value));
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function gauge($variable, $value)
+    public function increment(string $variable, array $tags = []): void
+    {
+        $this->logger->debug('increment:'.$variable);
+    }
+
+    public function decrement(string $variable, array $tags = []): void
+    {
+        $this->logger->debug('decrement:'.$variable);
+    }
+
+    public function timing(string $variable, int $time, array $tags = []): void
+    {
+        $this->logger->debug(sprintf('timing:%s:%s', $variable, $time));
+    }
+
+    public function gauge(string $variable, int $value, array $tags = []): void
     {
         $this->logger->debug(sprintf('gauge:%s:%s', $variable, $value));
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function flush()
+    public function flush(): void
     {
         $this->logger->debug('flush');
     }

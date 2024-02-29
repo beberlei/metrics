@@ -16,90 +16,39 @@ namespace Beberlei\Metrics\Collector;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class Librato implements Collector
+class Librato implements CollectorInterface
 {
-    private HttpClientInterface $httpClient;
+    private array $data = ['counters' => [], 'gauges' => []];
 
-    /** @var string */
-    private $source;
-
-    /** @var string */
-    private $username;
-
-    /** @var string */
-    private $password;
-
-    /** @var array */
-    private $data = array(
-        'counters' => array(),
-        'gauges' => array(),
-    );
-
-    /**
-     * @param string        $source
-     * @param string        $username
-     * @param string        $password
-     */
-    public function __construct(HttpClientInterface $httpClient, $source, $username, $password)
-    {
-        $this->httpClient = $httpClient;
-        $this->source = $source;
-        $this->username = $username;
-        $this->password = $password;
+    public function __construct(
+        private readonly HttpClientInterface $httpClient,
+        private readonly string $source,
+        private readonly string $username,
+        private readonly string $password
+    ) {
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function increment($variable)
+    public function measure(string $variable, int $value, array $tags = []): void
     {
-        $this->data['counters'][] = array(
-            'source' => $this->source,
-            'name' => $variable,
-            'value' => 1,
-        );
+        $this->data['gauges'][] = ['source' => $this->source, 'name' => $variable, 'value' => $value];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function decrement($variable)
+    public function increment(string $variable, array $tags = []): void
     {
-        $this->data['counters'][] = array(
-            'source' => $this->source,
-            'name' => $variable,
-            'value' => -1,
-        );
+        $this->data['counters'][] = ['source' => $this->source, 'name' => $variable, 'value' => 1];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function timing($variable, $time)
+    public function decrement(string $variable, array $tags = []): void
     {
-        $this->data['gauges'][] = array(
-            'source' => $this->source,
-            'name' => $variable,
-            'value' => $time,
-        );
+        $this->data['counters'][] = ['source' => $this->source, 'name' => $variable, 'value' => -1];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function measure($variable, $value)
+    public function timing(string $variable, int $time, array $tags = []): void
     {
-        $this->data['gauges'][] = array(
-            'source' => $this->source,
-            'name' => $variable,
-            'value' => $value,
-        );
+        $this->data['gauges'][] = ['source' => $this->source, 'name' => $variable, 'value' => $time];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function flush()
+    public function flush(): void
     {
         if (!$this->data['gauges'] && !$this->data['counters']) {
             return;
@@ -110,7 +59,7 @@ class Librato implements Collector
                 'auth_basic' => [$this->username, $this->password],
                 'json' => $this->data,
             ]);
-            $this->data = array('gauges' => array(), 'counters' => array());
+            $this->data = ['gauges' => [], 'counters' => []];
         } catch (ExceptionInterface) {
         }
     }

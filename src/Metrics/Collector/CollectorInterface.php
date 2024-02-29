@@ -13,43 +13,32 @@
 
 namespace Beberlei\Metrics\Collector;
 
-/**
- * Collector interface.
- */
-interface Collector
+interface CollectorInterface
 {
     /**
      * Updates a counter by some arbitrary amount.
-     *
-     * @param string $variable
-     * @param int    $value    The amount to increment the counter by
      */
-    public function measure($variable, $value);
+    public function measure(string $variable, int $value, array $tags = []): void;
 
     /**
      * Increments a counter.
-     *
-     * @param string $variable
      */
-    public function increment($variable);
+    public function increment(string $variable, array $tags = []): void;
 
     /**
      * Decrements a counter.
-     *
-     * @param string $variable
      */
-    public function decrement($variable);
+    public function decrement(string $variable, array $tags = []): void;
 
     /**
      * Records a timing.
      *
-     * @param string $variable
      * @param int    $time     The duration of the timing in milliseconds
      */
-    public function timing($variable, $time);
+    public function timing(string $variable, int $time, array $tags = []): void;
 
     /**
      * Sends the metrics to the adapter backend.
      */
-    public function flush();
+    public function flush(): void;
 }

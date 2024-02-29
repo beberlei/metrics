@@ -13,15 +13,10 @@
 
 namespace Beberlei\Metrics\Collector;
 
-/**
- * TaggableCollector interface.
- */
-interface TaggableCollector
+interface GaugeableCollectorInterface
 {
     /**
-     * Sets a metrics tags.
-     *
-     * @param array $tags
+     * Updates a gauge by an arbitrary amount.
      */
-    public function setTags($tags);
+    public function gauge(string $variable, int $value, array $tags = []): void;
 }

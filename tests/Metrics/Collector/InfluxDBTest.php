@@ -13,6 +13,7 @@
 
 namespace Beberlei\Metrics\Tests\Collector;
 
+use InfluxDB\Client;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
 use Beberlei\Metrics\Collector\InfluxDB;
@@ -24,30 +25,19 @@ class InfluxDBTest extends TestCase
      */
     private $client;
 
-    /**
-     * @var InfluxDB
-     */
-    private $collector;
+    private InfluxDB $collector;
 
     protected function setUp(): void
     {
-        $this->client = $this->getMockBuilder('\\InfluxDB\\Client')
+        $this->client = $this->getMockBuilder(Client::class)
             ->disableOriginalConstructor()
             ->getMock();
         $this->collector = new InfluxDB($this->client);
     }
 
-    public function testCollectIncrement()
+    public function testCollectIncrement(): void
     {
-        $expectedArgs = array(
-            'points' => array(
-                array(
-                    'measurement' => 'series-name',
-                    'fields' => array('value' => 1),
-                ),
-            ),
-            'tags' => array(),
-        );
+        $expectedArgs = ['points' => [['measurement' => 'series-name', 'fields' => ['value' => 1]]], 'tags' => []];
 
         $this->client->expects($this->once())
             ->method('mark')
@@ -57,17 +47,9 @@ class InfluxDBTest extends TestCase
         $this->collector->flush();
     }
 
-    public function testCollectDecrement()
+    public function testCollectDecrement(): void
     {
-        $expectedArgs = array(
-            'points' => array(
-                array(
-                    'measurement' => 'series-name',
-                    'fields' => array('value' => -1),
-                ),
-            ),
-            'tags' => array(),
-        );
+        $expectedArgs = ['points' => [['measurement' => 'series-name', 'fields' => ['value' => -1]]], 'tags' => []];
 
         $this->client->expects($this->once())
             ->method('mark')
@@ -77,17 +59,9 @@ class InfluxDBTest extends TestCase
         $this->collector->flush();
     }
 
-    public function testCollectTiming()
+    public function testCollectTiming(): void
     {
-        $expectedArgs = array(
-            'points' => array(
-                array(
-                    'measurement' => 'series-name',
-                    'fields' => array('value' => 47.11),
-                ),
-            ),
-            'tags' => array(),
-        );
+        $expectedArgs = ['points' => [['measurement' => 'series-name', 'fields' => ['value' => 47.11]]], 'tags' => []];
 
         $this->client->expects($this->once())
             ->method('mark')
@@ -97,17 +71,9 @@ class InfluxDBTest extends TestCase
         $this->collector->flush();
     }
 
-    public function testCollectMeasure()
+    public function testCollectMeasure(): void
     {
-        $expectedArgs = array(
-            'points' => array(
-                array(
-                    'measurement' => 'series-name',
-                    'fields' => array('value' => 47.11),
-                ),
-            ),
-            'tags' => array(),
-        );
+        $expectedArgs = ['points' => [['measurement' => 'series-name', 'fields' => ['value' => 47.11]]], 'tags' => []];
 
         $this->client->expects($this->once())
             ->method('mark')
@@ -117,22 +83,11 @@ class InfluxDBTest extends TestCase
         $this->collector->flush();
     }
 
-    public function testCollectMeasureWithTags()
+    public function testCollectMeasureWithTags(): void
     {
-        $expectedTags = array(
-            'dc' => 'west',
-            'node' => 'nemesis101',
-        );
+        $expectedTags = ['dc' => 'west', 'node' => 'nemesis101'];
 
-        $expectedArgs = array(
-            'points' => array(
-                array(
-                    'measurement' => 'series-name',
-                    'fields' => array('value' => 47.11),
-                ),
-            ),
-            'tags' => $expectedTags,
-        );
+        $expectedArgs = ['points' => [['measurement' => 'series-name', 'fields' => ['value' => 47.11]]], 'tags' => $expectedTags];
 
         $this->client->expects($this->once())
             ->method('mark')

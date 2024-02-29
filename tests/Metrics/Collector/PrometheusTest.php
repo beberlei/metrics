@@ -13,28 +13,28 @@
 
 namespace Beberlei\Metrics\Tests\Collector;
 
+use Prometheus\CollectorRegistry;
+use Prometheus\Gauge;
 use Beberlei\Metrics\Collector\Prometheus;
 use PHPUnit\Framework\TestCase;
 use Prometheus\Exception\MetricNotFoundException;
 
 class PrometheusTest extends TestCase
 {
-    const TEST_NAMESPACE = 'some_metric_namespace';
-    const TEST_VARIABLE_NAME = 'some_variable_name';
+    public const TEST_NAMESPACE = 'some_metric_namespace';
+
+    public const TEST_VARIABLE_NAME = 'some_variable_name';
 
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject
      */
     private $collectorRegistryMock;
 
-    /**
-     * @var Prometheus
-     */
-    private $collector;
+    private Prometheus $collector;
 
     protected function setUp(): void
     {
-        $this->collectorRegistryMock = $this->getMockBuilder('\\Prometheus\\CollectorRegistry')
+        $this->collectorRegistryMock = $this->getMockBuilder(CollectorRegistry::class)
             ->disableOriginalConstructor()
             ->getMock()
         ;
@@ -42,18 +42,18 @@ class PrometheusTest extends TestCase
         $this->collector = new Prometheus($this->collectorRegistryMock, self::TEST_NAMESPACE);
     }
 
-    public function testMeasure()
+    public function testMeasure(): void
     {
         $expectedVariableValue = 123;
 
-        $gaugeMock = $this->getMockBuilder('\\Prometheus\\Gauge')
+        $gaugeMock = $this->getMockBuilder(Gauge::class)
             ->disableOriginalConstructor()
             ->getMock()
         ;
         $gaugeMock
             ->expects($this->once())
             ->method('set')
-            ->with($expectedVariableValue, array())
+            ->with($expectedVariableValue, [])
         ;
 
         $this->collectorRegistryMock
@@ -67,12 +67,12 @@ class PrometheusTest extends TestCase
         $this->collector->flush();
     }
 
-    public function testMeasureWithTags()
+    public function testMeasureWithTags(): void
     {
         $expectedVariableValue = 123;
-        $expectedTagsValues = array('value1', 'value2');
+        $expectedTagsValues = ['value1', 'value2'];
 
-        $gaugeMock = $this->getMockBuilder('\\Prometheus\\Gauge')
+        $gaugeMock = $this->getMockBuilder(Gauge::class)
             ->disableOriginalConstructor()
             ->getMock()
         ;
@@ -89,25 +89,22 @@ class PrometheusTest extends TestCase
             ->willReturn($gaugeMock)
         ;
 
-        $this->collector->setTags(array(
-            'tag1' => 'value1',
-            'tag2' => 'value2',
-        ));
+        $this->collector->setTags(['tag1' => 'value1', 'tag2' => 'value2']);
 
         $this->collector->measure(self::TEST_VARIABLE_NAME, $expectedVariableValue);
         $this->collector->flush();
     }
 
-    public function testIncrement()
+    public function testIncrement(): void
     {
-        $gaugeMock = $this->getMockBuilder('\\Prometheus\\Gauge')
+        $gaugeMock = $this->getMockBuilder(Gauge::class)
             ->disableOriginalConstructor()
             ->getMock()
         ;
         $gaugeMock
             ->expects($this->once())
             ->method('inc')
-            ->with(array())
+            ->with([])
         ;
 
         $this->collectorRegistryMock
@@ -121,11 +118,11 @@ class PrometheusTest extends TestCase
         $this->collector->flush();
     }
 
-    public function testIncrementWithTags()
+    public function testIncrementWithTags(): void
     {
-        $expectedTagsValues = array('value1', 'value2');
+        $expectedTagsValues = ['value1', 'value2'];
 
-        $gaugeMock = $this->getMockBuilder('\\Prometheus\\Gauge')
+        $gaugeMock = $this->getMockBuilder(Gauge::class)
             ->disableOriginalConstructor()
             ->getMock()
         ;
@@ -142,25 +139,22 @@ class PrometheusTest extends TestCase
             ->willReturn($gaugeMock)
         ;
 
-        $this->collector->setTags(array(
-            'tag1' => 'value1',
-            'tag2' => 'value2',
-        ));
+        $this->collector->setTags(['tag1' => 'value1', 'tag2' => 'value2']);
 
         $this->collector->increment(self::TEST_VARIABLE_NAME);
         $this->collector->flush();
     }
 
-    public function testDecrement()
+    public function testDecrement(): void
     {
-        $gaugeMock = $this->getMockBuilder('\\Prometheus\\Gauge')
+        $gaugeMock = $this->getMockBuilder(Gauge::class)
             ->disableOriginalConstructor()
             ->getMock()
         ;
         $gaugeMock
             ->expects($this->once())
             ->method('dec')
-            ->with(array())
+            ->with([])
         ;
 
         $this->collectorRegistryMock
@@ -174,11 +168,11 @@ class PrometheusTest extends TestCase
         $this->collector->flush();
     }
 
-    public function testDecrementWithTags()
+    public function testDecrementWithTags(): void
     {
-        $expectedTagsValues = array('value1', 'value2');
+        $expectedTagsValues = ['value1', 'value2'];
 
-        $gaugeMock = $this->getMockBuilder('\\Prometheus\\Gauge')
+        $gaugeMock = $this->getMockBuilder(Gauge::class)
             ->disableOriginalConstructor()
             ->getMock()
         ;
@@ -195,27 +189,24 @@ class PrometheusTest extends TestCase
             ->willReturn($gaugeMock)
         ;
 
-        $this->collector->setTags(array(
-            'tag1' => 'value1',
-            'tag2' => 'value2',
-        ));
+        $this->collector->setTags(['tag1' => 'value1', 'tag2' => 'value2']);
 
         $this->collector->decrement(self::TEST_VARIABLE_NAME);
         $this->collector->flush();
     }
 
-    public function testTiming()
+    public function testTiming(): void
     {
         $expectedVariableValue = 123;
 
-        $gaugeMock = $this->getMockBuilder('\\Prometheus\\Gauge')
+        $gaugeMock = $this->getMockBuilder(Gauge::class)
             ->disableOriginalConstructor()
             ->getMock()
         ;
         $gaugeMock
             ->expects($this->once())
             ->method('set')
-            ->with($expectedVariableValue, array())
+            ->with($expectedVariableValue, [])
         ;
 
         $this->collectorRegistryMock
@@ -229,12 +220,12 @@ class PrometheusTest extends TestCase
         $this->collector->flush();
     }
 
-    public function testTimingWithTags()
+    public function testTimingWithTags(): void
     {
         $expectedVariableValue = 123;
-        $expectedTagsValues = array('value1', 'value2');
+        $expectedTagsValues = ['value1', 'value2'];
 
-        $gaugeMock = $this->getMockBuilder('\\Prometheus\\Gauge')
+        $gaugeMock = $this->getMockBuilder(Gauge::class)
             ->disableOriginalConstructor()
             ->getMock()
         ;
@@ -251,22 +242,19 @@ class PrometheusTest extends TestCase
             ->willReturn($gaugeMock)
         ;
 
-        $this->collector->setTags(array(
-            'tag1' => 'value1',
-            'tag2' => 'value2',
-        ));
+        $this->collector->setTags(['tag1' => 'value1', 'tag2' => 'value2']);
 
         $this->collector->timing(self::TEST_VARIABLE_NAME, $expectedVariableValue);
         $this->collector->flush();
     }
 
-    public function testMeasureWhenSetNewVariableWithTags()
+    public function testMeasureWhenSetNewVariableWithTags(): void
     {
         $expectedVariableValue = 123;
-        $expectedTagsNames = array('tag1', 'tag2');
-        $expectedTagsValues = array('value1', 'value2');
+        $expectedTagsNames = ['tag1', 'tag2'];
+        $expectedTagsValues = ['value1', 'value2'];
 
-        $gaugeMock = $this->getMockBuilder('\\Prometheus\\Gauge')
+        $gaugeMock = $this->getMockBuilder(Gauge::class)
             ->disableOriginalConstructor()
             ->getMock()
         ;
@@ -289,10 +277,7 @@ class PrometheusTest extends TestCase
             ->willReturn($gaugeMock)
         ;
 
-        $this->collector->setTags(array(
-            'tag1' => 'value1',
-            'tag2' => 'value2',
-        ));
+        $this->collector->setTags(['tag1' => 'value1', 'tag2' => 'value2']);
 
         $this->collector->measure(self::TEST_VARIABLE_NAME, $expectedVariableValue);
         $this->collector->flush();
@@ -301,24 +286,24 @@ class PrometheusTest extends TestCase
     /**
      * Method flush must to reset value of field `data`.
      */
-    public function testFlushWhenCallsTwiceWithDifferentData()
+    public function testFlushWhenCallsTwiceWithDifferentData(): void
     {
         $firstExpectedVariableValue = 123;
         $secondExpectedVariableValue = 321;
 
-        $gaugeMock = $this->getMockBuilder('\\Prometheus\\Gauge')
+        $gaugeMock = $this->getMockBuilder(Gauge::class)
             ->disableOriginalConstructor()
             ->getMock()
         ;
         $gaugeMock
             ->expects($this->at(0))
             ->method('set')
-            ->with($firstExpectedVariableValue, array())
+            ->with($firstExpectedVariableValue, [])
         ;
         $gaugeMock
             ->expects($this->at(1))
             ->method('set')
-            ->with($secondExpectedVariableValue, array())
+            ->with($secondExpectedVariableValue, [])
         ;
 
         $this->collectorRegistryMock

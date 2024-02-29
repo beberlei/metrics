@@ -13,10 +13,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 class BeberleiMetricsExtension extends Extension
 {
-    /**
-     * @return void
-     */
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = $this->getConfiguration($configs, $container);
         $config = $this->processConfiguration($configuration, $configs);
@@ -39,24 +36,16 @@ class BeberleiMetricsExtension extends Extension
         $container->setAlias(Collector::class, 'beberlei_metrics.collector');
     }
 
-    private function createCollector($type, $config)
+    private function createCollector($type, array $config)
     {
         $definition = new ChildDefinition('beberlei_metrics.collector_proto.'.$config['type']);
 
         // Theses listeners should be as late as possible
-        $definition->addTag('kernel.event_listener', array(
-            'method' => 'flush',
-            'priority' => -1024,
-            'event' => 'kernel.terminate',
-        ));
-        $definition->addTag('kernel.event_listener', array(
-            'method' => 'flush',
-            'priority' => -1024,
-            'event' => 'console.terminate',
-        ));
+        $definition->addTag('kernel.event_listener', ['method' => 'flush', 'priority' => -1024, 'event' => 'kernel.terminate']);
+        $definition->addTag('kernel.event_listener', ['method' => 'flush', 'priority' => -1024, 'event' => 'console.terminate']);
 
         if (count($config['tags']) > 0) {
-            $definition->addMethodCall('setTags', array($config['tags']));
+            $definition->addMethodCall('setTags', [$config['tags']]);
         }
 
         switch ($type) {
