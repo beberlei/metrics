@@ -13,6 +13,9 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 class BeberleiMetricsExtension extends Extension
 {
+    /**
+     * @return void
+     */
     public function load(array $configs, ContainerBuilder $container)
     {
         $configuration = $this->getConfiguration($configs, $container);
