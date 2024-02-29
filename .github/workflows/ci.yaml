@@ -1,0 +1,66 @@
+name: CI
+
+on:
+    push:
+        # FIXME: Change the branch name to your main branch
+        branches: [main]
+    pull_request: ~
+
+jobs:
+    cs:
+        name: PHP-CS-Fixer
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: PHP-CS-Fixer
+              uses: docker://oskarstark/php-cs-fixer-ga
+              with:
+                  args: --diff --dry-run
+
+    phpstan:
+        name: PHPStan
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Install Composer dependencies
+              run: composer update --prefer-dist --no-interaction
+
+            - name: PHPStan
+              env:
+                  CHECK_PLATFORM_REQUIREMENTS: false
+                  REQUIRE_DEV: true
+              uses: docker://oskarstark/phpstan-ga
+
+    phpunit:
+        name: PHPUnit on PHP ${{ matrix.php-version }} ${{ matrix.name }}
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                php-version: ["8.2", "8.3"]
+                composer-flags: [""]
+                name: [""]
+                include:
+                    - php-version: 8.1
+                      composer-flags: "--prefer-lowest"
+                      name: "(prefer lowest dependencies)"
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup PHP, with composer and extensions
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php-version }}
+                  extensions: mbstring, xml
+                  ini-values: phar.readonly="Off"
+
+            - name: Install Composer dependencies
+              run: composer update --prefer-dist --no-interaction ${{ matrix.composer-flags }}
+
+            - name: Run Tests
+              run: vendor/bin/simple-phpunit
