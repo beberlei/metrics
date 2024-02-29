@@ -1,14 +1,10 @@
 <?php
-/**
- * Beberlei Metrics.
+
+/*
+ * This file is part of the beberlei/metrics project.
  *
- * LICENSE
- *
- * This source file is subject to the MIT license that is bundled
- * with this package in the file LICENSE.txt.
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to kontakt@beberlei.de so I can send you a copy immediately.
+ * For the full copyright and license information, please view the LICENSE.md
+ * file that was distributed with this source code.
  */
 
 namespace Beberlei\Metrics\Tests\Collector;

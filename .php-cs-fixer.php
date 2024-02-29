@@ -1,5 +1,19 @@
 <?php
 
+/*
+ * This file is part of the beberlei/metrics project.
+ *
+ * For the full copyright and license information, please view the LICENSE.md
+ * file that was distributed with this source code.
+ */
+
+$fileHeaderComment = <<<'LICENSE'
+    This file is part of the beberlei/metrics project.
+
+    For the full copyright and license information, please view the LICENSE.md
+    file that was distributed with this source code.
+    LICENSE;
+
 $finder = PhpCsFixer\Finder::create()
     ->ignoreVCSIgnored(true)
     ->in(__DIR__)
@@ -16,6 +30,7 @@ return (new PhpCsFixer\Config())
         '@Symfony' => true,
         '@Symfony:risky' => true,
         'heredoc_indentation' => false,
+        'header_comment' => ['header' => $fileHeaderComment],
         'single_line_empty_body' => false,
         'ordered_types' => false, // From @PhpCsFixer but we don't want it
         'php_unit_internal_class' => false, // From @PhpCsFixer but we don't want it
