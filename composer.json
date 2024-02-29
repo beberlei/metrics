@@ -25,7 +25,6 @@
         "jimdo/prometheus_client_php": "^0.5.1",
         "symfony/config": "^5.4 || ^6.4 || ^7.0",
         "symfony/dependency-injection": "^5.4 || ^6.4 || ^7.0",
-        "symfony/http-client": "^5.4 || ^6.4 || ^7.0",
         "symfony/http-kernel": "^5.4 || ^6.4 || ^7.0",
         "symfony/phpunit-bridge": "^6.4.4 || ^7.0"
     },
@@ -50,7 +49,6 @@
     },
     "suggest": {
         "corley/influxdb-sdk": "For InfluxDB integration",
-        "kriswallsmith/buzz": "For Librato integration",
         "jimdo/prometheus_client_php": "For Prometheus integration"
     },
     "config": {

@@ -14,7 +14,6 @@ Currently supported backends:
 * Graphite
 * InfluxDB
 * Telegraf
-* Librato
 * Logger (Psr\Log\LoggerInterface)
 * Null (Dummy that does nothing)
 * Prometheus
@@ -70,12 +69,6 @@ $collector->flush();
 <?php
 $statsd = \Beberlei\Metrics\Factory::create('statsd');
 
-$librato = \Beberlei\Metrics\Factory::create('librato', array(
-    'hostname' => 'foo.beberlei.de',
-    'username' => 'foo',
-    'password' => 'bar',
-));
-
 $null = \Beberlei\Metrics\Factory::create('null');
 ```
 
@@ -106,11 +99,6 @@ beberlei_metrics:
     collectors:
         foo:
             type: statsd
-        librato:
-            type: librato
-            username: foo
-            password: bar
-            source: hermes10
         dbal:
             type: doctrine_dbal
             connection: metrics # using the connection named "metrics"

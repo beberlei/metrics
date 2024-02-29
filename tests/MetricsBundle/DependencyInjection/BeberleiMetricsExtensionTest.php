@@ -18,7 +18,6 @@ use Beberlei\Metrics\Collector\DogStatsD;
 use Beberlei\Metrics\Collector\Graphite;
 use Beberlei\Metrics\Collector\InfluxDB;
 use Beberlei\Metrics\Collector\InMemory;
-use Beberlei\Metrics\Collector\Librato;
 use Beberlei\Metrics\Collector\Logger;
 use Beberlei\Metrics\Collector\NullCollector;
 use Beberlei\Metrics\Collector\Prometheus;
@@ -49,29 +48,6 @@ class BeberleiMetricsExtensionTest extends TestCase
         $this->assertSame('udp', $this->getProperty($collector, 'protocol'));
         $this->assertSame('graphite.localhost', $this->getProperty($collector, 'host'));
         $this->assertSame(1234, $this->getProperty($collector, 'port'));
-    }
-
-    /**
-     * The source has to be specified to use a Librato.
-     */
-    public function testWithLibratoAndInvalidConfiguration(): void
-    {
-        $this->expectException(InvalidConfigurationException::class);
-
-        $container = $this->createContainer(['collectors' => ['simple' => ['type' => 'librato']]], ['beberlei_metrics.collector.librato']);
-
-        $this->assertInstanceOf(Librato::class, $container->get('beberlei_metrics.collector.librato'));
-    }
-
-    public function testWithLibrato(): void
-    {
-        $container = $this->createContainer(['collectors' => ['full' => ['type' => 'librato', 'source' => 'foo.beberlei.de', 'username' => 'foo', 'password' => 'bar']]], ['beberlei_metrics.collector.full']);
-
-        $collector = $container->get('beberlei_metrics.collector.full');
-        $this->assertInstanceOf(Librato::class, $collector);
-        $this->assertSame('foo.beberlei.de', $this->getProperty($collector, 'source'));
-        $this->assertSame('foo', $this->getProperty($collector, 'username'));
-        $this->assertSame('bar', $this->getProperty($collector, 'password'));
     }
 
     public function testWithLogger(): void

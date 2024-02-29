@@ -18,19 +18,14 @@ use Beberlei\Metrics\Collector\DoctrineDBAL;
 use Beberlei\Metrics\Collector\DogStatsD;
 use Beberlei\Metrics\Collector\Graphite;
 use Beberlei\Metrics\Collector\InfluxDB;
-use Beberlei\Metrics\Collector\Librato;
 use Beberlei\Metrics\Collector\Logger;
 use Beberlei\Metrics\Collector\NullCollector;
 use Beberlei\Metrics\Collector\Prometheus;
 use Beberlei\Metrics\Collector\StatsD;
 use Beberlei\Metrics\Collector\Telegraf;
-use Symfony\Component\HttpClient\HttpClient;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 abstract class Factory
 {
-    private static HttpClientInterface $httpClient;
-
     /**
      * @throws MetricsException
      */
@@ -115,21 +110,6 @@ abstract class Factory
 
                 return new Graphite($options['host'], $options['port']);
 
-            case 'librato':
-                if (!isset($options['hostname'])) {
-                    throw new MetricsException('Hostname is required for librato collector.');
-                }
-
-                if (!isset($options['username'])) {
-                    throw new MetricsException('No username given for librato collector.');
-                }
-
-                if (!isset($options['password'])) {
-                    throw new MetricsException('No password given for librato collector.');
-                }
-
-                return new Librato(self::getHttpClient(), $options['hostname'], $options['username'], $options['password']);
-
             case 'doctrine_dbal':
                 if (!isset($options['connection'])) {
                     throw new MetricsException('connection is required for Doctrine DBAL collector.');
@@ -166,10 +146,5 @@ abstract class Factory
             default:
                 throw new MetricsException(sprintf('Unknown metrics collector given (%s).', $type));
         }
-    }
-
-    private static function getHttpClient(): HttpClientInterface
-    {
-        return self::$httpClient ??= HttpClient::create();
     }
 }

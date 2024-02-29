@@ -6,7 +6,6 @@ use Beberlei\Metrics\Collector\DoctrineDBAL;
 use Beberlei\Metrics\Collector\DogStatsD;
 use Beberlei\Metrics\Collector\Graphite;
 use Beberlei\Metrics\Collector\InfluxDB;
-use Beberlei\Metrics\Collector\Librato;
 use Beberlei\Metrics\Collector\Logger;
 use Beberlei\Metrics\Collector\NullCollector;
 use Beberlei\Metrics\Collector\Prometheus;
@@ -33,7 +32,6 @@ class FactoryTest extends TestCase
         yield [DogStatsD::class, 'dogstatsd', ['host' => 'localhost']];
         yield [Graphite::class, 'graphite'];
         yield [Graphite::class, 'graphite', ['host' => 'localhost', 'port' => 1234]];
-        yield [Librato::class, 'librato', ['hostname' => 'foobar.com', 'username' => 'username', 'password' => 'password']];
         yield [DoctrineDBAL::class, 'doctrine_dbal', ['connection' => $this->getMockBuilder(Connection::class)->disableOriginalConstructor()->getMock()]];
         yield [Logger::class, 'logger', ['logger' => new NullLogger()]];
         yield [NullCollector::class, 'null'];
@@ -61,9 +59,6 @@ class FactoryTest extends TestCase
         yield ['You should specified a host and a port if you specified a prefix.', 'dogstatsd', ['port' => '1234', 'prefix' => 'prefix']];
         yield ['You should specified a host and a port if you specified a prefix.', 'dogstatsd', ['hostname' => 'foobar.com', 'prefix' => 'prefix']];
         yield ['You should specified a host if you specified a port.', 'graphite', ['port' => '1234']];
-        yield ['Hostname is required for librato collector.', 'librato'];
-        yield ['No username given for librato collector.', 'librato', ['hostname' => 'foobar.com']];
-        yield ['No password given for librato collector.', 'librato', ['hostname' => 'foobar.com', 'username' => 'username']];
         yield ['connection is required for Doctrine DBAL collector.', 'doctrine_dbal'];
         yield ["Missing 'logger' key with logger service.", 'logger'];
         yield ["Missing 'client' key for InfluxDB collector.", 'influxdb'];

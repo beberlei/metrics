@@ -78,12 +78,6 @@ class BeberleiMetricsExtension extends Extension
                 $definition->replaceArgument(0, new Reference($config['influxdb_client']));
 
                 return $definition;
-            case 'librato':
-                $definition->replaceArgument(1, $config['host']);
-                $definition->replaceArgument(2, $config['username']);
-                $definition->replaceArgument(3, $config['password']);
-
-                return $definition;
             case 'logger':
             case 'null':
             case 'memory':
