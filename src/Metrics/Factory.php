@@ -13,18 +13,15 @@
 
 namespace Beberlei\Metrics;
 
-use Buzz\Browser;
-use Buzz\Client\Curl;
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * Static factory for Metrics Collectors.
  */
 abstract class Factory
 {
-    /**
-     * @var Buzz\Browser
-     */
-    private static $httpClient;
+    private static HttpClientInterface $httpClient;
 
     /**
      * Create Metrics Collector Instance.
@@ -162,12 +159,8 @@ abstract class Factory
         }
     }
 
-    private static function getHttpClient()
+    private static function getHttpClient(): HttpClientInterface
     {
-        if (self::$httpClient === null) {
-            self::$httpClient = new Browser(new Curl());
-        }
-
-        return self::$httpClient;
+        return self::$httpClient ??= HttpClient::create();
     }
 }

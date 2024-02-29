@@ -23,15 +23,16 @@
         "corley/influxdb-sdk": "^0.5.1",
         "doctrine/dbal": "~2.0",
         "jimdo/prometheus_client_php": "^0.5",
-        "kriswallsmith/buzz": "*",
         "symfony/config": "^5.4 || ^6.4 || ^7.0",
         "symfony/dependency-injection": "^5.4 || ^6.4 || ^7.0",
+        "symfony/http-client": "^5.4 || ^6.4 || ^7.0",
         "symfony/http-kernel": "^5.4 || ^6.4 || ^7.0",
         "symfony/phpunit-bridge": "^6.4 || ^7.0"
     },
     "conflict": {
         "symfony/config": "<5.4",
         "symfony/dependency-injection": "<5.4",
+        "symfony/http-client": "<5.4",
         "symfony/http-kernel": "<5.4"
     },
     "autoload": {

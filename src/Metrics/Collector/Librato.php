@@ -13,12 +13,12 @@
 
 namespace Beberlei\Metrics\Collector;
 
-use Buzz\Browser;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class Librato implements Collector
 {
-    /** @var \Buzz\Browser */
-    private $browser;
+    private HttpClientInterface $httpClient;
 
     /** @var string */
     private $source;
@@ -36,14 +36,13 @@ class Librato implements Collector
     );
 
     /**
-     * @param \Buzz\Browser $browser
      * @param string        $source
      * @param string        $username
      * @param string        $password
      */
-    public function __construct(Browser $browser, $source, $username, $password)
+    public function __construct(HttpClientInterface $httpClient, $source, $username, $password)
     {
-        $this->browser = $browser;
+        $this->httpClient = $httpClient;
         $this->source = $source;
         $this->username = $username;
         $this->password = $password;
@@ -107,12 +106,12 @@ class Librato implements Collector
         }
 
         try {
-            $this->browser->post('https://metrics-api.librato.com/v1/metrics', array(
-                'Authorization: Basic '.base64_encode($this->username.':'.$this->password),
-                'Content-Type: application/json',
-            ), json_encode($this->data));
+            $this->httpClient->request('POST', 'https://metrics-api.librato.com/v1/metrics', [
+                'auth_basic' => [$this->username, $this->password],
+                'json' => $this->data,
+            ]);
             $this->data = array('gauges' => array(), 'counters' => array());
-        } catch (\Exception $e) {
+        } catch (ExceptionInterface) {
         }
     }
 }

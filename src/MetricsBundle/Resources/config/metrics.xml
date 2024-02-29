@@ -6,11 +6,8 @@
 
     <services>
         <!-- Util -->
-        <service id="beberlei_metrics.util.buzz.curl" class="Buzz\Client\Curl" public="false">
-        </service>
-
-        <service id="beberlei_metrics.util.buzz.browser" class="Buzz\Browser" public="false">
-            <argument type="service" id="beberlei_metrics.util.buzz.curl" />
+        <service id="beberlei_metrics.util.http_client" class="Symfony\Contracts\HttpClient\HttpClientInterface" public="false">
+            <factory class="Symfony\Component\HttpClient\HttpClient" method="create" />
         </service>
 
         <!-- Prototype / Collector -->
@@ -26,7 +23,7 @@
             <argument /> <!-- InfluxDB client, set by the extension -->
         </service>
         <service id="beberlei_metrics.collector_proto.librato" class="Beberlei\Metrics\Collector\Librato" abstract="true">
-            <argument type="service" id="beberlei_metrics.util.buzz.browser" />
+            <argument type="service" id="beberlei_metrics.util.http_client" />
             <argument /> <!-- host, set by the extension -->
             <argument /> <!-- port, set by the extension -->
             <argument /> <!-- protocol, set by the extension -->
