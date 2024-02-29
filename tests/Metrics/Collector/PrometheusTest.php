@@ -32,7 +32,7 @@ class PrometheusTest extends TestCase
      */
     private $collector;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->collectorRegistryMock = $this->getMockBuilder('\\Prometheus\\CollectorRegistry')
             ->disableOriginalConstructor()

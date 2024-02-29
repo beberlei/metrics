@@ -29,7 +29,7 @@ class InfluxDBTest extends TestCase
      */
     private $collector;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->client = $this->getMockBuilder('\\InfluxDB\\Client')
             ->disableOriginalConstructor()
