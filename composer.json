@@ -22,14 +22,14 @@
         "php": ">=8.1",
         "doctrine/dbal": "^2.0",
         "influxdb/influxdb-php": "^1.15",
-        "jimdo/prometheus_client_php": "^0.5.1",
+        "promphp/prometheus_client_php": "^2",
         "symfony/framework-bundle": "^5.4 || ^6.4 || ^7.0",
         "symfony/phpunit-bridge": "^6.4.4 || ^7.0"
     },
     "conflict": {
         "doctrine/dbal": "<2",
         "influxdb/influxdb-php": "<1.15",
-        "jimdo/prometheus_client_php": "<0.5.1",
+        "promphp/prometheus_client_php": "<2",
         "symfony/framework-bundle": "<5.4"
     },
     "autoload": {
@@ -44,8 +44,10 @@
         }
     },
     "suggest": {
+        "doctrine/dbal": "For Doctrine DBAL integration",
         "influxdb/influxdb-php": "For InfluxDB integration",
-        "jimdo/prometheus_client_php": "For Prometheus integration"
+        "symfony/framework-bundle": "For Symfony integration",
+        "promphp/prometheus_client_php": "For Prometheus integration"
     },
     "config": {
         "sort-packages": true

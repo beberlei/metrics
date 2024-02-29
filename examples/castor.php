@@ -30,13 +30,10 @@ function create_default_variables(): array
     return [
         'project_name' => 'symfony-metrics',
         'root_domain' => 'symfony-metrics.test',
-        'extra_domains' => [
-            'grafana.symfony-metrics.test',
-        ],
     ];
 }
 
-#[AsTask(description: 'Builds and starts the infrastructure, then install the application (composer, yarn, ...)')]
+#[AsTask(description: 'Builds and starts the infrastructure, then install the application (composer, ...)')]
 function start(): void
 {
     io()->title('Starting the stack');
@@ -56,16 +53,13 @@ function start(): void
     about();
 }
 
-#[AsTask(description: 'Installs the application (composer, yarn, ...)', namespace: 'app', aliases: ['install'])]
+#[AsTask(description: 'Installs the application (composer, ...)', namespace: 'app', aliases: ['install'])]
 function install(): void
 {
     io()->title('Installing the application');
 
     io()->section('Installing PHP dependencies');
     docker_compose_run('composer install -n --prefer-dist --optimize-autoloader');
-
-    io()->section('Installing importmap');
-    docker_compose_run('bin/console importmap:install');
 
     qa\install();
 }

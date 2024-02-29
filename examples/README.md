@@ -1,4 +1,8 @@
-# My project
+# Symfony demo application
+
+This application use
+[jolicode/docker-starter](https://github.com/jolicode/docker-starter) to provide
+a local development environment.
 
 ## Running the application locally
 
@@ -7,8 +11,6 @@
 A Docker environment is provided and requires you to have these tools available:
 
  * Docker
- * Bash
- * PHP >= 8.1
  * [Castor](https://github.com/jolicode/castor#installation)
 
 #### Castor
@@ -50,7 +52,7 @@ This IP is probably `127.0.0.1` unless you run Docker in a special VM (like dock
 > The router binds port 80 and 443, that's why it will work with `127.0.0.1`
 
 ```
-echo '127.0.0.1 app.test www.app.test' | sudo tee -a /etc/hosts
+echo '127.0.0.1 symfony-metrics.test grafana.symfony-metrics.test' | sudo tee -a /etc/hosts
 ```
 
 ### Starting the stack

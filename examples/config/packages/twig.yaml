@@ -1,5 +1,7 @@
 twig:
     file_name_pattern: '*.twig'
+    globals:
+        project_dir: '%kernel.project_dir%'
 
 when@test:
     twig:

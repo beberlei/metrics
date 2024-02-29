@@ -304,7 +304,7 @@ function create_default_context(): Context
             // If the directory does not exist, we create it. Otherwise, docker
             // will do, as root, and the user will not be able to write in it.
             if (!is_dir($composerCacheDir)) {
-                mkdir($composerCacheDir, 0777, true);
+                mkdir($composerCacheDir, 0o777, true);
             }
         }
 

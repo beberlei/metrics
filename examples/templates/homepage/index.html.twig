@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello{% endblock %}
+
+{% block body %}
+    <h1>Metrics demo application</h1>
+
+    <p>
+        This application demonstrates how to use the
+        <a href="https://github.com/beberlei/metrics"><code>beberlei/metrics</code></a> library.
+        <br />
+        This controller uses all collectors defined in the
+        <a href="{{ (project_dir ~ '/config/packages/metrics.yaml')|file_link(1) }}"><code>config/packages/metrics.yaml</code></a>:
+        <ul>
+            {% for collector in collectors %}
+                <li>
+                    {{ constant('class', collector) }}</li>
+            {% endfor %}
+        </ul>
+    </p>
+
+    <p>
+        The following applications let you explore the collected metrics:
+        <ul>
+            <li><a href="https://grafana.{{ app.request.host }}">Grafana</a>: application with all database configureds</li>
+            <li><a href="https://graphite.{{ app.request.host }}">Graphite</a>: application with graphite, statsd, dogstatsd</li>
+        </ul>
+    </p>
+
+    <h2>Current collectors data</h2>
+
+    <p>Current collectors collected the following metrics:</p>
+
+    <table>
+        <tr>
+            <th>Mesaure</th>
+            <th>Value</th>
+        </tr>
+        <tr>
+            <td><code>random</code></td>
+            <td>{{ random }}</td>
+        </tr>
+        <tr>
+            <td><code>visits</code></td>
+            <td>{{ visits }}</td>
+        </tr>
+        <tr>
+            <td><code>timing</code></td>
+            <td>{{ timing }}</td>
+        </tr>
+        <tr>
+            <td><code>gauge</code></td>
+            <td>{{ gauge }}</td>
+        </tr>
+    </table>
+{% endblock %}

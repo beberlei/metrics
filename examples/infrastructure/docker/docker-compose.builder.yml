@@ -23,3 +23,4 @@ services:
             - "builder-data:/home/app"
             - "${COMPOSER_CACHE_DIR}:/home/app/.composer/cache"
             - "../..:/var/www:cached"
+            - "../../..:/metrics:cached"
