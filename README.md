@@ -50,7 +50,8 @@ $collector->decrement('foo.bar');
 
 $start = microtime(true);
 $diff  = microtime(true) - $start;
-$collector->timing('foo.bar', $diff);
+$diff_milliseconds = (int) (1000 * $diff);
+$collector->timing('foo.bar', $diff_milliseconds);
 
 $value = 1234;
 $collector->measure('foo.bar', $value);
