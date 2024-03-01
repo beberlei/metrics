@@ -20,6 +20,19 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 class BeberleiMetricsExtension extends Extension
 {
+    public const TYPES = [
+        'doctrine_dbal',
+        'dogstatsd',
+        'graphite',
+        'influxdb_v1',
+        'logger',
+        'memory',
+        'null',
+        'prometheus',
+        'statsd',
+        'telegraf',
+    ];
+
     public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = $this->getConfiguration($configs, $container) ?? throw new \LogicException('Expected configuration to be set');
@@ -63,7 +76,7 @@ class BeberleiMetricsExtension extends Extension
         $definition->addTag('kernel.event_listener', ['method' => 'flush', 'priority' => -1024, 'event' => 'kernel.terminate']);
         $definition->addTag('kernel.event_listener', ['method' => 'flush', 'priority' => -1024, 'event' => 'console.terminate']);
         $definition->addTag(CollectorInterface::class);
-        // $definition->addTag('kernel.reset');
+        $definition->addTag('kernel.reset', ['method' => 'flush']);
 
         if ($config['tags'] ?? []) {
             $definition->addMethodCall('setTags', [$config['tags']]);

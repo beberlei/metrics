@@ -195,6 +195,13 @@ class BeberleiMetricsExtensionTest extends TestCase
         $this->createContainer(['collectors' => ['prometheus' => ['type' => 'prometheus']]]);
     }
 
+    public function testWithInvalid(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessageMatches('/^The value "invalid" is not allowed for path "beberlei_metrics.collectors.invalid.type". Permissible values: /');
+        $this->createContainer(['collectors' => ['invalid' => ['type' => 'invalid']]]);
+    }
+
     private function createContainer($configs, array $publicServices = [], array $additionalServices = []): ContainerBuilder
     {
         $container = new ContainerBuilder();
