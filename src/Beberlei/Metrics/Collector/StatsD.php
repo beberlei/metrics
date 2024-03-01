@@ -92,7 +92,7 @@ class StatsD implements Collector, GaugeableCollector
             return;
         }
 
-        $fp = fsockopen('udp://'.$this->host, $this->port, $errno, $errstr, 1.0);
+        $fp = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
 
         if (!$fp) {
             return;
@@ -100,11 +100,11 @@ class StatsD implements Collector, GaugeableCollector
 
         $level = error_reporting(0);
         foreach ($this->data as $line) {
-            fwrite($fp, $this->prefix.$line);
+            socket_sendto($fp, $this->prefix.$line, strlen($this->prefix.$line), 0, $this->host, $this->port);
         }
         error_reporting($level);
 
-        fclose($fp);
+        socket_close($fp);
 
         $this->data = array();
     }
