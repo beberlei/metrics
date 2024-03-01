@@ -23,19 +23,14 @@
         "doctrine/dbal": "^2.0",
         "influxdb/influxdb-php": "^1.15",
         "jimdo/prometheus_client_php": "^0.5.1",
-        "symfony/config": "^5.4 || ^6.4 || ^7.0",
-        "symfony/dependency-injection": "^5.4 || ^6.4 || ^7.0",
-        "symfony/http-kernel": "^5.4 || ^6.4 || ^7.0",
+        "symfony/framework-bundle": "^5.4 || ^6.4 || ^7.0",
         "symfony/phpunit-bridge": "^6.4.4 || ^7.0"
     },
     "conflict": {
         "doctrine/dbal": "<2",
         "influxdb/influxdb-php": "<1.15",
         "jimdo/prometheus_client_php": "<0.5.1",
-        "symfony/config": "<5.4",
-        "symfony/dependency-injection": "<5.4",
-        "symfony/http-client": "<5.4",
-        "symfony/http-kernel": "<5.4"
+        "symfony/framework-bundle": "<5.4"
     },
     "autoload": {
         "psr-4": {
