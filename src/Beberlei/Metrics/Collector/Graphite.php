@@ -29,19 +29,23 @@ class Graphite implements Collector
     /** @var int */
     private $port;
 
+    /** @var int fsocket connection timeout, in seconds. */
+    private $timeout;
+
     /** @var array */
     private $data = array();
 
     /**
      * @param string $host
-     * @param int    $port
+     * @param int $port
      * @param string $protocol
      */
-    public function __construct($host = 'localhost', $port = 2003, $protocol = 'tcp')
+    public function __construct($host = 'localhost', $port = 2003, $timeout = null, $protocol = 'tcp')
     {
         $this->host = $host;
         $this->port = $port;
         $this->protocol = $protocol;
+        $this->timeout = $timeout;
     }
 
     /**
@@ -85,20 +89,17 @@ class Graphite implements Collector
             return;
         }
 
-        try {
-            $fp = fsockopen($this->protocol.'://'.$this->host, $this->port);
+        $fp = @fsockopen($this->protocol . '://' . $this->host, $this->port, $errno, $errmsg, $this->timeout);
 
-            if (!$fp) {
-                return;
-            }
-
-            foreach ($this->data as $line) {
-                fwrite($fp, $line);
-            }
-
-            fclose($fp);
-        } catch (Exception $e) {
+        if ($errno != 0 || $fp == false) {
+            throw new \RuntimeException("Couldn't connect to " . $this->host . ':' . $this->port . ' with message: ' . $errmsg);
         }
+
+        foreach ($this->data as $line) {
+            fwrite($fp, $line);
+        }
+
+        fclose($fp);
 
         $this->data = array();
     }
@@ -113,3 +114,4 @@ class Graphite implements Collector
         );
     }
 }
+
