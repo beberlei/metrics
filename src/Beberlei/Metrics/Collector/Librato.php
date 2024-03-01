@@ -14,11 +14,14 @@
 namespace Beberlei\Metrics\Collector;
 
 use Buzz\Browser;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class Librato implements Collector
 {
-    /** @var \Buzz\Browser */
-    private $browser;
+    const ENDPOINT = 'https://metrics-api.librato.com/v1/metrics';
+
+    /** @var HttpClientInterface|Browser */
+    private $client;
 
     /** @var string */
     private $source;
@@ -36,14 +39,18 @@ class Librato implements Collector
     );
 
     /**
-     * @param \Buzz\Browser $browser
-     * @param string        $source
-     * @param string        $username
-     * @param string        $password
+     * @param HttpClientInterface|Browser   $client
+     * @param string                        $source
+     * @param string                        $username
+     * @param string                        $password
      */
-    public function __construct(Browser $browser, $source, $username, $password)
+    public function __construct($client, $source, $username, $password)
     {
-        $this->browser = $browser;
+        if (!$client instanceof Browser && !$client instanceof HttpClientInterface) {
+            throw new \TypeError(sprintf('Argument 1 passed to %s::%s() must be an instance of %s or %s, %s given', __CLASS__, __METHOD__, HttpClientInterface::class, Browser::class, \is_object($client) ? \get_class($client) : \gettype($client)));
+        }
+
+        $this->client = $client;
         $this->source = $source;
         $this->username = $username;
         $this->password = $password;
@@ -107,10 +114,18 @@ class Librato implements Collector
         }
 
         try {
-            $this->browser->post('https://metrics-api.librato.com/v1/metrics', array(
-                'Authorization: Basic '.base64_encode($this->username.':'.$this->password),
-                'Content-Type: application/json',
-            ), json_encode($this->data));
+            if ($this->client instanceof Browser) {
+                $this->client->post(self::ENDPOINT, array(
+                    'Authorization: Basic '.base64_encode($this->username.':'.$this->password),
+                    'Content-Type: application/json',
+                ), json_encode($this->data));
+            } else {
+                $this->client->request('POST', self::ENDPOINT, array(
+                    'json' => $this->data,
+                    'auth_basic' => array($this->username, $this->password)
+                ));
+            }
+
             $this->data = array('gauges' => array(), 'counters' => array());
         } catch (\Exception $e) {
         }

@@ -17,6 +17,8 @@ use Net\Zabbix\Sender;
 use Net\Zabbix\Agent\Config;
 use Buzz\Browser;
 use Buzz\Client\Curl;
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * Static factory for Metrics Collectors.
@@ -24,7 +26,7 @@ use Buzz\Client\Curl;
 abstract class Factory
 {
     /**
-     * @var Buzz\Browser
+     * @var HttpClientInterface|Browser
      */
     private static $httpClient;
 
@@ -195,7 +197,11 @@ abstract class Factory
     private static function getHttpClient()
     {
         if (self::$httpClient === null) {
-            self::$httpClient = new Browser(new Curl());
+            if (class_exists(HttpClient::class)) {
+                self::$httpClient = HttpClient::create();
+            } else {
+                self::$httpClient = new Browser(new Curl());
+            }
         }
 
         return self::$httpClient;
