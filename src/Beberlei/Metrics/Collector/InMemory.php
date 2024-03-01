@@ -20,11 +20,11 @@ namespace Beberlei\Metrics\Collector;
 class InMemory implements Collector, GaugeableCollector
 {
     /** @var int[] */
-    private $incrementData = [];
+    protected $incrementData = [];
     /** @var int[] */
-    private $gaugeData = [];
+    protected $gaugeData = [];
     /** @var int[] */
-    private $timingData = [];
+    protected $timingData = [];
 
     /**
      * Updates a counter by some arbitrary amount.
