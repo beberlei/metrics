@@ -11,7 +11,7 @@ namespace Beberlei\Metrics\Collector;
 
 use Prometheus\CollectorRegistry;
 
-class Prometheus implements CollectorInterface, GaugeableCollectorInterface, TaggableCollectorInterface
+class Prometheus implements CollectorInterface, GaugeableCollectorInterface
 {
     private array $counters = [];
     private array $gauges = [];
@@ -19,7 +19,7 @@ class Prometheus implements CollectorInterface, GaugeableCollectorInterface, Tag
     public function __construct(
         private readonly CollectorRegistry $registry,
         private readonly string $namespace = '',
-        private array $tags = [],
+        private readonly array $tags = [],
     ) {
     }
 
@@ -74,11 +74,6 @@ class Prometheus implements CollectorInterface, GaugeableCollectorInterface, Tag
         }
 
         $this->counters = $this->gauges = [];
-    }
-
-    public function setTags(array $tags): void
-    {
-        $this->tags = $tags;
     }
 
     private function normalizeVariable(string $variable): string

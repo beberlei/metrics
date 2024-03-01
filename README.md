@@ -86,6 +86,10 @@ beberlei_metrics:
         influxdb:
             type: influxdb
             database: metrics
+            # host: localhost # option
+            # username: username # optional
+            # password: password # optional
+            # port: 8086 # optional
             # If you want to use a custom database service
             # It must be an instance of "InfluxDB\Database"
             # In this case, you can omit de "database" option

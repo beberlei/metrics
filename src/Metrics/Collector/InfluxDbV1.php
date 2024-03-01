@@ -13,7 +13,7 @@ use InfluxDB\Database;
 use InfluxDB\Exception;
 use InfluxDB\Point;
 
-class InfluxDbV1 implements CollectorInterface, TaggableCollectorInterface
+class InfluxDbV1 implements CollectorInterface
 {
     private array $data = [];
 
@@ -60,10 +60,5 @@ class InfluxDbV1 implements CollectorInterface, TaggableCollectorInterface
         }
 
         $this->data = [];
-    }
-
-    public function setTags(array $tags): void
-    {
-        $this->tags = $tags;
     }
 }

@@ -77,76 +77,82 @@ class BeberleiMetricsExtension extends Extension
         $definition->addTag(CollectorInterface::class);
         $definition->addTag('kernel.reset', ['method' => 'flush']);
 
-        if ($config['tags'] ?? []) {
-            $definition->addMethodCall('setTags', [$config['tags']]);
-        }
+        $tags = $config['tags'] ?? [];
 
         switch ($type) {
-            case 'doctrine_dbal':
-                $ref = $config['connection'] ? sprintf('doctrine.dbal.%s_connection', $config['connection']) : 'database_connection';
-                $definition->replaceArgument(0, new Reference($ref));
-
-                return $definition;
-            case 'graphite':
-                $definition->replaceArgument(0, $config['host']);
-                $definition->replaceArgument(1, $config['port'] ?? 2003);
-                $definition->replaceArgument(2, $config['protocol'] ?? 'tcp');
-
-                return $definition;
             case 'influxdb_v1':
                 if (!class_exists(\InfluxDB\Client::class)) {
                     throw new \LogicException('The "influxdb/influxdb-php" package is required to use the "influxdb" collector.');
                 }
+
                 if ($config['service']) {
-                    $definition->replaceArgument(0, new Reference($config['service']));
+                    $database = new Reference($config['service']);
                 } else {
                     $database = new ChildDefinition('beberlei_metrics.collector_proto.influxdb_v1.database');
-                    $database->replaceArgument(0, sprintf('influxdb://%s:%s@%s:%s/%s',
+                    $database->replaceArgument('$dsn', sprintf('influxdb://%s:%s@%s:%s/%s',
                         $config['username'],
                         $config['password'],
                         $config['host'],
                         $config['port'] ?? 8086,
                         $config['database'],
                     ));
-                    $definition->replaceArgument(0, $database);
                 }
 
-                return $definition;
-            case 'logger':
-            case 'null':
-            case 'memory':
+                $definition->replaceArgument('$database', $database);
+                $definition->replaceArgument('$tags', $tags);
+
                 return $definition;
             case 'prometheus':
                 if (!class_exists(CollectorRegistry::class)) {
                     throw new \LogicException('The "promphp/prometheus_client_php" package is required to use the "prometheus" collector.');
                 }
-                if ($config['service']) {
-                    $definition->replaceArgument(0, new Reference($config['service']));
-                } else {
-                    $database = new ChildDefinition('beberlei_metrics.collector_proto.prometheus.registry');
-                    $container->setDefinition($id = 'beberlei_metrics.collector.' . $name . '.prometheus.registry', $database);
 
-                    $definition->replaceArgument(0, new Reference($id));
+                if ($config['service']) {
+                    $registryId = $config['service'];
+                } else {
+                    $container->setDefinition(
+                        $registryId = 'beberlei_metrics.collector.' . $name . '.prometheus.registry',
+                        new ChildDefinition('beberlei_metrics.collector_proto.prometheus.registry'),
+                    );
+
                     if (!$container->hasAlias(CollectorRegistry::class)) {
-                        $container->setAlias(CollectorRegistry::class, $id);
+                        $container->setAlias(CollectorRegistry::class, $registryId);
                     }
                 }
 
-                $definition->replaceArgument(1, $config['namespace']);
+                $definition->replaceArgument('$registry', new Reference($registryId));
+                $definition->replaceArgument('$namespace', $config['namespace']);
+                $definition->replaceArgument('$tags', $tags);
+
+                return $definition;
+            case 'graphite':
+                $definition->replaceArgument('$host', $config['host']);
+                $definition->replaceArgument('$port', $config['port'] ?? 2003);
+                $definition->replaceArgument('$protocol', $config['protocol'] ?? 'tcp');
 
                 return $definition;
             case 'statsd':
             case 'dogstatsd':
-                $definition->replaceArgument(0, $config['host']);
-                $definition->replaceArgument(1, $config['port'] ?? 8125);
-                $definition->replaceArgument(2, $config['prefix']);
+                $definition->replaceArgument('$host', $config['host']);
+                $definition->replaceArgument('$port', $config['port'] ?? 8125);
+                $definition->replaceArgument('$prefix', $config['prefix']);
 
                 return $definition;
             case 'telegraf':
-                $definition->replaceArgument(0, $config['host']);
-                $definition->replaceArgument(1, $config['port'] ?? 8125);
-                $definition->replaceArgument(2, $config['prefix']);
+                $definition->replaceArgument('$host', $config['host']);
+                $definition->replaceArgument('$port', $config['port'] ?? 8125);
+                $definition->replaceArgument('$prefix', $config['prefix']);
+                $definition->replaceArgument('$tags', $tags);
 
+                return $definition;
+            case 'doctrine_dbal':
+                $ref = $config['connection'] ? sprintf('doctrine.dbal.%s_connection', $config['connection']) : 'database_connection';
+                $definition->replaceArgument('$conn', new Reference($ref));
+
+                return $definition;
+            case 'logger':
+            case 'memory':
+            case 'null':
                 return $definition;
             default:
                 throw new \InvalidArgumentException(sprintf('The type "%s" is not supported.', $type));

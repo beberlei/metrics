@@ -7,19 +7,19 @@
     <services>
         <!-- Prototype / Collector -->
         <service id="beberlei_metrics.collector_proto.doctrine_dbal" class="Beberlei\Metrics\Collector\DoctrineDBAL" abstract="true">
-            <argument /> <!-- Doctrine DBAL connection, set by the extension -->
+            <argument key="$conn" type="abstract">should be defined the extension</argument>
         </service>
         <service id="beberlei_metrics.collector_proto.graphite" class="Beberlei\Metrics\Collector\Graphite" abstract="true">
-            <argument /> <!-- host, set by the extension -->
-            <argument /> <!-- port, set by the extension -->
-            <argument /> <!-- protocol, set by the extension -->
+            <argument key="$host" type="abstract">should be defined the extension</argument>
+            <argument key="$port" type="abstract">should be defined the extension</argument>
+            <argument key="$protocol" type="abstract">should be defined the extension</argument>
         </service>
         <service id="beberlei_metrics.collector_proto.influxdb_v1.database" class="InfluxDB\Database" abstract="true">
             <factory class="InfluxDB\Client" method="fromDSN" />
-            <argument /> <!-- InfluxDB DSN, set by the extension -->
+            <argument key="$dsn" type="abstract">should be defined the extension</argument>
         </service>
         <service id="beberlei_metrics.collector_proto.influxdb_v1" class="Beberlei\Metrics\Collector\InfluxDbV1" abstract="true">
-            <argument /> <!-- InfluxDB dataase, set by the extension -->
+            <argument key="$database" type="abstract">should be defined the extension</argument>
         </service>
         <service id="beberlei_metrics.collector_proto.logger" class="Beberlei\Metrics\Collector\Logger" abstract="true">
             <argument type="service" id="logger" />
@@ -33,23 +33,25 @@
             </argument>
         </service>
         <service id="beberlei_metrics.collector_proto.prometheus" class="Beberlei\Metrics\Collector\Prometheus" abstract="true">
-            <argument /> <!-- Prometheus collector registry, set by the extension -->
-            <argument /> <!-- Prometheus namespace, set by the extension -->
+            <argument key="$registry" type="abstract">should be defined the extension</argument>
+            <argument key="$namespace" type="abstract">should be defined the extension</argument>
+            <argument key="$tags" type="abstract">should be defined the extension</argument>
         </service>
         <service id="beberlei_metrics.collector_proto.statsd" class="Beberlei\Metrics\Collector\StatsD" abstract="true">
-            <argument /> <!-- host, set by the extension -->
-            <argument /> <!-- port, set by the extension -->
-            <argument /> <!-- prefix, set by the extension -->
+            <argument key="$host" type="abstract">should be defined the extension</argument>
+            <argument key="$port" type="abstract">should be defined the extension</argument>
+            <argument key="$prefix" type="abstract">should be defined the extension</argument>
         </service>
         <service id="beberlei_metrics.collector_proto.dogstatsd" class="Beberlei\Metrics\Collector\DogStatsD" abstract="true">
-            <argument /> <!-- host, set by the extension -->
-            <argument /> <!-- port, set by the extension -->
-            <argument /> <!-- prefix, set by the extension -->
+            <argument key="$host" type="abstract">should be defined the extension</argument>
+            <argument key="$port" type="abstract">should be defined the extension</argument>
+            <argument key="$prefix" type="abstract">should be defined the extension</argument>
         </service>
         <service id="beberlei_metrics.collector_proto.telegraf" class="Beberlei\Metrics\Collector\Telegraf" abstract="true">
-            <argument /> <!-- host, set by the extension -->
-            <argument /> <!-- port, set by the extension -->
-            <argument /> <!-- prefix, set by the extension -->
+            <argument key="$host" type="abstract">should be defined the extension</argument>
+            <argument key="$port" type="abstract">should be defined the extension</argument>
+            <argument key="$prefix" type="abstract">should be defined the extension</argument>
+            <argument key="$tags" type="abstract">should be defined the extension</argument>
         </service>
         <service id="beberlei_metrics.collector_proto.memory" class="Beberlei\Metrics\Collector\InMemory" abstract="true">
         </service>

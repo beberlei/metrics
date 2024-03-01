@@ -19,30 +19,31 @@ class InfluxDbV1Test extends TestCase
 {
     private MockObject&Database $database;
 
-    private InfluxDbV1 $collector;
-
     protected function setUp(): void
     {
         $this->database = $this->getMockBuilder(Database::class)
             ->disableOriginalConstructor()
             ->getMock()
         ;
-        $this->collector = new InfluxDbV1($this->database);
     }
 
     public function testCollectIncrement(): void
     {
+        $collector = $this->createCollector([]);
+
         $this->database->expects($this->once())
             ->method('writePoints')
             ->with($this->isType('array'))
         ;
 
-        $this->collector->increment('series-name');
-        $this->collector->flush();
+        $collector->increment('series-name');
+        $collector->flush();
     }
 
     public function testCollectDecrement(): void
     {
+        $collector = $this->createCollector([]);
+
         $this->database->expects($this->once())
             ->method('writePoints')
             ->with($this->callback(function ($arg0) {
@@ -59,12 +60,14 @@ class InfluxDbV1Test extends TestCase
             }))
         ;
 
-        $this->collector->decrement('series-name');
-        $this->collector->flush();
+        $collector->decrement('series-name');
+        $collector->flush();
     }
 
     public function testCollectTiming(): void
     {
+        $collector = $this->createCollector([]);
+
         $this->database->expects($this->once())
             ->method('writePoints')
             ->with($this->callback(function ($arg0) {
@@ -81,12 +84,14 @@ class InfluxDbV1Test extends TestCase
             }))
         ;
 
-        $this->collector->timing('series-name', 47);
-        $this->collector->flush();
+        $collector->timing('series-name', 47);
+        $collector->flush();
     }
 
     public function testCollectMeasure(): void
     {
+        $collector = $this->createCollector([]);
+
         $this->database->expects($this->once())
             ->method('writePoints')
             ->with($this->callback(function ($arg0) {
@@ -103,13 +108,14 @@ class InfluxDbV1Test extends TestCase
             }))
         ;
 
-        $this->collector->measure('series-name', 47);
-        $this->collector->flush();
+        $collector->measure('series-name', 47);
+        $collector->flush();
     }
 
     public function testCollectMeasureWithTags(): void
     {
         $expectedTags = ['dc' => 'west', 'node' => 'nemesis101'];
+        $collector = $this->createCollector($expectedTags);
 
         $this->database->expects($this->once())
             ->method('writePoints')
@@ -127,13 +133,14 @@ class InfluxDbV1Test extends TestCase
             }))
         ;
 
-        $this->collector->setTags($expectedTags);
-        $this->collector->measure('series-name', 47);
-        $this->collector->flush();
+        $collector->measure('series-name', 47);
+        $collector->flush();
     }
 
     public function testCollectMeasureWithTagsMerged(): void
     {
+        $collector = $this->createCollector(['dc' => 'west', 'node' => 'nemesis101']);
+
         $this->database->expects($this->once())
             ->method('writePoints')
             ->with($this->callback(function ($arg0) {
@@ -150,8 +157,12 @@ class InfluxDbV1Test extends TestCase
             }))
         ;
 
-        $collector = new InfluxDbV1($this->database, ['dc' => 'west', 'node' => 'nemesis101']);
         $collector->measure('series-name', 47, ['foo' => 'bar']);
         $collector->flush();
+    }
+
+    private function createCollector(array $tags): InfluxDbV1
+    {
+        return new InfluxDbV1($this->database, $tags);
     }
 }

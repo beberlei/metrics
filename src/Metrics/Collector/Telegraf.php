@@ -16,16 +16,19 @@ use Beberlei\Metrics\Utils\Box;
  * ad hoc implementation for the StatsD - Telegraf integration,
  * support tagging.
  */
-class Telegraf implements CollectorInterface, GaugeableCollectorInterface, TaggableCollectorInterface
+class Telegraf implements CollectorInterface, GaugeableCollectorInterface
 {
     private array $data = [];
+    private string $tags;
 
     public function __construct(
         private readonly string $host = 'localhost',
         private readonly int $port = 8125,
         private readonly string $prefix = '',
-        private string $tags = '',
+        array $tags = [],
     ) {
+        $this->tags = http_build_query($tags, '', ',');
+        $this->tags = \strlen($this->tags) > 0 ? ',' . $this->tags : $this->tags;
     }
 
     public function measure(string $variable, int $value, array $tags = []): void
@@ -65,12 +68,6 @@ class Telegraf implements CollectorInterface, GaugeableCollectorInterface, Tagga
         }
 
         Box::box($this->doFlush(...));
-    }
-
-    public function setTags(array $tags): void
-    {
-        $this->tags = http_build_query($tags, '', ',');
-        $this->tags = \strlen($this->tags) > 0 ? ',' . $this->tags : $this->tags;
     }
 
     private function doFlush(): void

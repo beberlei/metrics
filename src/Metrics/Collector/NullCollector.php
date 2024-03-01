@@ -9,7 +9,7 @@
 
 namespace Beberlei\Metrics\Collector;
 
-class NullCollector implements CollectorInterface, GaugeableCollectorInterface, TaggableCollectorInterface
+class NullCollector implements CollectorInterface, GaugeableCollectorInterface
 {
     public function increment(string $variable, array $tags = []): void
     {
@@ -32,10 +32,6 @@ class NullCollector implements CollectorInterface, GaugeableCollectorInterface, 
     }
 
     public function flush(): void
-    {
-    }
-
-    public function setTags(array $tags): void
     {
     }
 }
