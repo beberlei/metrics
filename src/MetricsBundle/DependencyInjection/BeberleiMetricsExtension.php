@@ -10,6 +10,7 @@
 namespace Beberlei\Bundle\MetricsBundle\DependencyInjection;
 
 use Beberlei\Metrics\Collector\CollectorInterface;
+use Prometheus\CollectorRegistry;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -47,7 +48,7 @@ class BeberleiMetricsExtension extends Extension
             ];
         }
         foreach ($config['collectors'] as $name => $colConfig) {
-            $definition = $this->createCollector($colConfig['type'], $colConfig);
+            $definition = $this->createCollector($container, $name, $colConfig['type'], $colConfig);
             $container->setDefinition('beberlei_metrics.collector.' . $name, $definition);
             $container->registerAliasForArgument('beberlei_metrics.collector.' . $name, CollectorInterface::class, $name);
         }
@@ -63,12 +64,10 @@ class BeberleiMetricsExtension extends Extension
             throw new InvalidArgumentException('No default collector is configured and there is more than one collector. Please define a default collector');
         }
 
-        if ($name) {
-            $container->setAlias(CollectorInterface::class, 'beberlei_metrics.collector.' . $name);
-        }
+        $container->setAlias(CollectorInterface::class, 'beberlei_metrics.collector.' . $name);
     }
 
-    private function createCollector(string $type, array $config): ChildDefinition
+    private function createCollector(ContainerBuilder $container, string $name, string $type, array $config): ChildDefinition
     {
         $definition = new ChildDefinition('beberlei_metrics.collector_proto.' . $config['type']);
 
@@ -118,7 +117,21 @@ class BeberleiMetricsExtension extends Extension
             case 'memory':
                 return $definition;
             case 'prometheus':
-                $definition->replaceArgument(0, new Reference($config['prometheus_collector_registry']));
+                if (!class_exists(CollectorRegistry::class)) {
+                    throw new \LogicException('The "promphp/prometheus_client_php" package is required to use the "prometheus" collector.');
+                }
+                if ($config['service']) {
+                    $definition->replaceArgument(0, new Reference($config['service']));
+                } else {
+                    $database = new ChildDefinition('beberlei_metrics.collector_proto.prometheus.registry');
+                    $container->setDefinition($id = 'beberlei_metrics.collector.' . $name . '.prometheus.registry', $database);
+
+                    $definition->replaceArgument(0, new Reference($id));
+                    if (!$container->hasAlias(CollectorRegistry::class)) {
+                        $container->setAlias(CollectorRegistry::class, $id);
+                    }
+                }
+
                 $definition->replaceArgument(1, $config['namespace']);
 
                 return $definition;

@@ -27,6 +27,11 @@
         </service>
         <service id="beberlei_metrics.collector_proto.null" class="Beberlei\Metrics\Collector\NullCollector" abstract="true">
         </service>
+        <service id="beberlei_metrics.collector_proto.prometheus.registry" class="Prometheus\CollectorRegistry" abstract="true">
+            <argument type="service">
+                <service class="Prometheus\Storage\InMemory"></service>
+            </argument>
+        </service>
         <service id="beberlei_metrics.collector_proto.prometheus" class="Beberlei\Metrics\Collector\Prometheus" abstract="true">
             <argument /> <!-- Prometheus collector registry, set by the extension -->
             <argument /> <!-- Prometheus namespace, set by the extension -->

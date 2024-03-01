@@ -140,11 +140,11 @@ class BeberleiMetricsExtensionTest extends TestCase
             ->getMock()
         ;
 
-        $container = $this->createContainer(['collectors' => ['prometheus' => ['type' => 'prometheus', 'prometheus_collector_registry' => 'prometheus_collector_registry_mock']]], ['beberlei_metrics.collector.prometheus'], ['prometheus_collector_registry_mock' => $prometheusCollectorRegistryMock]);
+        $container = $this->createContainer(['collectors' => ['prometheus' => ['type' => 'prometheus', 'service' => 'prometheus_collector_registry_mock']]], ['beberlei_metrics.collector.prometheus'], ['prometheus_collector_registry_mock' => $prometheusCollectorRegistryMock]);
 
         $collector = $container->get('beberlei_metrics.collector.prometheus');
         $this->assertInstanceOf(Prometheus::class, $collector);
-        $this->assertSame($prometheusCollectorRegistryMock, $this->getProperty($collector, 'collectorRegistry'));
+        $this->assertSame($prometheusCollectorRegistryMock, $this->getProperty($collector, 'registry'));
         $this->assertSame('', $this->getProperty($collector, 'namespace'));
     }
 
@@ -164,11 +164,11 @@ class BeberleiMetricsExtensionTest extends TestCase
             ->getMock()
         ;
 
-        $container = $this->createContainer(['collectors' => ['prometheus' => ['type' => 'prometheus', 'prometheus_collector_registry' => 'prometheus_collector_registry_mock', 'namespace' => $expectedNamespace]]], ['beberlei_metrics.collector.prometheus'], ['prometheus_collector_registry_mock' => $prometheusCollectorRegistryMock]);
+        $container = $this->createContainer(['collectors' => ['prometheus' => ['type' => 'prometheus', 'service' => 'prometheus_collector_registry_mock', 'namespace' => $expectedNamespace]]], ['beberlei_metrics.collector.prometheus'], ['prometheus_collector_registry_mock' => $prometheusCollectorRegistryMock]);
 
         $collector = $container->get('beberlei_metrics.collector.prometheus');
         $this->assertInstanceOf(Prometheus::class, $collector);
-        $this->assertSame($prometheusCollectorRegistryMock, $this->getProperty($collector, 'collectorRegistry'));
+        $this->assertSame($prometheusCollectorRegistryMock, $this->getProperty($collector, 'registry'));
         $this->assertSame($expectedNamespace, $this->getProperty($collector, 'namespace'));
     }
 
@@ -181,7 +181,7 @@ class BeberleiMetricsExtensionTest extends TestCase
             ->getMock()
         ;
 
-        $container = $this->createContainer(['collectors' => ['prometheus' => ['type' => 'prometheus', 'prometheus_collector_registry' => 'prometheus_collector_registry_mock', 'tags' => $expectedTags]]], ['beberlei_metrics.collector.prometheus'], ['prometheus_collector_registry_mock' => $prometheusCollectorRegistryMock]);
+        $container = $this->createContainer(['collectors' => ['prometheus' => ['type' => 'prometheus', 'service' => 'prometheus_collector_registry_mock', 'tags' => $expectedTags]]], ['beberlei_metrics.collector.prometheus'], ['prometheus_collector_registry_mock' => $prometheusCollectorRegistryMock]);
 
         $collector = $container->get('beberlei_metrics.collector.prometheus');
         $this->assertInstanceOf(Prometheus::class, $collector);
@@ -190,9 +190,10 @@ class BeberleiMetricsExtensionTest extends TestCase
 
     public function testValidationWhenTypeIsPrometheusAndPrometheusCollectorRegistryIsNotSpecified(): void
     {
-        $this->expectException(InvalidConfigurationException::class);
-        $this->expectExceptionMessage('The "prometheus_collector_registry" has to be specified to use a Prometheus');
-        $this->createContainer(['collectors' => ['prometheus' => ['type' => 'prometheus']]]);
+        $container = $this->createContainer(['collectors' => ['prometheus' => ['type' => 'prometheus']]], ['beberlei_metrics.collector.prometheus']);
+
+        $collector = $container->get('beberlei_metrics.collector.prometheus');
+        $this->assertInstanceOf(Prometheus::class, $collector);
     }
 
     public function testWithInvalid(): void
@@ -224,11 +225,8 @@ class BeberleiMetricsExtensionTest extends TestCase
         return $container;
     }
 
-    private function getProperty(?object $object, string $property)
+    private function getProperty(?object $object, string $property): mixed
     {
-        $reflectionProperty = new \ReflectionProperty($object::class, $property);
-        $reflectionProperty->setAccessible(true);
-
-        return $reflectionProperty->getValue($object);
+        return (new \ReflectionProperty($object::class, $property))->getValue($object);
     }
 }
