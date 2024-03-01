@@ -106,7 +106,7 @@ beberlei_metrics:
             type: monolog
         influxdb:
             type: influxdb
-            influxdb_client: influxdb_client_service # using the InfluxDB client service named "influxdb_client_service"
+            database: metrics
             tags:
                 dc: "west"
                 node_instance: "hermes10"

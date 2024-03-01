@@ -13,7 +13,7 @@ use InfluxDB\Database;
 use InfluxDB\Exception;
 use InfluxDB\Point;
 
-class InfluxDB implements CollectorInterface, TaggableCollectorInterface
+class InfluxDbV1 implements CollectorInterface, TaggableCollectorInterface
 {
     private array $data = [];
 

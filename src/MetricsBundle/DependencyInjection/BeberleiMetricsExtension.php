@@ -81,14 +81,14 @@ class BeberleiMetricsExtension extends Extension
                 $definition->replaceArgument(2, $config['protocol'] ?? 'tcp');
 
                 return $definition;
-            case 'influxdb':
+            case 'influxdb_v1':
                 if (!class_exists(\InfluxDB\Client::class)) {
                     throw new \LogicException('The "influxdb/influxdb-php" package is required to use the "influxdb" collector.');
                 }
                 if ($config['service']) {
                     $definition->replaceArgument(0, new Reference($config['service']));
                 } else {
-                    $database = new ChildDefinition('beberlei_metrics.collector_proto.influxdb.database');
+                    $database = new ChildDefinition('beberlei_metrics.collector_proto.influxdb_v1.database');
                     $database->replaceArgument(0, sprintf('influxdb://%s:%s@%s:%s/%s',
                         $config['username'],
                         $config['password'],

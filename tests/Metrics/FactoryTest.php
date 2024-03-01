@@ -12,7 +12,7 @@ namespace Beberlei\Metrics\Tests;
 use Beberlei\Metrics\Collector\DoctrineDBAL;
 use Beberlei\Metrics\Collector\DogStatsD;
 use Beberlei\Metrics\Collector\Graphite;
-use Beberlei\Metrics\Collector\InfluxDB;
+use Beberlei\Metrics\Collector\InfluxDbV1;
 use Beberlei\Metrics\Collector\Logger;
 use Beberlei\Metrics\Collector\NullCollector;
 use Beberlei\Metrics\Collector\Prometheus;
@@ -42,7 +42,7 @@ class FactoryTest extends TestCase
         yield [DoctrineDBAL::class, 'doctrine_dbal', ['connection' => $this->getMockBuilder(Connection::class)->disableOriginalConstructor()->getMock()]];
         yield [Logger::class, 'logger', ['logger' => new NullLogger()]];
         yield [NullCollector::class, 'null'];
-        yield [InfluxDB::class, 'influxdb', ['database' => $this->getMockBuilder(Database::class)->disableOriginalConstructor()->getMock()]];
+        yield [InfluxDbV1::class, 'influxdb_v1', ['database' => $this->getMockBuilder(Database::class)->disableOriginalConstructor()->getMock()]];
         yield [Prometheus::class, 'prometheus', ['collector_registry' => $this->getMockBuilder(CollectorRegistry::class)->disableOriginalConstructor()->getMock()]];
         yield [Prometheus::class, 'prometheus', ['collector_registry' => $this->getMockBuilder(CollectorRegistry::class)->disableOriginalConstructor()->getMock(), 'namespace' => 'some_namespace']];
     }
@@ -68,7 +68,7 @@ class FactoryTest extends TestCase
         yield ['You should specified a host if you specified a port.', 'graphite', ['port' => '1234']];
         yield ['connection is required for Doctrine DBAL collector.', 'doctrine_dbal'];
         yield ['Missing "logger" key with logger service.', 'logger'];
-        yield ['Missing "database" key for InfluxDB collector.', 'influxdb'];
+        yield ['Missing "database" key for InfluxDB collector.', 'influxdb_v1'];
         yield ['Missing "collector_registry" key for Prometheus collector.', 'prometheus'];
     }
 

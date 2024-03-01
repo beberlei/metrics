@@ -9,17 +9,17 @@
 
 namespace Beberlei\Metrics\Tests\Collector;
 
-use Beberlei\Metrics\Collector\InfluxDB;
+use Beberlei\Metrics\Collector\InfluxDbV1;
 use InfluxDB\Database;
 use InfluxDB\Point;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-class InfluxDBTest extends TestCase
+class InfluxDbV1Test extends TestCase
 {
     private MockObject&Database $database;
 
-    private InfluxDB $collector;
+    private InfluxDbV1 $collector;
 
     protected function setUp(): void
     {
@@ -27,7 +27,7 @@ class InfluxDBTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock()
         ;
-        $this->collector = new InfluxDB($this->database);
+        $this->collector = new InfluxDbV1($this->database);
     }
 
     public function testCollectIncrement(): void
@@ -150,7 +150,7 @@ class InfluxDBTest extends TestCase
             }))
         ;
 
-        $collector = new InfluxDB($this->database, ['dc' => 'west', 'node' => 'nemesis101']);
+        $collector = new InfluxDbV1($this->database, ['dc' => 'west', 'node' => 'nemesis101']);
         $collector->measure('series-name', 47, ['foo' => 'bar']);
         $collector->flush();
     }

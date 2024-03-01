@@ -12,7 +12,7 @@ namespace Beberlei\Bundle\MetricsBundle\Tests\DependencyInjection;
 use Beberlei\Bundle\MetricsBundle\DependencyInjection\BeberleiMetricsExtension;
 use Beberlei\Metrics\Collector\DogStatsD;
 use Beberlei\Metrics\Collector\Graphite;
-use Beberlei\Metrics\Collector\InfluxDB;
+use Beberlei\Metrics\Collector\InfluxDbV1;
 use Beberlei\Metrics\Collector\InMemory;
 use Beberlei\Metrics\Collector\Logger;
 use Beberlei\Metrics\Collector\NullCollector;
@@ -116,20 +116,20 @@ class BeberleiMetricsExtensionTest extends TestCase
 
     public function testWithInfluxDB(): void
     {
-        $container = $this->createContainer(['collectors' => ['influxdb' => ['type' => 'influxdb', 'database' => 'foobar']]], ['beberlei_metrics.collector.influxdb']);
+        $container = $this->createContainer(['collectors' => ['influxdb' => ['type' => 'influxdb_v1', 'database' => 'foobar']]], ['beberlei_metrics.collector.influxdb']);
 
         $collector = $container->get('beberlei_metrics.collector.influxdb');
-        $this->assertInstanceOf(InfluxDB::class, $collector);
+        $this->assertInstanceOf(InfluxDbV1::class, $collector);
     }
 
     public function testWithInfluxDBAndWithTags(): void
     {
         $expectedTags = ['string_tag' => 'first_value', 'int_tag' => 123];
 
-        $container = $this->createContainer(['collectors' => ['influxdb' => ['type' => 'influxdb', 'database' => 'foobar', 'tags' => $expectedTags]]], ['beberlei_metrics.collector.influxdb']);
+        $container = $this->createContainer(['collectors' => ['influxdb' => ['type' => 'influxdb_v1', 'database' => 'foobar', 'tags' => $expectedTags]]], ['beberlei_metrics.collector.influxdb']);
 
         $collector = $container->get('beberlei_metrics.collector.influxdb');
-        $this->assertInstanceOf(InfluxDB::class, $collector);
+        $this->assertInstanceOf(InfluxDbV1::class, $collector);
         $this->assertEquals($expectedTags, $this->getProperty($collector, 'tags'));
     }
 

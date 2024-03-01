@@ -13,7 +13,7 @@ use Beberlei\Metrics\Collector\CollectorInterface;
 use Beberlei\Metrics\Collector\DoctrineDBAL;
 use Beberlei\Metrics\Collector\DogStatsD;
 use Beberlei\Metrics\Collector\Graphite;
-use Beberlei\Metrics\Collector\InfluxDB;
+use Beberlei\Metrics\Collector\InfluxDbV1;
 use Beberlei\Metrics\Collector\Logger;
 use Beberlei\Metrics\Collector\NullCollector;
 use Beberlei\Metrics\Collector\Prometheus;
@@ -120,12 +120,12 @@ abstract class Factory
 
                 return new Logger($options['logger']);
 
-            case 'influxdb':
+            case 'influxdb_v1':
                 if (!isset($options['database'])) {
                     throw new MetricsException('Missing "database" key for InfluxDB collector.');
                 }
 
-                return new InfluxDB($options['database']);
+                return new InfluxDbV1($options['database']);
 
             case 'null':
                 return new NullCollector();

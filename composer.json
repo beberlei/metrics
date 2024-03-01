@@ -30,6 +30,7 @@
     },
     "conflict": {
         "doctrine/dbal": "<2",
+        "influxdb/influxdb-php": "<1.15",
         "jimdo/prometheus_client_php": "<0.5.1",
         "symfony/config": "<5.4",
         "symfony/dependency-injection": "<5.4",
@@ -48,6 +49,7 @@
         }
     },
     "suggest": {
+        "influxdb/influxdb-php": "For InfluxDB integration",
         "jimdo/prometheus_client_php": "For Prometheus integration"
     },
     "config": {

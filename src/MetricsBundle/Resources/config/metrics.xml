@@ -14,11 +14,11 @@
             <argument /> <!-- port, set by the extension -->
             <argument /> <!-- protocol, set by the extension -->
         </service>
-        <service id="beberlei_metrics.collector_proto.influxdb.database" class="InfluxDB\Database" abstract="true">
+        <service id="beberlei_metrics.collector_proto.influxdb_v1.database" class="InfluxDB\Database" abstract="true">
             <factory class="InfluxDB\Client" method="fromDSN" />
             <argument /> <!-- InfluxDB DSN, set by the extension -->
         </service>
-        <service id="beberlei_metrics.collector_proto.influxdb" class="Beberlei\Metrics\Collector\InfluxDB" abstract="true">
+        <service id="beberlei_metrics.collector_proto.influxdb_v1" class="Beberlei\Metrics\Collector\InfluxDbV1" abstract="true">
             <argument /> <!-- InfluxDB dataase, set by the extension -->
         </service>
         <service id="beberlei_metrics.collector_proto.logger" class="Beberlei\Metrics\Collector\Logger" abstract="true">
