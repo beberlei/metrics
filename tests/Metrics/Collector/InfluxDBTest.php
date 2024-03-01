@@ -10,34 +10,31 @@
 namespace Beberlei\Metrics\Tests\Collector;
 
 use Beberlei\Metrics\Collector\InfluxDB;
-use InfluxDB\Client;
+use InfluxDB\Database;
+use InfluxDB\Point;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class InfluxDBTest extends TestCase
 {
-    /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
-     */
-    private $client;
+    private MockObject&Database $database;
 
     private InfluxDB $collector;
 
     protected function setUp(): void
     {
-        $this->client = $this->getMockBuilder(Client::class)
+        $this->database = $this->getMockBuilder(Database::class)
             ->disableOriginalConstructor()
             ->getMock()
         ;
-        $this->collector = new InfluxDB($this->client);
+        $this->collector = new InfluxDB($this->database);
     }
 
     public function testCollectIncrement(): void
     {
-        $expectedArgs = ['points' => [['measurement' => 'series-name', 'fields' => ['value' => 1]]], 'tags' => []];
-
-        $this->client->expects($this->once())
-            ->method('mark')
-            ->with($expectedArgs)
+        $this->database->expects($this->once())
+            ->method('writePoints')
+            ->with($this->isType('array'))
         ;
 
         $this->collector->increment('series-name');
@@ -46,11 +43,20 @@ class InfluxDBTest extends TestCase
 
     public function testCollectDecrement(): void
     {
-        $expectedArgs = ['points' => [['measurement' => 'series-name', 'fields' => ['value' => -1]]], 'tags' => []];
+        $this->database->expects($this->once())
+            ->method('writePoints')
+            ->with($this->callback(function ($arg0) {
+                $this->assertIsArray($arg0);
+                $this->assertCount(1, $arg0);
+                $this->assertArrayHasKey(0, $arg0);
+                $point = $arg0[0];
+                $this->assertInstanceOf(Point::class, $point);
+                $this->assertSame('series-name', $point->getMeasurement());
+                $this->assertSame(['value' => '-1i'], $point->getFields());
+                $this->assertSame([], $point->getTags());
 
-        $this->client->expects($this->once())
-            ->method('mark')
-            ->with($expectedArgs)
+                return true;
+            }))
         ;
 
         $this->collector->decrement('series-name');
@@ -59,11 +65,20 @@ class InfluxDBTest extends TestCase
 
     public function testCollectTiming(): void
     {
-        $expectedArgs = ['points' => [['measurement' => 'series-name', 'fields' => ['value' => 47]]], 'tags' => []];
+        $this->database->expects($this->once())
+            ->method('writePoints')
+            ->with($this->callback(function ($arg0) {
+                $this->assertIsArray($arg0);
+                $this->assertCount(1, $arg0);
+                $this->assertArrayHasKey(0, $arg0);
+                $point = $arg0[0];
+                $this->assertInstanceOf(Point::class, $point);
+                $this->assertSame('series-name', $point->getMeasurement());
+                $this->assertSame(['value' => '47i'], $point->getFields());
+                $this->assertSame([], $point->getTags());
 
-        $this->client->expects($this->once())
-            ->method('mark')
-            ->with($expectedArgs)
+                return true;
+            }))
         ;
 
         $this->collector->timing('series-name', 47);
@@ -72,11 +87,20 @@ class InfluxDBTest extends TestCase
 
     public function testCollectMeasure(): void
     {
-        $expectedArgs = ['points' => [['measurement' => 'series-name', 'fields' => ['value' => 47]]], 'tags' => []];
+        $this->database->expects($this->once())
+            ->method('writePoints')
+            ->with($this->callback(function ($arg0) {
+                $this->assertIsArray($arg0);
+                $this->assertCount(1, $arg0);
+                $this->assertArrayHasKey(0, $arg0);
+                $point = $arg0[0];
+                $this->assertInstanceOf(Point::class, $point);
+                $this->assertSame('series-name', $point->getMeasurement());
+                $this->assertSame(['value' => '47i'], $point->getFields());
+                $this->assertSame([], $point->getTags());
 
-        $this->client->expects($this->once())
-            ->method('mark')
-            ->with($expectedArgs)
+                return true;
+            }))
         ;
 
         $this->collector->measure('series-name', 47);
@@ -87,15 +111,47 @@ class InfluxDBTest extends TestCase
     {
         $expectedTags = ['dc' => 'west', 'node' => 'nemesis101'];
 
-        $expectedArgs = ['points' => [['measurement' => 'series-name', 'fields' => ['value' => 47]]], 'tags' => $expectedTags];
+        $this->database->expects($this->once())
+            ->method('writePoints')
+            ->with($this->callback(function ($arg0) use ($expectedTags) {
+                $this->assertIsArray($arg0);
+                $this->assertCount(1, $arg0);
+                $this->assertArrayHasKey(0, $arg0);
+                $point = $arg0[0];
+                $this->assertInstanceOf(Point::class, $point);
+                $this->assertSame('series-name', $point->getMeasurement());
+                $this->assertSame(['value' => '47i'], $point->getFields());
+                $this->assertSame($expectedTags, $point->getTags());
 
-        $this->client->expects($this->once())
-            ->method('mark')
-            ->with($expectedArgs)
+                return true;
+            }))
         ;
 
         $this->collector->setTags($expectedTags);
         $this->collector->measure('series-name', 47);
         $this->collector->flush();
+    }
+
+    public function testCollectMeasureWithTagsMerged(): void
+    {
+        $this->database->expects($this->once())
+            ->method('writePoints')
+            ->with($this->callback(function ($arg0) {
+                $this->assertIsArray($arg0);
+                $this->assertCount(1, $arg0);
+                $this->assertArrayHasKey(0, $arg0);
+                $point = $arg0[0];
+                $this->assertInstanceOf(Point::class, $point);
+                $this->assertSame('series-name', $point->getMeasurement());
+                $this->assertSame(['value' => '47i'], $point->getFields());
+                $this->assertSame(['dc' => 'west', 'node' => 'nemesis101', 'foo' => 'bar'], $point->getTags());
+
+                return true;
+            }))
+        ;
+
+        $collector = new InfluxDB($this->database, ['dc' => 'west', 'node' => 'nemesis101']);
+        $collector->measure('series-name', 47, ['foo' => 'bar']);
+        $collector->flush();
     }
 }

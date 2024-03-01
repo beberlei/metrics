@@ -20,7 +20,7 @@ use Beberlei\Metrics\Collector\StatsD;
 use Beberlei\Metrics\Factory;
 use Beberlei\Metrics\MetricsException;
 use Doctrine\DBAL\Connection;
-use InfluxDB\Client;
+use InfluxDB\Database;
 use PHPUnit\Framework\TestCase;
 use Prometheus\CollectorRegistry;
 use Psr\Log\NullLogger;
@@ -42,7 +42,7 @@ class FactoryTest extends TestCase
         yield [DoctrineDBAL::class, 'doctrine_dbal', ['connection' => $this->getMockBuilder(Connection::class)->disableOriginalConstructor()->getMock()]];
         yield [Logger::class, 'logger', ['logger' => new NullLogger()]];
         yield [NullCollector::class, 'null'];
-        yield [InfluxDB::class, 'influxdb', ['client' => $this->getMockBuilder(Client::class)->disableOriginalConstructor()->getMock()]];
+        yield [InfluxDB::class, 'influxdb', ['database' => $this->getMockBuilder(Database::class)->disableOriginalConstructor()->getMock()]];
         yield [Prometheus::class, 'prometheus', ['collector_registry' => $this->getMockBuilder(CollectorRegistry::class)->disableOriginalConstructor()->getMock()]];
         yield [Prometheus::class, 'prometheus', ['collector_registry' => $this->getMockBuilder(CollectorRegistry::class)->disableOriginalConstructor()->getMock(), 'namespace' => 'some_namespace']];
     }
@@ -67,9 +67,9 @@ class FactoryTest extends TestCase
         yield ['You should specified a host and a port if you specified a prefix.', 'dogstatsd', ['hostname' => 'foobar.com', 'prefix' => 'prefix']];
         yield ['You should specified a host if you specified a port.', 'graphite', ['port' => '1234']];
         yield ['connection is required for Doctrine DBAL collector.', 'doctrine_dbal'];
-        yield ["Missing 'logger' key with logger service.", 'logger'];
-        yield ["Missing 'client' key for InfluxDB collector.", 'influxdb'];
-        yield ["Missing 'collector_registry' key for Prometheus collector.", 'prometheus'];
+        yield ['Missing "logger" key with logger service.', 'logger'];
+        yield ['Missing "database" key for InfluxDB collector.', 'influxdb'];
+        yield ['Missing "collector_registry" key for Prometheus collector.', 'prometheus'];
     }
 
     /**

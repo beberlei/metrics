@@ -10,7 +10,6 @@
 namespace Beberlei\Bundle\MetricsBundle\DependencyInjection;
 
 use Beberlei\Metrics\Collector\CollectorInterface;
-use Prometheus\Collector;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -64,6 +63,7 @@ class BeberleiMetricsExtension extends Extension
         $definition->addTag('kernel.event_listener', ['method' => 'flush', 'priority' => -1024, 'event' => 'kernel.terminate']);
         $definition->addTag('kernel.event_listener', ['method' => 'flush', 'priority' => -1024, 'event' => 'console.terminate']);
         $definition->addTag(CollectorInterface::class);
+        // $definition->addTag('kernel.reset');
 
         if ($config['tags'] ?? []) {
             $definition->addMethodCall('setTags', [$config['tags']]);
@@ -76,13 +76,28 @@ class BeberleiMetricsExtension extends Extension
 
                 return $definition;
             case 'graphite':
-                $definition->replaceArgument(0, $config['host'] ?? 'localhost');
+                $definition->replaceArgument(0, $config['host']);
                 $definition->replaceArgument(1, $config['port'] ?? 2003);
                 $definition->replaceArgument(2, $config['protocol'] ?? 'tcp');
 
                 return $definition;
             case 'influxdb':
-                $definition->replaceArgument(0, new Reference($config['influxdb_client']));
+                if (!class_exists(\InfluxDB\Client::class)) {
+                    throw new \LogicException('The "influxdb/influxdb-php" package is required to use the "influxdb" collector.');
+                }
+                if ($config['service']) {
+                    $definition->replaceArgument(0, new Reference($config['service']));
+                } else {
+                    $database = new ChildDefinition('beberlei_metrics.collector_proto.influxdb.database');
+                    $database->replaceArgument(0, sprintf('influxdb://%s:%s@%s:%s/%s',
+                        $config['username'],
+                        $config['password'],
+                        $config['host'],
+                        $config['port'] ?? 8086,
+                        $config['database'],
+                    ));
+                    $definition->replaceArgument(0, $database);
+                }
 
                 return $definition;
             case 'logger':
@@ -96,15 +111,15 @@ class BeberleiMetricsExtension extends Extension
                 return $definition;
             case 'statsd':
             case 'dogstatsd':
-                $definition->replaceArgument(0, $config['host'] ?? 'localhost');
+                $definition->replaceArgument(0, $config['host']);
                 $definition->replaceArgument(1, $config['port'] ?? 8125);
-                $definition->replaceArgument(2, (string) $config['prefix']);
+                $definition->replaceArgument(2, $config['prefix']);
 
                 return $definition;
             case 'telegraf':
-                $definition->replaceArgument(0, $config['host'] ?? 'localhost');
+                $definition->replaceArgument(0, $config['host']);
                 $definition->replaceArgument(1, $config['port'] ?? 8125);
-                $definition->replaceArgument(2, (string) $config['prefix']);
+                $definition->replaceArgument(2, $config['prefix']);
 
                 return $definition;
             default:

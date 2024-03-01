@@ -9,14 +9,16 @@
 
 namespace Beberlei\Metrics\Collector;
 
-use InfluxDB\Client;
+use InfluxDB\Database;
+use InfluxDB\Exception;
+use InfluxDB\Point;
 
 class InfluxDB implements CollectorInterface, TaggableCollectorInterface
 {
     private array $data = [];
 
     public function __construct(
-        private readonly Client $client,
+        private readonly Database $database,
         private array $tags = [],
     ) {
     }
@@ -43,12 +45,18 @@ class InfluxDB implements CollectorInterface, TaggableCollectorInterface
 
     public function flush(): void
     {
+        $points = [];
         foreach ($this->data as $data) {
-            try {
-                $this->client->mark(['points' => [['measurement' => $data[0], 'fields' => ['value' => $data[1]]]], 'tags' => $data[2] + $this->tags]);
-            } catch (\Exception) {
-                continue;
-            }
+            $points[] = new Point(
+                $data[0],
+                $data[1],
+                $this->tags + $data[2],
+            );
+        }
+
+        try {
+            $this->database->writePoints($points, Database::PRECISION_SECONDS);
+        } catch (Exception) {
         }
 
         $this->data = [];

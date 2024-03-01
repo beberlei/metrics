@@ -19,7 +19,6 @@ use Beberlei\Metrics\Collector\NullCollector;
 use Beberlei\Metrics\Collector\Prometheus;
 use Beberlei\Metrics\Collector\StatsD;
 use Beberlei\Metrics\Collector\Telegraf;
-use InfluxDB\Client;
 use PHPUnit\Framework\TestCase;
 use Prometheus\CollectorRegistry;
 use Psr\Log\NullLogger;
@@ -117,28 +116,17 @@ class BeberleiMetricsExtensionTest extends TestCase
 
     public function testWithInfluxDB(): void
     {
-        $influxDBClientMock = $this->getMockBuilder(Client::class)
-            ->disableOriginalConstructor()
-            ->getMock()
-        ;
-
-        $container = $this->createContainer(['collectors' => ['influxdb' => ['type' => 'influxdb', 'influxdb_client' => 'influxdb_client_mock']]], ['beberlei_metrics.collector.influxdb'], ['influxdb_client_mock' => $influxDBClientMock]);
+        $container = $this->createContainer(['collectors' => ['influxdb' => ['type' => 'influxdb', 'database' => 'foobar']]], ['beberlei_metrics.collector.influxdb']);
 
         $collector = $container->get('beberlei_metrics.collector.influxdb');
         $this->assertInstanceOf(InfluxDB::class, $collector);
-        $this->assertSame($influxDBClientMock, $this->getProperty($collector, 'client'));
     }
 
     public function testWithInfluxDBAndWithTags(): void
     {
         $expectedTags = ['string_tag' => 'first_value', 'int_tag' => 123];
 
-        $influxDBClientMock = $this->getMockBuilder(Client::class)
-            ->disableOriginalConstructor()
-            ->getMock()
-        ;
-
-        $container = $this->createContainer(['collectors' => ['influxdb' => ['type' => 'influxdb', 'influxdb_client' => 'influxdb_client_mock', 'tags' => $expectedTags]]], ['beberlei_metrics.collector.influxdb'], ['influxdb_client_mock' => $influxDBClientMock]);
+        $container = $this->createContainer(['collectors' => ['influxdb' => ['type' => 'influxdb', 'database' => 'foobar', 'tags' => $expectedTags]]], ['beberlei_metrics.collector.influxdb']);
 
         $collector = $container->get('beberlei_metrics.collector.influxdb');
         $this->assertInstanceOf(InfluxDB::class, $collector);
@@ -203,7 +191,7 @@ class BeberleiMetricsExtensionTest extends TestCase
     public function testValidationWhenTypeIsPrometheusAndPrometheusCollectorRegistryIsNotSpecified(): void
     {
         $this->expectException(InvalidConfigurationException::class);
-        $this->expectExceptionMessage('The prometheus_collector_registry has to be specified to use a Prometheus');
+        $this->expectExceptionMessage('The "prometheus_collector_registry" has to be specified to use a Prometheus');
         $this->createContainer(['collectors' => ['prometheus' => ['type' => 'prometheus']]]);
     }
 

@@ -20,8 +20,8 @@
     },
     "require-dev": {
         "php": ">=8.1",
-        "corley/influxdb-sdk": "^0.5.1",
         "doctrine/dbal": "^2.0",
+        "influxdb/influxdb-php": "^1.15",
         "jimdo/prometheus_client_php": "^0.5.1",
         "symfony/config": "^5.4 || ^6.4 || ^7.0",
         "symfony/dependency-injection": "^5.4 || ^6.4 || ^7.0",
@@ -48,7 +48,6 @@
         }
     },
     "suggest": {
-        "corley/influxdb-sdk": "For InfluxDB integration",
         "jimdo/prometheus_client_php": "For Prometheus integration"
     },
     "config": {

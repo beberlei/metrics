@@ -115,24 +115,24 @@ abstract class Factory
 
             case 'logger':
                 if (!isset($options['logger'])) {
-                    throw new MetricsException("Missing 'logger' key with logger service.");
+                    throw new MetricsException('Missing "logger" key with logger service.');
                 }
 
                 return new Logger($options['logger']);
 
             case 'influxdb':
-                if (!isset($options['client'])) {
-                    throw new MetricsException("Missing 'client' key for InfluxDB collector.");
+                if (!isset($options['database'])) {
+                    throw new MetricsException('Missing "database" key for InfluxDB collector.');
                 }
 
-                return new InfluxDB($options['client']);
+                return new InfluxDB($options['database']);
 
             case 'null':
                 return new NullCollector();
 
             case 'prometheus':
                 if (!isset($options['collector_registry'])) {
-                    throw new MetricsException("Missing 'collector_registry' key for Prometheus collector.");
+                    throw new MetricsException('Missing "collector_registry" key for Prometheus collector.');
                 }
 
                 $namespace = $options['namespace'] ?? '';
