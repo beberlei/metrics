@@ -10,6 +10,7 @@
 namespace Beberlei\Metrics\Collector;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ParameterType;
 
 /**
  * Sends statistics to a relational database.
@@ -29,28 +30,28 @@ class DoctrineDBAL implements CollectorInterface
     private array $data = [];
 
     public function __construct(
-        private readonly Connection $conn
+        private readonly Connection $conn,
     ) {
     }
 
     public function measure(string $variable, int $value, array $tags = []): void
     {
-        $this->data[] = [$variable, $value, date('Y-m-d')];
+        $this->data[] = [$variable, $value, date('Y-m-d H:i:s')];
     }
 
     public function increment(string $variable, array $tags = []): void
     {
-        $this->data[] = [$variable, 1, date('Y-m-d')];
+        $this->data[] = [$variable, 1, date('Y-m-d H:i:s')];
     }
 
     public function decrement(string $variable, array $tags = []): void
     {
-        $this->data[] = [$variable, -1, date('Y-m-d')];
+        $this->data[] = [$variable, -1, date('Y-m-d H:i:s')];
     }
 
     public function timing(string $variable, int $time, array $tags = []): void
     {
-        $this->data[] = [$variable, $time, date('Y-m-d')];
+        $this->data[] = [$variable, $time, date('Y-m-d H:i:s')];
     }
 
     public function flush(): void
@@ -65,9 +66,9 @@ class DoctrineDBAL implements CollectorInterface
             $stmt = $this->conn->prepare('INSERT INTO metrics (metric, measurement, created) VALUES (?, ?, ?)');
 
             foreach ($this->data as $measurement) {
-                $stmt->bindParam(1, $measurement[0]);
-                $stmt->bindParam(2, $measurement[1]);
-                $stmt->bindParam(3, $measurement[2]);
+                $stmt->bindValue(1, $measurement[0]);
+                $stmt->bindValue(2, $measurement[1], ParameterType::INTEGER);
+                $stmt->bindValue(3, $measurement[2], ParameterType::STRING);
                 $stmt->executeStatement();
             }
 
