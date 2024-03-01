@@ -172,6 +172,13 @@ abstract class Factory
 
                 return new Collector\InfluxDB($options['client']);
 
+            case 'influxdb_official':
+                if (!isset($options['database'])) {
+                    throw new MetricsException('Missing \'database\' key for Official InfluxDB collector.');
+                }
+
+                return new Collector\InfluxDBOfficial($options['database']);
+
             case 'null':
                 return new Collector\NullCollector();
 

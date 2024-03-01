@@ -88,6 +88,14 @@ $librato = \Beberlei\Metrics\Factory::create('librato', array(
     'password' => 'bar',
 ));
 
+$influxdb = \Beberlei\Metrics\Factory::create('influxdb', array(
+    'client' => $influxdbClient
+));
+
+$influxdb_official = \Beberlei\Metrics\Factory::create('influxdb_official', array(
+    'database' => $influxdbDatabase
+));
+
 $null = \Beberlei\Metrics\Factory::create('null');
 ```
 
@@ -143,6 +151,12 @@ beberlei_metrics:
             tags:
                 dc: "west"
                 node_instance: "hermes10"
+        influxdb_official:
+            type: influxdb_official
+            influxdb_database: influxdb_database_service # using the InfluxDB database service named "influxdb_database_service", if you are using algatux/influxdb-bundle: algatux_influx_db.connection.default.http
+            tags:
+                dc: "west"
+                node_instance: "hermes10"
         prometheus:
             type: prometheus
             prometheus_collector_registry: prometheus_collector_registry_service # using the Prometheus collector registry service named "prometheus_collector_registry_service"
@@ -169,4 +183,3 @@ and the default collector can be fetched:
 
 $metrics = $container->get('beberlei_metrics.collector');
 ```
-
