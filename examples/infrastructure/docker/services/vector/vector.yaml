@@ -1,0 +1,62 @@
+data_dir: /var/lib/vector
+
+api:
+  enabled: true
+  address: '0.0.0.0:8686'
+
+sources:
+  syslog:
+    type: syslog
+    mode: udp
+    address: '0.0.0.0:9000'
+
+transforms:
+  syslog_json:
+    inputs:
+      - syslog
+    type: remap
+    source: |
+      . = parse_json!(.message)
+      .host = get_hostname() ?? "n/a"
+      .environment = get_env_var("VECTOR_ENVIRONMENT") ?? "production"
+      .application = get_env_var("VECTOR_APPLICATION") ?? "symfony"
+
+sinks:
+  elasticsearch:
+    inputs:
+      - syslog_json
+    type: elasticsearch
+    mode: bulk
+    endpoints:
+      - 'http://elasticsearch:9200'
+    bulk:
+      index: vector-%Y.%m.%d
+      action: create
+  loki:
+    inputs:
+      - syslog_json
+    type: loki
+    encoding:
+      codec: json
+    endpoint: 'http://loki:3100'
+    healthcheck: false
+    labels:
+      host: '{{ host }}'
+      environment: '{{ environment }}'
+      application: '{{ application }}'
+      channel: '{{ channel }}'
+      level: '{{ level_name }}'
+  clickhouse:
+    inputs:
+      - syslog_json
+    type: clickhouse
+    # format: json_as_string
+    endpoint: 'http://clickhouse:8123'
+    database: observability
+    table: logs
+    healthcheck: false
+    auth:
+      strategy: basic
+      password: observability
+      user: observability
+    skip_unknown_fields: true

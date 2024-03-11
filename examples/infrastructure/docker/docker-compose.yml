@@ -1,0 +1,143 @@
+version: '3.7'
+
+volumes:
+    grafana-data: {}
+    graphite-data: {}
+    influxdb-data: {}
+    postgres-data: {}
+    prometheus-data: {}
+    # redis-data: {}
+    # vector-data: {}
+
+services:
+    router:
+        build: services/router
+        volumes:
+            - "/var/run/docker.sock:/var/run/docker.sock"
+            - "./services/router/certs:/etc/ssl/certs"
+        network_mode: host
+
+    frontend:
+        build:
+            context: services/php
+            target: frontend
+        depends_on:
+            - postgres
+        volumes:
+            - "../..:/var/www:cached"
+            - "../../..:/metrics:cached"
+        environment:
+            - "PHP_VERSION=${PHP_VERSION}"
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.${PROJECT_NAME}-frontend.rule=Host(${PROJECT_DOMAINS})"
+            - "traefik.http.routers.${PROJECT_NAME}-frontend.tls=true"
+            - "traefik.http.routers.${PROJECT_NAME}-frontend-unsecure.rule=Host(${PROJECT_DOMAINS})"
+            # Comment the next line to be able to access frontend via HTTP instead of HTTPS
+            - "traefik.http.routers.${PROJECT_NAME}-frontend-unsecure.middlewares=redirect-to-https@file"
+
+    postgres:
+        image: postgres:16
+        environment:
+            - POSTGRES_USER=app
+            - POSTGRES_PASSWORD=app
+        volumes:
+            - postgres-data:/var/lib/postgresql/data
+
+    grafana:
+        image: grafana/grafana:latest
+        volumes:
+            - grafana-data:/var/lib/grafana
+        environment:
+            - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+            - GF_AUTH_ANONYMOUS_ENABLED=true
+            - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+            - GF_INSTALL_PLUGINS=grafana-clickhouse-datasource
+        entrypoint:
+            - sh
+            - -euc
+            - |
+                mkdir -p /etc/grafana/provisioning/datasources
+                cat <<EOF > /etc/grafana/provisioning/datasources/loki.yaml
+                apiVersion: 1
+                datasources:
+                  - name: Loki
+                    type: loki
+                    access: proxy
+                    orgId: 1
+                    url: http://loki:3100
+                    basicAuth: false
+                    isDefault: true
+                    version: 1
+                    editable: false
+                  - name: ClickHouse
+                    type: grafana-clickhouse-datasource
+                    access: proxy
+                    orgId: 1
+                    isDefault: false
+                    jsonData:
+                      host: clickhouse
+                      port: 9000
+                      defaultDatabase: observability
+                      username: observability
+                      defaultDatasource: true
+                    secureJsonData:
+                      password: observability
+                    version: 1
+                    editable: false
+                EOF
+                /run.sh
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.${PROJECT_NAME}-grafana.rule=Host(`grafana.${PROJECT_ROOT_DOMAIN}`)"
+            - "traefik.http.routers.${PROJECT_NAME}-grafana.tls=true"
+
+    graphite:
+        image: graphiteapp/graphite-statsd:1.1.10-5
+        volumes:
+            - graphite-data:/opt/graphite/storage
+        expose:
+            - 80
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.${PROJECT_NAME}-graphite.rule=Host(`graphite.${PROJECT_ROOT_DOMAIN}`)"
+            - "traefik.http.routers.${PROJECT_NAME}-graphite.tls=true"
+
+    influxdb1:
+        image: influxdb:1.8
+        environment:
+            - INFLUXDB_DB=app
+        volumes:
+            - influxdb-data:/var/lib/influxdb
+
+    prometheus:
+        image: prom/prometheus:v2.50.1
+        volumes:
+            - ./services/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:cached
+            - prometheus-data:/var/lib/prometheus
+
+    # redis:
+    #     image: redislabs/redistimeseries:1.10.11
+    #     volumes:
+    #         - "redis-data:/data"
+
+    # redis-insight:
+    #     image: redislabs/redisinsight:1.14.0
+    #     environment:
+    #         RITRUSTEDORIGINS: https://redis.symfony-metrics.test
+    #     labels:
+    #         - "traefik.enable=true"
+    #         - "traefik.http.routers.${PROJECT_NAME}-redis.rule=Host(`redis.${PROJECT_ROOT_DOMAIN}`)"
+    #         - "traefik.http.routers.${PROJECT_NAME}-redis.tls=true"
+
+    # vector:
+    #     image: timberio/vector:0.36.0-debian
+    #     volumes:
+    #         - ./services/vector/vector.yaml:/etc/vector/vector.yaml:cached
+    #         - vector-data:/var/lib/vector
+    #     expose:
+    #         - 8686
+    #     labels:
+    #         - "traefik.enable=true"
+    #         - "traefik.http.routers.${PROJECT_NAME}-vector.rule=Host(`vector.${PROJECT_ROOT_DOMAIN}`)"
+    #         - "traefik.http.routers.${PROJECT_NAME}-vector.tls=true"

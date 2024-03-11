@@ -1,0 +1,14 @@
+includes:
+    - phpstan-baseline.neon
+
+parameters:
+    level: 8
+    paths:
+        - src
+    inferPrivatePropertyTypeFromConstructor: true
+    checkGenericClassInNonGenericObjectType: false
+    ignoreErrors:
+    # Issue about array shape
+    - '{Property .* type has no value type specified in iterable type array\.}'
+    - '{Method .* has parameter \$\w+ with no value type specified in iterable type array\.}'
+

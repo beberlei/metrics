@@ -1,0 +1,16 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Parameter \\#1 \\$callback of function set_error_handler expects \\(callable\\(int, string, string, int\\)\\: bool\\)\\|null, Closure\\(\\)\\: null given\\.$#"
+			count: 1
+			path: src/Metrics/Utils/Box.php
+
+		-
+			message: "#^Cannot access offset 'null' on 0\\|0\\.0\\|''\\|'0'\\|array\\{\\}\\|false\\|null\\.$#"
+			count: 1
+			path: src/MetricsBundle/DependencyInjection/BeberleiMetricsExtension.php
+
+		-
+			message: "#^Call to an undefined method Symfony\\\\Component\\\\Config\\\\Definition\\\\Builder\\\\NodeDefinition\\:\\:children\\(\\)\\.$#"
+			count: 1
+			path: src/MetricsBundle/DependencyInjection/Configuration.php

@@ -1,0 +1,60 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <!-- Prototype / Collector -->
+        <service id="beberlei_metrics.collector_proto.doctrine_dbal" class="Beberlei\Metrics\Collector\DoctrineDBAL" abstract="true">
+            <argument key="$conn" type="abstract">should be defined the extension</argument>
+        </service>
+        <service id="beberlei_metrics.collector_proto.graphite" class="Beberlei\Metrics\Collector\Graphite" abstract="true">
+            <argument key="$host" type="abstract">should be defined the extension</argument>
+            <argument key="$port" type="abstract">should be defined the extension</argument>
+            <argument key="$protocol" type="abstract">should be defined the extension</argument>
+        </service>
+        <service id="beberlei_metrics.collector_proto.influxdb_v1.database" class="InfluxDB\Database" abstract="true">
+            <factory class="InfluxDB\Client" method="fromDSN" />
+            <argument key="$dsn" type="abstract">should be defined the extension</argument>
+        </service>
+        <service id="beberlei_metrics.collector_proto.influxdb_v1" class="Beberlei\Metrics\Collector\InfluxDbV1" abstract="true">
+            <argument key="$database" type="abstract">should be defined the extension</argument>
+        </service>
+        <service id="beberlei_metrics.collector_proto.logger" class="Beberlei\Metrics\Collector\Logger" abstract="true">
+            <argument type="service" id="logger" />
+            <tag name="monolog.logger" channel="beberlei_metrics" />
+        </service>
+        <service id="beberlei_metrics.collector_proto.null" class="Beberlei\Metrics\Collector\NullCollector" abstract="true">
+        </service>
+        <service id="beberlei_metrics.collector_proto.prometheus.registry" class="Prometheus\CollectorRegistry" abstract="true">
+            <argument type="service">
+                <service class="Prometheus\Storage\InMemory"></service>
+            </argument>
+        </service>
+        <service id="beberlei_metrics.collector_proto.prometheus" class="Beberlei\Metrics\Collector\Prometheus" abstract="true">
+            <argument key="$registry" type="abstract">should be defined the extension</argument>
+            <argument key="$namespace" type="abstract">should be defined the extension</argument>
+            <argument key="$tags" type="abstract">should be defined the extension</argument>
+        </service>
+        <service id="beberlei_metrics.collector_proto.statsd" class="Beberlei\Metrics\Collector\StatsD" abstract="true">
+            <argument key="$host" type="abstract">should be defined the extension</argument>
+            <argument key="$port" type="abstract">should be defined the extension</argument>
+            <argument key="$prefix" type="abstract">should be defined the extension</argument>
+        </service>
+        <service id="beberlei_metrics.collector_proto.dogstatsd" class="Beberlei\Metrics\Collector\DogStatsD" abstract="true">
+            <argument key="$host" type="abstract">should be defined the extension</argument>
+            <argument key="$port" type="abstract">should be defined the extension</argument>
+            <argument key="$prefix" type="abstract">should be defined the extension</argument>
+        </service>
+        <service id="beberlei_metrics.collector_proto.telegraf" class="Beberlei\Metrics\Collector\Telegraf" abstract="true">
+            <argument key="$host" type="abstract">should be defined the extension</argument>
+            <argument key="$port" type="abstract">should be defined the extension</argument>
+            <argument key="$prefix" type="abstract">should be defined the extension</argument>
+            <argument key="$tags" type="abstract">should be defined the extension</argument>
+        </service>
+        <service id="beberlei_metrics.collector_proto.memory" class="Beberlei\Metrics\Collector\InMemory" abstract="true">
+        </service>
+    </services>
+
+</container>

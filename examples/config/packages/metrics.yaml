@@ -1,0 +1,31 @@
+beberlei_metrics:
+    default: logger
+    collectors:
+        influxdb_v1:
+            type: influxdb_v1
+            host: influxdb1
+            database: app
+        prometheus:
+            type: prometheus
+            host: prometheus
+            service: Prometheus\CollectorRegistry
+            namespace: app
+        graphite:
+            type: graphite
+            host: graphite
+        statsd:
+            type: statsd
+            host: graphite
+            prefix: 'app.statsd.'
+        dogstatsd:
+            type: dogstatsd
+            host: graphite
+            prefix: 'app.dogstatsd.'
+        dbal:
+            type: doctrine_dbal
+        logger:
+            type: logger
+        memory:
+            type: memory
+        'null':
+            type: 'null'
