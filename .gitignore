@@ -1,2 +1,8 @@
 /composer.lock
 /vendor/
+/.phpunit.cache/
+/tools/*/vendor/
+.php-cs-fixer.cache
+.phpcs-cache
+.phpstan-cache
+cov/
