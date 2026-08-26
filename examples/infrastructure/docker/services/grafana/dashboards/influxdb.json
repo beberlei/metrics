@@ -1,0 +1,86 @@
+{
+    "annotations": { "list": [] },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": null,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+        {
+            "title": "About this dashboard",
+            "type": "text",
+            "gridPos": { "h": 4, "w": 24, "x": 0, "y": 0 },
+            "options": {
+                "mode": "markdown",
+                "content": "This dashboard reads from **InfluxDB 1.x** (database `app`), written to by the `influxdb_v1` collector (`Beberlei\\Metrics\\Collector\\InfluxDbV1`). Every metric is stored as an InfluxDB *measurement* named after the metric (e.g. `homepage.visits`), with its value in a field called `value`. The `$measurement` variable above is populated with `SHOW MEASUREMENTS`, so it lists every metric name ever sent, including custom ones from the form."
+            }
+        },
+        {
+            "title": "homepage.visits (guaranteed to exist after the first page load)",
+            "type": "timeseries",
+            "gridPos": { "h": 8, "w": 24, "x": 0, "y": 4 },
+            "datasource": { "type": "influxdb", "uid": "influxdb-metrics" },
+            "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+            "options": {
+                "legend": { "displayMode": "list", "placement": "bottom" },
+                "tooltip": { "mode": "multi" }
+            },
+            "targets": [
+                {
+                    "refId": "A",
+                    "datasource": { "type": "influxdb", "uid": "influxdb-metrics" },
+                    "query": "SELECT \"value\" FROM \"homepage.visits\" WHERE $timeFilter",
+                    "rawQuery": true,
+                    "resultFormat": "time_series"
+                }
+            ]
+        },
+        {
+            "title": "Explore: $measurement",
+            "type": "timeseries",
+            "gridPos": { "h": 9, "w": 24, "x": 0, "y": 12 },
+            "datasource": { "type": "influxdb", "uid": "influxdb-metrics" },
+            "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+            "options": {
+                "legend": { "displayMode": "list", "placement": "bottom" },
+                "tooltip": { "mode": "multi" }
+            },
+            "targets": [
+                {
+                    "refId": "A",
+                    "datasource": { "type": "influxdb", "uid": "influxdb-metrics" },
+                    "query": "SELECT \"value\" FROM \"$measurement\" WHERE $timeFilter",
+                    "rawQuery": true,
+                    "resultFormat": "time_series"
+                }
+            ]
+        }
+    ],
+    "refresh": "10s",
+    "schemaVersion": 39,
+    "tags": ["metrics-demo", "influxdb"],
+    "templating": {
+        "list": [
+            {
+                "name": "measurement",
+                "type": "query",
+                "label": "Metric (measurement)",
+                "datasource": { "type": "influxdb", "uid": "influxdb-metrics" },
+                "query": "SHOW MEASUREMENTS",
+                "refresh": 2,
+                "sort": 1,
+                "includeAll": false,
+                "multi": false,
+                "current": { "text": "homepage.visits", "value": "homepage.visits" }
+            }
+        ]
+    },
+    "time": { "from": "now-1h", "to": "now" },
+    "timepicker": {},
+    "timezone": "",
+    "title": "InfluxDB (influxdb_v1 collector)",
+    "uid": "influxdb-metrics",
+    "version": 1,
+    "weekStart": ""
+}

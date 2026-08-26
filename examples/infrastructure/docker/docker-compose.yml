@@ -68,6 +68,8 @@ services:
         image: grafana/grafana:latest
         volumes:
             - grafana-data:/var/lib/grafana
+            - ./services/grafana/provisioning:/etc/grafana/provisioning:ro
+            - ./services/grafana/dashboards:/var/lib/grafana/dashboards:ro
         environment:
             - GF_AUTH_ANONYMOUS_ENABLED=true
             - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
@@ -104,6 +106,12 @@ services:
 
     prometheus:
         image: prom/prometheus:v3.7.2
+        # --web.enable-otlp-receiver: the "opentelemetry" collector exports
+        # metrics as OTLP/HTTP directly to Prometheus, at /api/v1/otlp.
+        command:
+            - --config.file=/etc/prometheus/prometheus.yml
+            - --storage.tsdb.path=/prometheus
+            - --web.enable-otlp-receiver
         volumes:
             - ./services/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:cached
             - prometheus-data:/var/lib/prometheus

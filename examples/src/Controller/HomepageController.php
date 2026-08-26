@@ -9,6 +9,8 @@
 
 namespace App\Controller;
 
+use App\Metrics\OperationCatalog;
+use App\Metrics\ProcessorCatalog;
 use Beberlei\Metrics\Collector\CollectorInterface;
 use Beberlei\Metrics\Collector\GaugeableCollectorInterface;
 use Beberlei\Metrics\Collector\InMemory;
@@ -37,7 +39,7 @@ class HomepageController extends AbstractController
         $this->memoryCollector = $memoryCollector;
     }
 
-    #[Route('/')]
+    #[Route('/', name: 'homepage')]
     public function index(): Response
     {
         $random = (int) date('s');
@@ -54,7 +56,8 @@ class HomepageController extends AbstractController
         }
 
         return $this->render('homepage/index.html.twig', [
-            'collectors' => $this->collectors,
+            'processors' => ProcessorCatalog::all(),
+            'operations' => OperationCatalog::all(),
             'random' => $this->memoryCollector->getMeasure('homepage.random'),
             'visits' => $this->memoryCollector->getMeasure('homepage.visits'),
             'timing' => $this->memoryCollector->getTiming('homepage.duration'),

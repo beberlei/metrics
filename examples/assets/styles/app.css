@@ -1,0 +1,7 @@
+.metric-value {
+    font-variant-numeric: tabular-nums;
+}
+
+.card > .card-header {
+    font-weight: 600;
+}

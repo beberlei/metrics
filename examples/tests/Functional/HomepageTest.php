@@ -20,7 +20,7 @@ final class HomepageTest extends WebTestCase
 
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('h1', 'Metrics demo application');
-        self::assertSelectorTextContains('ul li', 'Beberlei\Metrics\Collector');
+        self::assertStringContainsString('DoctrineDBAL', (string) $client->getResponse()->getContent());
     }
 
     public function testHomepageIncrementsTheVisitsCounter(): void

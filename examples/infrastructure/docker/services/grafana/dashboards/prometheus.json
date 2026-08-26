@@ -1,0 +1,145 @@
+{
+    "annotations": { "list": [] },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": null,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+        {
+            "title": "About this dashboard",
+            "type": "text",
+            "gridPos": { "h": 4, "w": 24, "x": 0, "y": 0 },
+            "options": {
+                "mode": "markdown",
+                "content": "This dashboard reads from **Prometheus**, fed by two different collectors:\n\n- `prometheus` (`Beberlei\\Metrics\\Collector\\Prometheus`) is scraped from the app's `/prometheus` endpoint every 15s (see `infrastructure/docker/services/prometheus/prometheus.yml`), configured with namespace `app`, so `homepage.visits` becomes the series `app_homepage_visits`. `measure()`/`timing()` set a **gauge**, `increment()`/`decrement()` change a **counter**, `gauge()` sets a gauge directly.\n- `otel` (`Beberlei\\Metrics\\Collector\\OpenTelemetry`) *pushes* OTLP straight to Prometheus's own OTLP receiver (`--web.enable-otlp-receiver`, see docker-compose.yml) instead of being scraped. Its metrics keep their raw name (no `app_` prefix) and carry a `job=\"beberlei-metrics-demo\"` label instead."
+            }
+        },
+        {
+            "title": "app_homepage_visits (counter)",
+            "type": "timeseries",
+            "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+            "datasource": { "type": "prometheus", "uid": "prom-metrics" },
+            "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+            "options": {
+                "legend": { "displayMode": "list", "placement": "bottom" },
+                "tooltip": { "mode": "multi" }
+            },
+            "targets": [
+                {
+                    "refId": "A",
+                    "datasource": { "type": "prometheus", "uid": "prom-metrics" },
+                    "expr": "app_homepage_visits",
+                    "legendFormat": "visits"
+                }
+            ]
+        },
+        {
+            "title": "app_homepage_random (gauge, via measure())",
+            "type": "timeseries",
+            "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+            "datasource": { "type": "prometheus", "uid": "prom-metrics" },
+            "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+            "options": {
+                "legend": { "displayMode": "list", "placement": "bottom" },
+                "tooltip": { "mode": "multi" }
+            },
+            "targets": [
+                {
+                    "refId": "A",
+                    "datasource": { "type": "prometheus", "uid": "prom-metrics" },
+                    "expr": "app_homepage_random",
+                    "legendFormat": "random"
+                }
+            ]
+        },
+        {
+            "title": "app_homepage_duration ms (gauge, via timing())",
+            "type": "timeseries",
+            "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
+            "datasource": { "type": "prometheus", "uid": "prom-metrics" },
+            "fieldConfig": { "defaults": { "unit": "ms" }, "overrides": [] },
+            "options": {
+                "legend": { "displayMode": "list", "placement": "bottom" },
+                "tooltip": { "mode": "multi" }
+            },
+            "targets": [
+                {
+                    "refId": "A",
+                    "datasource": { "type": "prometheus", "uid": "prom-metrics" },
+                    "expr": "app_homepage_duration",
+                    "legendFormat": "duration"
+                }
+            ]
+        },
+        {
+            "title": "app_homepage_gauge (gauge, via gauge())",
+            "type": "timeseries",
+            "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
+            "datasource": { "type": "prometheus", "uid": "prom-metrics" },
+            "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+            "options": {
+                "legend": { "displayMode": "list", "placement": "bottom" },
+                "tooltip": { "mode": "multi" }
+            },
+            "targets": [
+                {
+                    "refId": "A",
+                    "datasource": { "type": "prometheus", "uid": "prom-metrics" },
+                    "expr": "app_homepage_gauge",
+                    "legendFormat": "gauge"
+                }
+            ]
+        },
+        {
+            "title": "All app_* metrics from the \"prometheus\" collector (catch-all, incl. custom metrics from the form)",
+            "type": "timeseries",
+            "gridPos": { "h": 9, "w": 24, "x": 0, "y": 20 },
+            "datasource": { "type": "prometheus", "uid": "prom-metrics" },
+            "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+            "options": {
+                "legend": { "displayMode": "list", "placement": "bottom" },
+                "tooltip": { "mode": "multi" }
+            },
+            "targets": [
+                {
+                    "refId": "A",
+                    "datasource": { "type": "prometheus", "uid": "prom-metrics" },
+                    "expr": "{__name__=~\"app_.+\"}",
+                    "legendFormat": "{{__name__}}"
+                }
+            ]
+        },
+        {
+            "title": "All metrics from the \"otel\" collector (catch-all, pushed via OTLP)",
+            "type": "timeseries",
+            "gridPos": { "h": 9, "w": 24, "x": 0, "y": 29 },
+            "datasource": { "type": "prometheus", "uid": "prom-metrics" },
+            "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+            "options": {
+                "legend": { "displayMode": "list", "placement": "bottom" },
+                "tooltip": { "mode": "multi" }
+            },
+            "targets": [
+                {
+                    "refId": "A",
+                    "datasource": { "type": "prometheus", "uid": "prom-metrics" },
+                    "expr": "{job=\"beberlei-metrics-demo\"}",
+                    "legendFormat": "{{__name__}}"
+                }
+            ]
+        }
+    ],
+    "refresh": "10s",
+    "schemaVersion": 39,
+    "tags": ["metrics-demo", "prometheus"],
+    "templating": { "list": [] },
+    "time": { "from": "now-1h", "to": "now" },
+    "timepicker": {},
+    "timezone": "",
+    "title": "Prometheus",
+    "uid": "prom-metrics",
+    "version": 1,
+    "weekStart": ""
+}

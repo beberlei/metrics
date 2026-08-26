@@ -10,6 +10,10 @@ beberlei_metrics:
             host: prometheus
             service: Prometheus\CollectorRegistry
             namespace: app
+        otel:
+            type: opentelemetry
+            service: OpenTelemetry\API\Metrics\MeterProviderInterface
+            namespace: app
         graphite:
             type: graphite
             host: graphite
@@ -21,6 +25,11 @@ beberlei_metrics:
             type: dogstatsd
             host: graphite
             prefix: 'app.dogstatsd.'
+        chain:
+            type: chain
+            # Dispatches every call to both StatsD collectors in one shot;
+            # already visible on the Graphite dashboard, no extra wiring.
+            collectors: [statsd, dogstatsd]
         dbal:
             type: doctrine_dbal
         logger:

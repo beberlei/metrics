@@ -1,56 +1,160 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello{% endblock %}
+{% block title %}Metrics demo{% endblock %}
 
 {% block body %}
-    <h1>Metrics demo application</h1>
+    <h1 class="mb-3">Metrics demo application</h1>
 
-    <p>
+    <p class="lead">
         This application demonstrates how to use the
         <a href="https://github.com/beberlei/metrics"><code>beberlei/metrics</code></a> library.
-        <br />
-        This controller uses all collectors defined in the
-        <a href="{{ (project_dir ~ '/config/packages/metrics.yaml')|file_link(1) }}"><code>config/packages/metrics.yaml</code></a>:
-        <ul>
-            {% for collector in collectors %}
+        Every page load sends a handful of metrics (<code>homepage.*</code>) to
+        <strong>every</strong> collector configured in
+        <a href="{{ (project_dir ~ '/config/packages/metrics.yaml')|file_link(1) }}"><code>config/packages/metrics.yaml</code></a>.
+    </p>
+
+    <div class="card mb-4">
+        <div class="card-header">Configured collectors ("processors")</div>
+        <div class="card-body p-0">
+            <table class="table table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Class</th>
+                        <th>What it does</th>
+                        <th class="text-center">Gauges?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for name, processor in processors %}
+                        <tr>
+                            <td><code>{{ name }}</code></td>
+                            <td><code>{{ processor.class|split('\\')|last }}</code></td>
+                            <td>{{ processor.description }}</td>
+                            <td class="text-center">
+                                {% if processor.gaugeable %}
+                                    <span class="badge text-bg-success">yes</span>
+                                {% else %}
+                                    <span class="badge text-bg-secondary">no</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">Auto-collected on this page load</div>
+        <div class="card-body">
+            <p class="text-body-secondary">
+                <code>HomepageController</code> called <code>measure()</code>, <code>increment()</code>,
+                <code>timing()</code> and <code>gauge()</code> on every collector above. The values below
+                come back from the <code>memory</code> processor, which only remembers what happened
+                during this single request.
+            </p>
+            <table class="table table-sm w-auto">
+                <tr>
+                    <th>random <small class="text-body-secondary">(measure)</small></th>
+                    <td class="metric-value">{{ random }}</td>
+                </tr>
+                <tr>
+                    <th>visits <small class="text-body-secondary">(increment)</small></th>
+                    <td class="metric-value">{{ visits }}</td>
+                </tr>
+                <tr>
+                    <th>duration <small class="text-body-secondary">(timing, ms)</small></th>
+                    <td class="metric-value">{{ timing }}</td>
+                </tr>
+                <tr>
+                    <th>gauge <small class="text-body-secondary">(gauge)</small></th>
+                    <td class="metric-value">{{ gauge }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">Send a custom metric</div>
+        <div class="card-body">
+            <p class="text-body-secondary">
+                Pick a processor and an operation to call it directly, outside of the automatic
+                homepage collection above. The metric is flushed immediately, so it should show up
+                in Grafana within a few seconds.
+            </p>
+
+            <form method="post" action="{{ path('send_metric') }}" data-send-metric-form class="row g-3">
+                <div class="col-md-4">
+                    <label for="processor" class="form-label">Processor</label>
+                    <select name="processor" id="processor" class="form-select" required>
+                        {% for name, processor in processors %}
+                            <option value="{{ name }}">{{ processor.label }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="form-text">Which collector receives the call.</div>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="operation" class="form-label">Operation</label>
+                    <select name="operation" id="operation" class="form-select" required>
+                        {% for name, operation in operations %}
+                            <option value="{{ name }}">{{ operation.label }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="form-text" id="operation-help">
+                        {% for name, operation in operations %}
+                            <span data-operation-help="{{ name }}"{% if not loop.first %} hidden{% endif %}>{{ operation.description }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="metric" class="form-label">Metric name</label>
+                    <input type="text" name="metric" id="metric" class="form-control" value="homepage.custom" required>
+                    <div class="form-text">Free text, e.g. <code>homepage.custom</code>.</div>
+                </div>
+
+                <div class="col-md-4" data-value-field>
+                    <label for="value" class="form-label">Value</label>
+                    <input type="number" name="value" id="value" class="form-control" value="1">
+                    <div class="form-text">Ignored by increment/decrement.</div>
+                </div>
+
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">Send metric</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">Explore in Grafana</div>
+        <div class="card-body">
+            <p class="text-body-secondary">
+                The Docker stack provisions Grafana with a datasource and a ready-made dashboard for
+                every backend that stores data (the <code>logger</code>, <code>memory</code> and
+                <code>null</code> processors have nothing to look at).
+            </p>
+            <ul class="list-unstyled d-flex flex-wrap gap-2 mb-0">
                 <li>
-                    {{ constant('class', collector) }}</li>
-            {% endfor %}
-        </ul>
-    </p>
-
-    <p>
-        The following applications let you explore the collected metrics:
-        <ul>
-            <li><a href="https://grafana.{{ app.request.host }}">Grafana</a>: application with all database configureds</li>
-            <li><a href="https://graphite.{{ app.request.host }}">Graphite</a>: application with graphite, statsd, dogstatsd</li>
-        </ul>
-    </p>
-
-    <h2>Current collectors data</h2>
-
-    <p>Current collectors collected the following metrics:</p>
-
-    <table>
-        <tr>
-            <th>Mesaure</th>
-            <th>Value</th>
-        </tr>
-        <tr>
-            <td><code>random</code></td>
-            <td>{{ random }}</td>
-        </tr>
-        <tr>
-            <td><code>visits</code></td>
-            <td>{{ visits }}</td>
-        </tr>
-        <tr>
-            <td><code>timing</code></td>
-            <td>{{ timing }}</td>
-        </tr>
-        <tr>
-            <td><code>gauge</code></td>
-            <td>{{ gauge }}</td>
-        </tr>
-    </table>
+                    <a class="btn btn-outline-primary btn-sm" href="https://grafana.{{ app.request.host }}" target="_blank" rel="noopener">
+                        Grafana home ↗
+                    </a>
+                </li>
+                {% for uid, label in {
+                    'pg-metrics': 'PostgreSQL (dbal)',
+                    'prom-metrics': 'Prometheus',
+                    'graphite-metrics': 'Graphite / StatsD / DogStatsD',
+                    'influxdb-metrics': 'InfluxDB (v1)',
+                } %}
+                    <li>
+                        <a class="btn btn-outline-secondary btn-sm" href="https://grafana.{{ app.request.host }}/d/{{ uid }}" target="_blank" rel="noopener">
+                            {{ label }} dashboard ↗
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
 {% endblock %}

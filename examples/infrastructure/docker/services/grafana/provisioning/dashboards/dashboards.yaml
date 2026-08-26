@@ -1,0 +1,17 @@
+# Grafana dashboard provisioning: load every JSON file in ../dashboards/
+# (mounted at /var/lib/grafana/dashboards) into a "Metrics demo" folder.
+#
+# See https://grafana.com/docs/grafana/latest/administration/provisioning/#dashboards
+
+apiVersion: 1
+
+providers:
+    - name: 'Metrics demo'
+      orgId: 1
+      folder: 'Metrics demo'
+      type: file
+      disableDeletion: false
+      updateIntervalSeconds: 10
+      allowUiUpdates: true
+      options:
+          path: /var/lib/grafana/dashboards

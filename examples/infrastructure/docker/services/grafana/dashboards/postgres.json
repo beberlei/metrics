@@ -1,0 +1,71 @@
+{
+    "annotations": { "list": [] },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": null,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+        {
+            "title": "About this dashboard",
+            "type": "text",
+            "gridPos": { "h": 4, "w": 24, "x": 0, "y": 0 },
+            "options": {
+                "mode": "markdown",
+                "content": "This dashboard reads from the **PostgreSQL** database written to by the `dbal` collector (`Beberlei\\Metrics\\Collector\\DoctrineDBAL`). Every call to `measure()`, `increment()`, `decrement()` or `timing()` inserts one row into the `metrics` table; there is no `gauge()` support for this collector. Because the query below is not hardcoded to specific metric names, it picks up metrics sent from the homepage **and** from the \"Send a custom metric\" form automatically."
+            }
+        },
+        {
+            "title": "Recent writes (any metric name)",
+            "type": "table",
+            "gridPos": { "h": 10, "w": 24, "x": 0, "y": 4 },
+            "datasource": { "type": "postgres", "uid": "pg-metrics" },
+            "fieldConfig": { "defaults": {}, "overrides": [] },
+            "options": {
+                "showHeader": true,
+                "sortBy": [{ "displayName": "time", "desc": true }]
+            },
+            "targets": [
+                {
+                    "refId": "A",
+                    "datasource": { "type": "postgres", "uid": "pg-metrics" },
+                    "format": "table",
+                    "rawQuery": true,
+                    "rawSql": "SELECT created AS \"time\", metric, measurement\nFROM metrics\nORDER BY created DESC\nLIMIT 100\n"
+                }
+            ]
+        },
+        {
+            "title": "Measurements over time, by metric",
+            "type": "timeseries",
+            "gridPos": { "h": 10, "w": 24, "x": 0, "y": 14 },
+            "datasource": { "type": "postgres", "uid": "pg-metrics" },
+            "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+            "options": {
+                "legend": { "displayMode": "list", "placement": "bottom" },
+                "tooltip": { "mode": "multi" }
+            },
+            "targets": [
+                {
+                    "refId": "A",
+                    "datasource": { "type": "postgres", "uid": "pg-metrics" },
+                    "format": "time_series",
+                    "rawQuery": true,
+                    "rawSql": "SELECT created AS \"time\", measurement AS \"value\", metric\nFROM metrics\nWHERE $__timeFilter(created)\nORDER BY created\n"
+                }
+            ]
+        }
+    ],
+    "refresh": "10s",
+    "schemaVersion": 39,
+    "tags": ["metrics-demo", "postgres", "dbal"],
+    "templating": { "list": [] },
+    "time": { "from": "now-1h", "to": "now" },
+    "timepicker": {},
+    "timezone": "",
+    "title": "PostgreSQL (dbal collector)",
+    "uid": "pg-metrics",
+    "version": 1,
+    "weekStart": ""
+}

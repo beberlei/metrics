@@ -1,0 +1,116 @@
+{
+    "annotations": { "list": [] },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": null,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+        {
+            "title": "About this dashboard",
+            "type": "text",
+            "gridPos": { "h": 5, "w": 24, "x": 0, "y": 0 },
+            "options": {
+                "mode": "markdown",
+                "content": "This dashboard reads from **Graphite**, shared by three collectors that all write into the same graphite-statsd container:\n\n- `graphite` pushes raw values directly to carbon (metric names unprefixed, e.g. `homepage.visits`).\n- `statsd` and `dogstatsd` send UDP packets to the bundled StatsD daemon, prefixed with `app.statsd.` / `app.dogstatsd.`. StatsD then republishes them under `stats.<key>` (rate) / `stats_counts.<key>` (count) for counters, `stats.gauges.<key>` for gauges, and `stats.timers.<key>.*` for timings.\n\nUse the `pattern` variable above the panels to explore any other metric name, including custom ones sent from the form (e.g. `stats.app.*.demo.*` or `homepage.*`)."
+            }
+        },
+        {
+            "title": "Direct pushes (graphite collector)",
+            "type": "timeseries",
+            "gridPos": { "h": 8, "w": 12, "x": 0, "y": 5 },
+            "datasource": { "type": "graphite", "uid": "graphite-metrics" },
+            "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+            "options": {
+                "legend": { "displayMode": "list", "placement": "bottom" },
+                "tooltip": { "mode": "multi" }
+            },
+            "targets": [
+                { "refId": "A", "target": "alias(homepage.visits, 'visits')" },
+                { "refId": "B", "target": "alias(homepage.random, 'random')" },
+                { "refId": "C", "target": "alias(homepage.duration, 'duration')" }
+            ]
+        },
+        {
+            "title": "Counters (statsd vs dogstatsd), per-second rate",
+            "type": "timeseries",
+            "gridPos": { "h": 8, "w": 12, "x": 12, "y": 5 },
+            "datasource": { "type": "graphite", "uid": "graphite-metrics" },
+            "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+            "options": {
+                "legend": { "displayMode": "list", "placement": "bottom" },
+                "tooltip": { "mode": "multi" }
+            },
+            "targets": [
+                { "refId": "A", "target": "alias(stats.app.statsd.homepage.visits, 'statsd visits')" },
+                { "refId": "B", "target": "alias(stats.app.dogstatsd.homepage.visits, 'dogstatsd visits')" },
+                { "refId": "C", "target": "alias(stats.app.statsd.homepage.random, 'statsd random')" },
+                { "refId": "D", "target": "alias(stats.app.dogstatsd.homepage.random, 'dogstatsd random')" }
+            ]
+        },
+        {
+            "title": "Gauges (statsd vs dogstatsd)",
+            "type": "timeseries",
+            "gridPos": { "h": 8, "w": 12, "x": 0, "y": 13 },
+            "datasource": { "type": "graphite", "uid": "graphite-metrics" },
+            "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+            "options": {
+                "legend": { "displayMode": "list", "placement": "bottom" },
+                "tooltip": { "mode": "multi" }
+            },
+            "targets": [
+                { "refId": "A", "target": "alias(stats.gauges.app.statsd.homepage.gauge, 'statsd gauge')" },
+                { "refId": "B", "target": "alias(stats.gauges.app.dogstatsd.homepage.gauge, 'dogstatsd gauge')" }
+            ]
+        },
+        {
+            "title": "Timings, mean ms (statsd vs dogstatsd)",
+            "type": "timeseries",
+            "gridPos": { "h": 8, "w": 12, "x": 12, "y": 13 },
+            "datasource": { "type": "graphite", "uid": "graphite-metrics" },
+            "fieldConfig": { "defaults": { "unit": "ms" }, "overrides": [] },
+            "options": {
+                "legend": { "displayMode": "list", "placement": "bottom" },
+                "tooltip": { "mode": "multi" }
+            },
+            "targets": [
+                { "refId": "A", "target": "alias(stats.timers.app.statsd.homepage.duration.mean, 'statsd duration')" },
+                { "refId": "B", "target": "alias(stats.timers.app.dogstatsd.homepage.duration.mean, 'dogstatsd duration')" }
+            ]
+        },
+        {
+            "title": "Explore: ${pattern}",
+            "type": "timeseries",
+            "gridPos": { "h": 9, "w": 24, "x": 0, "y": 21 },
+            "datasource": { "type": "graphite", "uid": "graphite-metrics" },
+            "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+            "options": {
+                "legend": { "displayMode": "list", "placement": "bottom" },
+                "tooltip": { "mode": "multi" }
+            },
+            "targets": [{ "refId": "A", "target": "${pattern}" }]
+        }
+    ],
+    "refresh": "10s",
+    "schemaVersion": 39,
+    "tags": ["metrics-demo", "graphite", "statsd", "dogstatsd"],
+    "templating": {
+        "list": [
+            {
+                "name": "pattern",
+                "type": "textbox",
+                "label": "Graphite pattern to explore",
+                "current": { "text": "stats.app.*.homepage.*", "value": "stats.app.*.homepage.*" },
+                "query": "stats.app.*.homepage.*"
+            }
+        ]
+    },
+    "time": { "from": "now-1h", "to": "now" },
+    "timepicker": {},
+    "timezone": "",
+    "title": "Graphite (graphite, statsd, dogstatsd collectors)",
+    "uid": "graphite-metrics",
+    "version": 1,
+    "weekStart": ""
+}

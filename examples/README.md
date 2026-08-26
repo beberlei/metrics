@@ -41,6 +41,13 @@ The Docker infrastructure provides a web stack with:
    - Node
    - Yarn / NPM
 
+...and, to back every collector demonstrated on the homepage (see
+[Metrics dashboards](#metrics-dashboards) below):
+ - Grafana
+ - Graphite (with a bundled StatsD daemon)
+ - InfluxDB (version 1)
+ - Prometheus
+
 ### Domain configuration (first time only)
 
 Before running the application for the first time, ensure your domain names
@@ -66,9 +73,59 @@ castor start
 > [!NOTE]
 > the first start of the stack should take a few minutes.
 
-The site is now accessible at the hostnames your have configured over HTTPS
+The site is now accessible at the hostnames you have configured over HTTPS
 (you may need to accept self-signed SSL certificate if you do not have mkcert
 installed on your computer - see below).
+
+### Metrics dashboards
+
+Open the homepage: it automatically sends a few `homepage.*` metrics to
+every collector configured in `config/packages/metrics.yaml`, and offers a
+form to send arbitrary metrics to any collector on demand.
+
+Grafana (`https://grafana.<your-domain>`) is fully provisioned out of the
+box: a datasource and a ready-made dashboard exist for every collector
+backed by an external database (PostgreSQL, Prometheus, Graphite/StatsD/
+DogStatsD, InfluxDB). No manual setup is needed — just load the homepage
+once, then open Grafana.
+
+> [!TIP]
+> Grafana only reliably picks up changes made under
+> `infrastructure/docker/services/grafana/` (a datasource or a dashboard) on
+> (re)start. If you edit one while the stack is already running, force a
+> reload with `castor grafana`.
+
+#### Screenshots
+
+Homepage — configured collectors, auto-collected metrics, and the form to
+send a custom metric to any of them:
+
+![Homepage](../media/home.png)
+
+A Grafana dashboard per backend:
+
+<table>
+  <tr>
+    <td width="50%">
+      <strong>PostgreSQL</strong> (<code>dbal</code>)<br>
+      <img src="../media/postgresql.png" alt="PostgreSQL dashboard">
+    </td>
+    <td width="50%">
+      <strong>Prometheus</strong> (<code>prometheus</code>, <code>otel</code>)<br>
+      <img src="../media/prometheus.png" alt="Prometheus dashboard">
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <strong>Graphite</strong> (<code>graphite</code>, <code>statsd</code>, <code>dogstatsd</code>, <code>chain</code>)<br>
+      <img src="../media/graphite.png" alt="Graphite dashboard">
+    </td>
+    <td width="50%">
+      <strong>InfluxDB</strong> (<code>influxdb_v1</code>)<br>
+      <img src="../media/influx1.png" alt="InfluxDB dashboard">
+    </td>
+  </tr>
+</table>
 
 ### SSL certificates
 
