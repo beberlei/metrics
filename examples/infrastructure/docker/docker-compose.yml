@@ -1,0 +1,135 @@
+# Templates to factorize the service definitions
+x-templates:
+    worker_base: &worker_base
+        build:
+            context: services/php
+            target: worker
+        user: "${USER_ID}:${USER_ID}"
+        environment:
+            - APP_ENV
+        depends_on:
+            postgres:
+                condition: service_healthy
+        volumes:
+            - "../..:/var/www:cached"
+        profiles:
+            - worker
+
+volumes:
+    grafana-data: {}
+    graphite-data: {}
+    influxdb-data: {}
+    postgres-data: {}
+    prometheus-data: {}
+
+services:
+    postgres:
+        image: postgres:16
+        environment:
+            - POSTGRES_USER=app
+            - POSTGRES_PASSWORD=app
+        volumes:
+            - postgres-data:/var/lib/postgresql/data
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U postgres"]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+        profiles:
+            - default
+
+    frontend:
+        build:
+            context: services/php
+            target: frontend
+            cache_from:
+              - "type=registry,ref=${REGISTRY:-}/frontend:cache"
+        user: "${USER_ID}:${USER_ID}"
+        environment:
+            - APP_ENV
+        volumes:
+            - "../..:/var/www:cached"
+            - "../../.home:/home/app:cached"
+        depends_on:
+            postgres:
+                condition: service_healthy
+        profiles:
+            - default
+        labels:
+            - "traefik.enable=true"
+            - "project-name=${PROJECT_NAME}"
+            - "traefik.http.routers.${PROJECT_NAME}-frontend.rule=Host(${PROJECT_DOMAINS})"
+            - "traefik.http.routers.${PROJECT_NAME}-frontend.tls=true"
+            - "traefik.http.routers.${PROJECT_NAME}-frontend-unsecure.rule=Host(${PROJECT_DOMAINS})"
+            # Comment the next line to be able to access frontend via HTTP instead of HTTPS
+            - "traefik.http.routers.${PROJECT_NAME}-frontend-unsecure.middlewares=redirect-to-https@file"
+
+    grafana:
+        image: grafana/grafana:latest
+        volumes:
+            - grafana-data:/var/lib/grafana
+        environment:
+            - GF_AUTH_ANONYMOUS_ENABLED=true
+            - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+        labels:
+            - "traefik.enable=true"
+            - "project-name=${PROJECT_NAME}"
+            - "traefik.http.routers.${PROJECT_NAME}-grafana.rule=Host(`grafana.${PROJECT_ROOT_DOMAIN}`)"
+            - "traefik.http.routers.${PROJECT_NAME}-grafana.tls=true"
+        profiles:
+            - default
+
+    graphite:
+        image: graphiteapp/graphite-statsd:1.1.10-5
+        volumes:
+            - graphite-data:/opt/graphite/storage
+        expose:
+            - 80
+        labels:
+            - "traefik.enable=true"
+            - "project-name=${PROJECT_NAME}"
+            - "traefik.http.routers.${PROJECT_NAME}-graphite.rule=Host(`graphite.${PROJECT_ROOT_DOMAIN}`)"
+            - "traefik.http.routers.${PROJECT_NAME}-graphite.tls=true"
+        profiles:
+            - default
+
+    influxdb1:
+        image: influxdb:1.8
+        environment:
+            - INFLUXDB_DB=app
+        volumes:
+            - influxdb-data:/var/lib/influxdb
+        profiles:
+            - default
+
+    prometheus:
+        image: prom/prometheus:v3.7.2
+        volumes:
+            - ./services/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:cached
+            - prometheus-data:/var/lib/prometheus
+        profiles:
+            - default
+
+    builder:
+        build:
+            context: services/php
+            target: builder
+            cache_from:
+                - "type=registry,ref=${REGISTRY:-}/builder:cache"
+        init: true
+        user: "${USER_ID}:${USER_ID}"
+        environment:
+            - APP_ENV
+            # The following list contains the common environment variables exposed by CI platforms
+            - GITHUB_ACTIONS
+            - CI # Travis CI, CircleCI, Cirrus CI, Gitlab CI, Appveyor, CodeShip, dsari
+            - CONTINUOUS_INTEGRATION # Travis CI, Cirrus CI
+            - BUILD_NUMBER # Jenkins, TeamCity
+            - RUN_ID # TaskCluster, dsari
+        volumes:
+            - "../..:/var/www:cached"
+            - "../../.home:/home/app:cached"
+        depends_on:
+            - postgres
+        profiles:
+            - builder
