@@ -148,7 +148,7 @@ beberlei_metrics:
             # Use another connection, by default it uses the default connection
             # connection: metrics
         monolog:
-            type: monolog
+            type: logger
         both:
             type: chain
             # The names of the collectors to dispatch every call to

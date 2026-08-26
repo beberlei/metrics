@@ -212,6 +212,28 @@ class BeberleiMetricsExtensionTest extends TestCase
         );
     }
 
+    public function testChainIsNotFlushedByHooksToAvoidDoubleFlush(): void
+    {
+        $container = $this->createContainer(
+            [
+                'default' => 'chain',
+                'collectors' => [
+                    'memory_1' => ['type' => 'memory'],
+                    'chain' => ['type' => 'chain', 'collectors' => ['memory_1']],
+                ],
+            ],
+            ['beberlei_metrics.collector.chain', 'beberlei_metrics.collector.memory_1'],
+        );
+
+        $chainDefinition = $container->getDefinition('beberlei_metrics.collector.chain');
+        $this->assertFalse($chainDefinition->hasTag('kernel.event_listener'));
+        $this->assertFalse($chainDefinition->hasTag('kernel.reset'));
+
+        $memoryDefinition = $container->getDefinition('beberlei_metrics.collector.memory_1');
+        $this->assertTrue($memoryDefinition->hasTag('kernel.event_listener'));
+        $this->assertTrue($memoryDefinition->hasTag('kernel.reset'));
+    }
+
     public function testWithChainRequiresAtLeastOneCollector(): void
     {
         $this->expectException(InvalidConfigurationException::class);

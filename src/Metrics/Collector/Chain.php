@@ -25,28 +25,40 @@ final class Chain implements CollectorInterface, GaugeableCollectorInterface
     public function measure(string $variable, int $value, array $tags = []): void
     {
         foreach ($this->collectors as $collector) {
-            $collector->measure($variable, $value, $tags);
+            try {
+                $collector->measure($variable, $value, $tags);
+            } catch (\Throwable) {
+            }
         }
     }
 
     public function increment(string $variable, array $tags = []): void
     {
         foreach ($this->collectors as $collector) {
-            $collector->increment($variable, $tags);
+            try {
+                $collector->increment($variable, $tags);
+            } catch (\Throwable) {
+            }
         }
     }
 
     public function decrement(string $variable, array $tags = []): void
     {
         foreach ($this->collectors as $collector) {
-            $collector->decrement($variable, $tags);
+            try {
+                $collector->decrement($variable, $tags);
+            } catch (\Throwable) {
+            }
         }
     }
 
     public function timing(string $variable, int $time, array $tags = []): void
     {
         foreach ($this->collectors as $collector) {
-            $collector->timing($variable, $time, $tags);
+            try {
+                $collector->timing($variable, $time, $tags);
+            } catch (\Throwable) {
+            }
         }
     }
 
@@ -54,7 +66,10 @@ final class Chain implements CollectorInterface, GaugeableCollectorInterface
     {
         foreach ($this->collectors as $collector) {
             if ($collector instanceof GaugeableCollectorInterface) {
-                $collector->gauge($variable, $value, $tags);
+                try {
+                    $collector->gauge($variable, $value, $tags);
+                } catch (\Throwable) {
+                }
             }
         }
     }
@@ -62,7 +77,10 @@ final class Chain implements CollectorInterface, GaugeableCollectorInterface
     public function flush(): void
     {
         foreach ($this->collectors as $collector) {
-            $collector->flush();
+            try {
+                $collector->flush();
+            } catch (\Throwable) {
+            }
         }
     }
 }

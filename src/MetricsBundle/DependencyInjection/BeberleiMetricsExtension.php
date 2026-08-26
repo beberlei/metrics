@@ -125,11 +125,16 @@ final class BeberleiMetricsExtension extends Extension
     {
         $definition = new ChildDefinition('beberlei_metrics.collector_proto.' . $type);
 
-        // Theses listeners should be as late as possible
-        $definition->addTag('kernel.event_listener', ['method' => 'flush', 'priority' => -1024, 'event' => 'kernel.terminate']);
-        $definition->addTag('kernel.event_listener', ['method' => 'flush', 'priority' => -1024, 'event' => 'console.terminate']);
         $definition->addTag(CollectorInterface::class);
-        $definition->addTag('kernel.reset', ['method' => 'flush']);
+
+        // The chain collector must not be flushed by these hooks itself: it already
+        // forwards flush() to its children, which are flushed by these same hooks.
+        if ('chain' !== $type) {
+            // Theses listeners should be as late as possible
+            $definition->addTag('kernel.event_listener', ['method' => 'flush', 'priority' => -1024, 'event' => 'kernel.terminate']);
+            $definition->addTag('kernel.event_listener', ['method' => 'flush', 'priority' => -1024, 'event' => 'console.terminate']);
+            $definition->addTag('kernel.reset', ['method' => 'flush']);
+        }
 
         /** @var array<string, scalar> $tags */
         $tags = $config['tags'] ?? [];

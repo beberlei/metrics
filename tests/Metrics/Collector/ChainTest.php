@@ -93,6 +93,19 @@ class ChainTest extends TestCase
         $this->assertSame(5, $gaugeable->getGauge('foo.bar'));
     }
 
+    public function testFaultyFirstCollectorDoesNotPreventOthersFromBeingCalled(): void
+    {
+        $tags = ['dc' => 'west'];
+
+        $a = $this->createMock(CollectorInterface::class);
+        $a->expects($this->once())->method('measure')->willThrowException(new \RuntimeException('boom'));
+
+        $b = $this->createMock(CollectorInterface::class);
+        $b->expects($this->once())->method('measure')->with('foo.bar', 5, $tags);
+
+        new Chain($a, $b)->measure('foo.bar', 5, $tags);
+    }
+
     public function testEmptyChainDoesNotFail(): void
     {
         $chain = new Chain();
