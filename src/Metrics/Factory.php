@@ -9,6 +9,7 @@
 
 namespace Beberlei\Metrics;
 
+use Beberlei\Metrics\Collector\Chain;
 use Beberlei\Metrics\Collector\CollectorInterface;
 use Beberlei\Metrics\Collector\DoctrineDBAL;
 use Beberlei\Metrics\Collector\DogStatsD;
@@ -38,6 +39,7 @@ final class Factory
     public static function create(string $type, array $options = []): CollectorInterface
     {
         return match ($type) {
+            'chain' => new Chain(...$options['collectors'] ?? throw new MetricsException('The "collectors" option is required for the Chain collector.')),
             'statsd' => new StatsD(...self::socketArguments($options, 'prefix')),
             'dogstatsd' => new DogStatsD(...self::socketArguments($options, 'prefix')),
             'telegraf' => new Telegraf(...self::socketArguments($options, 'prefix')),

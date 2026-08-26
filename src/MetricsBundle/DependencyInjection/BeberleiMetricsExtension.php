@@ -9,6 +9,7 @@
 
 namespace Beberlei\Bundle\MetricsBundle\DependencyInjection;
 
+use Beberlei\Metrics\Collector\Chain;
 use Beberlei\Metrics\Collector\CollectorInterface;
 use Beberlei\Metrics\Collector\DoctrineDBAL;
 use Beberlei\Metrics\Collector\DogStatsD;
@@ -32,6 +33,7 @@ use Symfony\Component\DependencyInjection\Reference;
 final class BeberleiMetricsExtension extends Extension
 {
     public const TYPES = [
+        'chain',
         'doctrine_dbal',
         'dogstatsd',
         'graphite',
@@ -45,6 +47,7 @@ final class BeberleiMetricsExtension extends Extension
     ];
 
     private const ABSTRACT_SERVICES = [
+        'chain' => Chain::class,
         'doctrine_dbal' => DoctrineDBAL::class,
         'dogstatsd' => DogStatsD::class,
         'graphite' => Graphite::class,
@@ -132,6 +135,14 @@ final class BeberleiMetricsExtension extends Extension
         $tags = $config['tags'] ?? [];
 
         switch ($type) {
+            case 'chain':
+                /** @var list<string> $collectorNames */
+                $collectorNames = $config['collectors'] ?? [];
+
+                return $definition->replaceArgument('$collectors', array_map(
+                    static fn (string $collectorName): Reference => new Reference('beberlei_metrics.collector.' . $collectorName),
+                    $collectorNames,
+                ));
             case 'influxdb_v1':
                 if (!class_exists(\InfluxDB\Client::class)) {
                     throw new \LogicException('The "influxdb/influxdb-php" package is required to use the "influxdb" collector.');

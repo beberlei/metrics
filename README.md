@@ -13,6 +13,7 @@ It also ships with a Symfony Bundle. **This is not a library for displaying metr
 
 Currently supported backends:
 
+* Chain (Dispatches to a list of other collectors)
 * Doctrine DBAL
 * DogStatsD
 * Graphite
@@ -59,6 +60,26 @@ flush:
 ```php
 $collector->flush();
 ```
+
+### Sending metrics to several backends at once
+
+The `Chain` collector dispatches every call to a list of other collectors. It
+is useful when you want to send the same metrics to several backends, for
+example StatsD and a logger:
+
+```php
+$collector = new \Beberlei\Metrics\Collector\Chain(
+    \Beberlei\Metrics\Factory::create('statsd'),
+    \Beberlei\Metrics\Factory::create('logger', ['logger' => $logger]),
+);
+
+$collector->increment('foo.bar');
+$collector->flush();
+```
+
+It also implements `GaugeableCollectorInterface`: `gauge()` calls are only
+forwarded to the chained collectors that support gauges, the others are
+silently skipped.
 
 ## Configuration
 
@@ -128,6 +149,10 @@ beberlei_metrics:
             # connection: metrics
         monolog:
             type: monolog
+        both:
+            type: chain
+            # The names of the collectors to dispatch every call to
+            collectors: [statsd, monolog]
 ```
 
 Then, you can inject the `Beberlei\Metrics\Collector\CollectorInterface` and

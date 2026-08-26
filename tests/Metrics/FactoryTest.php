@@ -9,6 +9,8 @@
 
 namespace Beberlei\Metrics\Tests;
 
+use Beberlei\Metrics\Collector\Chain;
+use Beberlei\Metrics\Collector\CollectorInterface;
 use Beberlei\Metrics\Collector\DoctrineDBAL;
 use Beberlei\Metrics\Collector\DogStatsD;
 use Beberlei\Metrics\Collector\Graphite;
@@ -47,6 +49,7 @@ class FactoryTest extends TestCase
     {
         $stub = static fn (string $class): callable => static fn (TestCase $testCase): object => $testCase->createStub($class);
 
+        yield [Chain::class, 'chain', ['collectors' => static fn (TestCase $testCase): array => [$testCase->createStub(CollectorInterface::class), $testCase->createStub(CollectorInterface::class)]]];
         yield [StatsD::class, 'statsd', []];
         yield [StatsD::class, 'statsd', ['host' => 'localhost', 'port' => 1234, 'prefix' => 'prefix']];
         yield [StatsD::class, 'statsd', ['host' => 'localhost', 'port' => 1234]];
@@ -80,6 +83,7 @@ class FactoryTest extends TestCase
 
     public static function getCreateThrowExceptionIfOptionsAreInvalidTests(): iterable
     {
+        yield ['The "collectors" option is required for the Chain collector.', 'chain'];
         yield ['You must specify a host if you specify a port.', 'statsd', ['port' => '1234']];
         yield ['You must specify a host and a port if you specify a prefix.', 'statsd', ['prefix' => 'prefix']];
         yield ['You must specify a host and a port if you specify a prefix.', 'statsd', ['port' => '1234', 'prefix' => 'prefix']];
