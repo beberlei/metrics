@@ -20,6 +20,7 @@ Currently supported backends:
 * InfluxDb (version 1)
 * Logger (Psr\Log\LoggerInterface)
 * Null (Dummy that does nothing)
+* OpenTelemetry
 * Prometheus
 * StatsD
 * Telegraf
@@ -81,6 +82,59 @@ It also implements `GaugeableCollectorInterface`: `gauge()` calls are only
 forwarded to the chained collectors that support gauges, the others are
 silently skipped.
 
+### Sending metrics through OpenTelemetry
+
+The `OpenTelemetry` collector records measurements on an
+[OpenTelemetry](https://opentelemetry.io/docs/languages/php/) `MeterProvider`.
+It requires the `open-telemetry/api` package, and an actual SDK (such as
+`open-telemetry/sdk` together with an exporter) to do anything useful with the
+recorded data:
+
+```
+composer require open-telemetry/api open-telemetry/sdk open-telemetry/exporter-otlp
+```
+
+```php
+$collector = new \Beberlei\Metrics\Collector\OpenTelemetry(
+    $meterProvider, // an OpenTelemetry\API\Metrics\MeterProviderInterface
+    'my_app', // instrumentation scope name, defaults to "beberlei/metrics"
+    ['dc' => 'west'], // default attributes merged into every data point
+);
+
+$collector->increment('foo.bar');
+$collector->flush();
+```
+
+It can also be created through the `Factory`:
+
+```php
+$collector = \Beberlei\Metrics\Factory::create('opentelemetry', [
+    'meter_provider' => $meterProvider,
+    'name' => 'my_app', // optional, defaults to "beberlei/metrics"
+    'tags' => ['dc' => 'west'], // optional
+]);
+```
+
+Calls are recorded immediately on the underlying OpenTelemetry instruments,
+as the API is meant to be used, instead of being buffered like the other
+collectors. `flush()` only calls `forceFlush()` on the `MeterProvider`, so
+that anything still buffered by the SDK's own exporters is sent before a
+short-lived PHP process ends; it is a no-op if the provider does not support
+it (for example the API's `NoopMeterProvider`).
+
+Like every other collector, it never lets an error or exception raised by the
+underlying provider/instruments (or by a non-stringable tag value) reach the
+instrumented application: those calls are silently ignored.
+
+Each method maps to the OpenTelemetry instrument that matches its semantics
+the closest:
+
+* `measure()`/`increment()`/`decrement()` use an `UpDownCounter`, since a
+  `Counter` is monotonic and cannot go down or receive a negative amount
+* `timing()` uses a `Histogram`, with a `ms` unit
+* `gauge()` uses a `Gauge`, tracking relative `+`/`-` adjustments locally
+  before recording the resulting absolute value, like the other collectors
+
 ## Configuration
 
 ```php
@@ -120,6 +174,15 @@ beberlei_metrics:
             # It must be an instance of "InfluxDB\Database"
             # In this case, you can omit de "database" option
             # service: my.service.id
+            tags: # optional
+                dc: "west"
+                node_instance: "hermes10"
+        otel:
+            type: opentelemetry
+            # The service must be an instance of
+            # "OpenTelemetry\API\Metrics\MeterProviderInterface"
+            service: my.meter_provider.service.id
+            namespace: app_name # optional, instrumentation scope name, defaults to "beberlei/metrics"
             tags: # optional
                 dc: "west"
                 node_instance: "hermes10"

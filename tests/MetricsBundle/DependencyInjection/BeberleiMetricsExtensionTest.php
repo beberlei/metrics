@@ -11,15 +11,18 @@ namespace Beberlei\Bundle\MetricsBundle\Tests\DependencyInjection;
 
 use Beberlei\Bundle\MetricsBundle\DependencyInjection\BeberleiMetricsExtension;
 use Beberlei\Metrics\Collector\Chain;
+use Beberlei\Metrics\Collector\CollectorInterface;
 use Beberlei\Metrics\Collector\DogStatsD;
 use Beberlei\Metrics\Collector\Graphite;
 use Beberlei\Metrics\Collector\InfluxDbV1;
 use Beberlei\Metrics\Collector\InMemory;
 use Beberlei\Metrics\Collector\Logger;
 use Beberlei\Metrics\Collector\NullCollector;
+use Beberlei\Metrics\Collector\OpenTelemetry;
 use Beberlei\Metrics\Collector\Prometheus;
 use Beberlei\Metrics\Collector\StatsD;
 use Beberlei\Metrics\Collector\Telegraf;
+use OpenTelemetry\API\Metrics\Noop\NoopMeterProvider;
 use PHPUnit\Framework\TestCase;
 use Prometheus\CollectorRegistry;
 use Psr\Log\NullLogger;
@@ -180,6 +183,50 @@ class BeberleiMetricsExtensionTest extends TestCase
         $this->assertEquals($expectedTags, $this->getProperty($collector, 'tags'));
     }
 
+    public function testWithOpenTelemetry(): void
+    {
+        $meterProviderMock = new NoopMeterProvider();
+
+        $container = $this->createContainer(['collectors' => ['opentelemetry' => ['type' => 'opentelemetry', 'service' => 'meter_provider_mock']]], ['beberlei_metrics.collector.opentelemetry'], ['meter_provider_mock' => $meterProviderMock]);
+
+        $collector = $container->get('beberlei_metrics.collector.opentelemetry');
+        $this->assertInstanceOf(OpenTelemetry::class, $collector);
+        $this->assertSame($meterProviderMock, $this->getProperty($collector, 'meterProvider'));
+        $this->assertSame('beberlei/metrics', $this->getProperty($collector, 'name'));
+    }
+
+    public function testWithOpenTelemetryAndWithNamespace(): void
+    {
+        $meterProviderMock = new NoopMeterProvider();
+
+        $container = $this->createContainer(['collectors' => ['opentelemetry' => ['type' => 'opentelemetry', 'service' => 'meter_provider_mock', 'namespace' => 'my_app']]], ['beberlei_metrics.collector.opentelemetry'], ['meter_provider_mock' => $meterProviderMock]);
+
+        $collector = $container->get('beberlei_metrics.collector.opentelemetry');
+        $this->assertInstanceOf(OpenTelemetry::class, $collector);
+        $this->assertSame('my_app', $this->getProperty($collector, 'name'));
+    }
+
+    public function testWithOpenTelemetryAndWithTags(): void
+    {
+        $expectedTags = ['string_tag' => 'first_value', 'int_tag' => 123];
+
+        $meterProviderMock = new NoopMeterProvider();
+
+        $container = $this->createContainer(['collectors' => ['opentelemetry' => ['type' => 'opentelemetry', 'service' => 'meter_provider_mock', 'tags' => $expectedTags]]], ['beberlei_metrics.collector.opentelemetry'], ['meter_provider_mock' => $meterProviderMock]);
+
+        $collector = $container->get('beberlei_metrics.collector.opentelemetry');
+        $this->assertInstanceOf(OpenTelemetry::class, $collector);
+        $this->assertEquals($expectedTags, $this->getProperty($collector, 'tags'));
+    }
+
+    public function testWithOpenTelemetryRequiresAService(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('The "service" option must be set to the service id of a "OpenTelemetry\API\Metrics\MeterProviderInterface" instance to use the OpenTelemetry collector');
+
+        $this->createContainer(['collectors' => ['opentelemetry' => ['type' => 'opentelemetry']]]);
+    }
+
     public function testValidationWhenTypeIsPrometheusAndPrometheusCollectorRegistryIsNotSpecified(): void
     {
         $container = $this->createContainer(['collectors' => ['prometheus' => ['type' => 'prometheus']]], ['beberlei_metrics.collector.prometheus']);
@@ -228,10 +275,12 @@ class BeberleiMetricsExtensionTest extends TestCase
         $chainDefinition = $container->getDefinition('beberlei_metrics.collector.chain');
         $this->assertFalse($chainDefinition->hasTag('kernel.event_listener'));
         $this->assertFalse($chainDefinition->hasTag('kernel.reset'));
+        $this->assertFalse($chainDefinition->hasTag(CollectorInterface::class));
 
         $memoryDefinition = $container->getDefinition('beberlei_metrics.collector.memory_1');
         $this->assertTrue($memoryDefinition->hasTag('kernel.event_listener'));
         $this->assertTrue($memoryDefinition->hasTag('kernel.reset'));
+        $this->assertTrue($memoryDefinition->hasTag(CollectorInterface::class));
     }
 
     public function testWithChainRequiresAtLeastOneCollector(): void

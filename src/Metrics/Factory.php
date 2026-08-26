@@ -17,6 +17,7 @@ use Beberlei\Metrics\Collector\Graphite;
 use Beberlei\Metrics\Collector\InfluxDbV1;
 use Beberlei\Metrics\Collector\Logger;
 use Beberlei\Metrics\Collector\NullCollector;
+use Beberlei\Metrics\Collector\OpenTelemetry;
 use Beberlei\Metrics\Collector\Prometheus;
 use Beberlei\Metrics\Collector\StatsD;
 use Beberlei\Metrics\Collector\Telegraf;
@@ -39,7 +40,7 @@ final class Factory
     public static function create(string $type, array $options = []): CollectorInterface
     {
         return match ($type) {
-            'chain' => new Chain(...$options['collectors'] ?? throw new MetricsException('The "collectors" option is required for the Chain collector.')),
+            'chain' => new Chain(...([] === ($options['collectors'] ?? []) ? throw new MetricsException('The "collectors" option must not be empty for the Chain collector.') : $options['collectors'])),
             'statsd' => new StatsD(...self::socketArguments($options, 'prefix')),
             'dogstatsd' => new DogStatsD(...self::socketArguments($options, 'prefix')),
             'telegraf' => new Telegraf(...self::socketArguments($options, 'prefix')),
@@ -54,6 +55,11 @@ final class Factory
                 $options['database'] ?? throw new MetricsException('The "database" option is required for the InfluxDbV1 collector.'),
             ),
             'null' => new NullCollector(),
+            'opentelemetry' => new OpenTelemetry(
+                $options['meter_provider'] ?? throw new MetricsException('The "meter_provider" option is required for the OpenTelemetry collector.'),
+                $options['name'] ?? 'beberlei/metrics',
+                $options['tags'] ?? [],
+            ),
             'prometheus' => new Prometheus(
                 $options['collector_registry'] ?? throw new MetricsException('The "collector_registry" option is required for the Prometheus collector.'),
                 $options['namespace'] ?? '',

@@ -43,6 +43,8 @@
 * collector:
   * Ensure all collectors cannot raise error or exception
   * Add a `Chain` collector, dispatching every call to a list of collectors
+  * Add an `OpenTelemetry` collector, recording measurements on an
+    `OpenTelemetry\API\Metrics\MeterProviderInterface`
 * bundle:
   * All collectors has alias for autowiring. Use
     `#[Target('name-of-the-collector')]` to inject a collector
@@ -51,6 +53,8 @@
     `Beberlei\Metrics\Collector\CollectorInterface`
   * Add support for the `chain` collector type, referencing other collectors
     by name through the `collectors` option
+  * Add support for the `opentelemetry` collector type, referencing a
+    `MeterProviderInterface` service through the `service` option
 * add a symfony application in the `examples` folder will all collectors enabled
   and visualisation with Grafana
 

@@ -18,9 +18,11 @@ use Beberlei\Metrics\Collector\InfluxDbV1;
 use Beberlei\Metrics\Collector\InMemory;
 use Beberlei\Metrics\Collector\Logger;
 use Beberlei\Metrics\Collector\NullCollector;
+use Beberlei\Metrics\Collector\OpenTelemetry;
 use Beberlei\Metrics\Collector\Prometheus;
 use Beberlei\Metrics\Collector\StatsD;
 use Beberlei\Metrics\Collector\Telegraf;
+use OpenTelemetry\API\Metrics\MeterProviderInterface;
 use Prometheus\CollectorRegistry;
 use Prometheus\Storage\InMemory as InMemoryStorage;
 use Symfony\Component\DependencyInjection\ChildDefinition;
@@ -41,6 +43,7 @@ final class BeberleiMetricsExtension extends Extension
         'logger',
         'memory',
         'null',
+        'opentelemetry',
         'prometheus',
         'statsd',
         'telegraf',
@@ -55,6 +58,7 @@ final class BeberleiMetricsExtension extends Extension
         'logger' => Logger::class,
         'memory' => InMemory::class,
         'null' => NullCollector::class,
+        'opentelemetry' => OpenTelemetry::class,
         'prometheus' => Prometheus::class,
         'statsd' => StatsD::class,
         'telegraf' => Telegraf::class,
@@ -125,11 +129,13 @@ final class BeberleiMetricsExtension extends Extension
     {
         $definition = new ChildDefinition('beberlei_metrics.collector_proto.' . $type);
 
-        $definition->addTag(CollectorInterface::class);
-
-        // The chain collector must not be flushed by these hooks itself: it already
-        // forwards flush() to its children, which are flushed by these same hooks.
+        // The chain collector must not be tagged as an individual collector, nor
+        // flushed by these hooks itself: it already forwards every call to its
+        // children, which are already tagged and flushed independently. Doing
+        // both for the chain too would double-count metrics for any consumer
+        // iterating CollectorInterface::class, and double-flush its children.
         if ('chain' !== $type) {
+            $definition->addTag(CollectorInterface::class);
             // Theses listeners should be as late as possible
             $definition->addTag('kernel.event_listener', ['method' => 'flush', 'priority' => -1024, 'event' => 'kernel.terminate']);
             $definition->addTag('kernel.event_listener', ['method' => 'flush', 'priority' => -1024, 'event' => 'console.terminate']);
@@ -149,9 +155,7 @@ final class BeberleiMetricsExtension extends Extension
                     $collectorNames,
                 ));
             case 'influxdb_v1':
-                if (!class_exists(\InfluxDB\Client::class)) {
-                    throw new \LogicException('The "influxdb/influxdb-php" package is required to use the "influxdb" collector.');
-                }
+                $this->requireInstalled(class_exists(\InfluxDB\Client::class), 'influxdb/influxdb-php', 'influxdb');
 
                 if ($config['service']) {
                     $database = new Reference($config['service']);
@@ -172,9 +176,7 @@ final class BeberleiMetricsExtension extends Extension
                     ->replaceArgument('$tags', $tags)
                 ;
             case 'prometheus':
-                if (!class_exists(CollectorRegistry::class)) {
-                    throw new \LogicException('The "promphp/prometheus_client_php" package is required to use the "prometheus" collector.');
-                }
+                $this->requireInstalled(class_exists(CollectorRegistry::class), 'promphp/prometheus_client_php', 'prometheus');
 
                 if ($config['service']) {
                     $registryId = $config['service'];
@@ -192,6 +194,14 @@ final class BeberleiMetricsExtension extends Extension
                 return $definition
                     ->replaceArgument('$registry', new Reference($registryId))
                     ->replaceArgument('$namespace', $config['namespace'])
+                    ->replaceArgument('$tags', $tags)
+                ;
+            case 'opentelemetry':
+                $this->requireInstalled(interface_exists(MeterProviderInterface::class), 'open-telemetry/api', 'opentelemetry');
+
+                return $definition
+                    ->replaceArgument('$meterProvider', new Reference($config['service']))
+                    ->replaceArgument('$name', '' === $config['namespace'] ? 'beberlei/metrics' : $config['namespace'])
                     ->replaceArgument('$tags', $tags)
                 ;
             case 'graphite':
@@ -224,6 +234,13 @@ final class BeberleiMetricsExtension extends Extension
                 return $definition;
             default:
                 throw new InvalidArgumentException(\sprintf('The type "%s" is not supported.', $type));
+        }
+    }
+
+    private function requireInstalled(bool $isAvailable, string $package, string $type): void
+    {
+        if (!$isAvailable) {
+            throw new \LogicException(\sprintf('The "%s" package is required to use the "%s" collector.', $package, $type));
         }
     }
 }

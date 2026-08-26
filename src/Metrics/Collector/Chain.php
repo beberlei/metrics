@@ -24,62 +24,44 @@ final class Chain implements CollectorInterface, GaugeableCollectorInterface
 
     public function measure(string $variable, int $value, array $tags = []): void
     {
-        foreach ($this->collectors as $collector) {
-            try {
-                $collector->measure($variable, $value, $tags);
-            } catch (\Throwable) {
-            }
-        }
+        $this->dispatch(static fn (CollectorInterface $collector) => $collector->measure($variable, $value, $tags));
     }
 
     public function increment(string $variable, array $tags = []): void
     {
-        foreach ($this->collectors as $collector) {
-            try {
-                $collector->increment($variable, $tags);
-            } catch (\Throwable) {
-            }
-        }
+        $this->dispatch(static fn (CollectorInterface $collector) => $collector->increment($variable, $tags));
     }
 
     public function decrement(string $variable, array $tags = []): void
     {
-        foreach ($this->collectors as $collector) {
-            try {
-                $collector->decrement($variable, $tags);
-            } catch (\Throwable) {
-            }
-        }
+        $this->dispatch(static fn (CollectorInterface $collector) => $collector->decrement($variable, $tags));
     }
 
     public function timing(string $variable, int $time, array $tags = []): void
     {
-        foreach ($this->collectors as $collector) {
-            try {
-                $collector->timing($variable, $time, $tags);
-            } catch (\Throwable) {
-            }
-        }
+        $this->dispatch(static fn (CollectorInterface $collector) => $collector->timing($variable, $time, $tags));
     }
 
     public function gauge(string $variable, string|int $value, array $tags = []): void
     {
-        foreach ($this->collectors as $collector) {
+        $this->dispatch(static function (CollectorInterface $collector) use ($variable, $value, $tags): void {
             if ($collector instanceof GaugeableCollectorInterface) {
-                try {
-                    $collector->gauge($variable, $value, $tags);
-                } catch (\Throwable) {
-                }
+                $collector->gauge($variable, $value, $tags);
             }
-        }
+        });
     }
 
     public function flush(): void
     {
+        $this->dispatch(static fn (CollectorInterface $collector) => $collector->flush());
+    }
+
+    private function dispatch(\Closure $call): void
+    {
         foreach ($this->collectors as $collector) {
             try {
-                $collector->flush();
-            } catch (\Throwable) {
+                $call($collector);
+            } catch (\Exception) {
             }
         }
     }

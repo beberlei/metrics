@@ -106,6 +106,16 @@ class ChainTest extends TestCase
         new Chain($a, $b)->measure('foo.bar', 5, $tags);
     }
 
+    public function testErrorFromAFaultyCollectorIsNotSwallowed(): void
+    {
+        $a = $this->createStub(CollectorInterface::class);
+        $a->method('measure')->willThrowException(new \TypeError('boom'));
+
+        $this->expectException(\TypeError::class);
+
+        new Chain($a)->measure('foo.bar', 5);
+    }
+
     public function testEmptyChainDoesNotFail(): void
     {
         $chain = new Chain();
