@@ -1,0 +1,46 @@
+<?php
+
+/*
+ * This file is part of the beberlei/metrics project.
+ *
+ * For the full copyright and license information, please view the LICENSE.md
+ * file that was distributed with this source code.
+ */
+
+$fileHeaderComment = <<<'LICENSE'
+    This file is part of the beberlei/metrics project.
+
+    For the full copyright and license information, please view the LICENSE.md
+    file that was distributed with this source code.
+    LICENSE;
+
+$finder = PhpCsFixer\Finder::create()
+    ->ignoreVCSIgnored(true)
+    ->in(__DIR__)
+    ->exclude('examples')
+    ->append([
+        __FILE__,
+    ])
+;
+
+return new PhpCsFixer\Config()
+    ->setRiskyAllowed(true)
+    ->setRules([
+        '@PHP84Migration' => true,
+        '@PhpCsFixer' => true,
+        '@Symfony' => true,
+        '@Symfony:risky' => true,
+        'heredoc_indentation' => false,
+        'header_comment' => ['header' => $fileHeaderComment],
+        'single_line_empty_body' => false,
+        'ordered_types' => false, // From @PhpCsFixer but we don't want it
+        'php_unit_internal_class' => false,
+        'php_unit_test_class_requires_covers' => false,
+        'phpdoc_add_missing_param_annotation' => false,
+        'concat_space' => ['spacing' => 'one'],
+        'ordered_class_elements' => true,
+        'blank_line_before_statement' => true,
+        'method_chaining_indentation' => false,
+    ])
+    ->setFinder($finder)
+;

@@ -1,0 +1,6 @@
+{
+    "require": {
+        "php": ">=8.4",
+        "phpstan/phpstan": "^2.1"
+    }
+}

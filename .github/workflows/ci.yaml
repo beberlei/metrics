@@ -1,0 +1,118 @@
+name: CI
+
+on:
+    push:
+        branches: [master]
+    pull_request: ~
+    workflow_dispatch: ~
+
+jobs:
+    cs:
+        name: PHP-CS-Fixer (library)
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v5
+
+            - name: Setup PHP, with composer and extensions
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: "8.4"
+                  extensions: mbstring, xml
+
+            - uses: actions/cache@v4
+              with:
+                  path: tools/php-cs-fixer/vendor
+                  key: php-cs-fixer-${{ github.sha }}
+                  restore-keys: php-cs-fixer-
+
+            - name: Install PHP-CS-Fixer
+              run: composer update --working-dir=tools/php-cs-fixer --prefer-dist --no-interaction --no-progress
+
+            - name: PHP-CS-Fixer
+              run: tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --diff --dry-run
+
+    phpstan:
+        name: PHPStan (library)
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v5
+
+            - name: Setup PHP, with composer and extensions
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: "8.4"
+                  extensions: mbstring, xml
+
+            - uses: actions/cache@v4
+              with:
+                  path: tools/phpstan/vendor
+                  key: phpstan-${{ github.sha }}
+                  restore-keys: phpstan-
+
+            - name: Install PHPStan
+              run: |
+                  composer update --prefer-dist --no-interaction --no-progress
+                  composer update --working-dir=tools/phpstan --prefer-dist --no-interaction --no-progress
+
+            - name: PHPStan
+              run: tools/phpstan/vendor/bin/phpstan analyse --memory-limit=-1 --no-progress
+
+    phpunit-library:
+        name: PHPUnit library (PHP ${{ matrix.php-version }}) ${{ matrix.name }}
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - php-version: "8.4"
+                    - php-version: "8.5"
+                    - php-version: "8.4"
+                      composer-flags: --prefer-lowest
+                      name: "(prefer lowest dependencies)"
+                    - php-version: "8.4"
+                      symfony-version: "6.4.*"
+                      name: "(Symfony 6.4)"
+                    - php-version: "8.4"
+                      symfony-version: "7.4.*"
+                      name: "(Symfony 7.4)"
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v5
+
+            - name: Setup PHP, with composer and extensions
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php-version }}
+                  extensions: mbstring, xml
+
+            - name: Install Composer dependencies
+              env:
+                  SYMFONY_VERSION: ${{ matrix.symfony-version }}
+              run: |
+                  if [ -n "$SYMFONY_VERSION" ]; then
+                      composer require --dev --no-update "symfony/framework-bundle:${SYMFONY_VERSION}"
+                  fi
+                  composer update --prefer-dist --no-interaction --no-progress ${{ matrix.composer-flags }}
+
+            - name: Run Tests
+              run: vendor/bin/phpunit
+
+    application:
+        name: Example application
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v5
+
+            - name: Setup castor
+              uses: castor-php/setup-castor@v1.0.0
+
+            - name: Start the stack
+              working-directory: examples
+              run: castor start
+
+            - name: Run the functional tests
+              working-directory: examples
+              run: castor qa:phpunit

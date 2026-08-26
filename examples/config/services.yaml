@@ -1,0 +1,19 @@
+parameters:
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    Prometheus\CollectorRegistry:
+        arguments:
+            $storageAdapter: !service { class: Prometheus\Storage\APCng }
+            $registerDefaultMetrics: false
+    Prometheus\RenderTextFormat: ~
