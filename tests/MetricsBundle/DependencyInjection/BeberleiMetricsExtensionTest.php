@@ -10,6 +10,7 @@
 namespace Beberlei\Bundle\MetricsBundle\Tests\DependencyInjection;
 
 use Beberlei\Bundle\MetricsBundle\DependencyInjection\BeberleiMetricsExtension;
+use Beberlei\Metrics\Collector\Chain;
 use Beberlei\Metrics\Collector\DogStatsD;
 use Beberlei\Metrics\Collector\Graphite;
 use Beberlei\Metrics\Collector\InfluxDbV1;
@@ -185,6 +186,60 @@ class BeberleiMetricsExtensionTest extends TestCase
 
         $collector = $container->get('beberlei_metrics.collector.prometheus');
         $this->assertInstanceOf(Prometheus::class, $collector);
+    }
+
+    public function testWithChain(): void
+    {
+        $container = $this->createContainer(
+            [
+                'default' => 'chain',
+                'collectors' => [
+                    'memory_1' => ['type' => 'memory'],
+                    'memory_2' => ['type' => 'memory'],
+                    'chain' => ['type' => 'chain', 'collectors' => ['memory_1', 'memory_2']],
+                ],
+            ],
+            ['beberlei_metrics.collector.chain', 'beberlei_metrics.collector.memory_1', 'beberlei_metrics.collector.memory_2'],
+        );
+
+        $collector = $container->get('beberlei_metrics.collector.chain');
+        $this->assertInstanceOf(Chain::class, $collector);
+
+        $collectors = $this->getProperty($collector, 'collectors');
+        $this->assertSame(
+            [$container->get('beberlei_metrics.collector.memory_1'), $container->get('beberlei_metrics.collector.memory_2')],
+            $collectors,
+        );
+    }
+
+    public function testChainIsNotFlushedByHooksToAvoidDoubleFlush(): void
+    {
+        $container = $this->createContainer(
+            [
+                'default' => 'chain',
+                'collectors' => [
+                    'memory_1' => ['type' => 'memory'],
+                    'chain' => ['type' => 'chain', 'collectors' => ['memory_1']],
+                ],
+            ],
+            ['beberlei_metrics.collector.chain', 'beberlei_metrics.collector.memory_1'],
+        );
+
+        $chainDefinition = $container->getDefinition('beberlei_metrics.collector.chain');
+        $this->assertFalse($chainDefinition->hasTag('kernel.event_listener'));
+        $this->assertFalse($chainDefinition->hasTag('kernel.reset'));
+
+        $memoryDefinition = $container->getDefinition('beberlei_metrics.collector.memory_1');
+        $this->assertTrue($memoryDefinition->hasTag('kernel.event_listener'));
+        $this->assertTrue($memoryDefinition->hasTag('kernel.reset'));
+    }
+
+    public function testWithChainRequiresAtLeastOneCollector(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('The "collectors" option must not be empty to use the chain collector');
+
+        $this->createContainer(['collectors' => ['chain' => ['type' => 'chain']]]);
     }
 
     public function testWithInvalid(): void

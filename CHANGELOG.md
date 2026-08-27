@@ -42,12 +42,15 @@
 
 * collector:
   * Ensure all collectors cannot raise error or exception
+  * Add a `Chain` collector, dispatching every call to a list of collectors
 * bundle:
   * All collectors has alias for autowiring. Use
     `#[Target('name-of-the-collector')]` to inject a collector
   * All collectors are tagged with `kernel.reset` to reset their state
   * All collectors are tagged with
     `Beberlei\Metrics\Collector\CollectorInterface`
+  * Add support for the `chain` collector type, referencing other collectors
+    by name through the `collectors` option
 * add a symfony application in the `examples` folder will all collectors enabled
   and visualisation with Grafana
 
