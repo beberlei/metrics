@@ -46,6 +46,8 @@ The Docker infrastructure provides a web stack with:
  - Grafana
  - Graphite (with a bundled StatsD daemon)
  - InfluxDB (version 1)
+ - InfluxDB (version 2)
+ - LocalStack (emulating AWS CloudWatch, so no AWS account is needed)
  - Prometheus
 
 ### Domain configuration (first time only)
@@ -86,8 +88,8 @@ form to send arbitrary metrics to any collector on demand.
 Grafana (`https://grafana.<your-domain>`) is fully provisioned out of the
 box: a datasource and a ready-made dashboard exist for every collector
 backed by an external database (PostgreSQL, Prometheus, Graphite/StatsD/
-DogStatsD, InfluxDB). No manual setup is needed — just load the homepage
-once, then open Grafana.
+DogStatsD, InfluxDB v1, InfluxDB v2, CloudWatch). No manual setup is needed
+— just load the homepage once, then open Grafana.
 
 > [!TIP]
 > Grafana only reliably picks up changes made under
@@ -126,6 +128,12 @@ A Grafana dashboard per backend:
     </td>
   </tr>
 </table>
+
+> [!NOTE]
+> Two more dashboards are provisioned but not screenshotted above: **InfluxDB
+> v2** (`influxdb_v2` collector) and **AWS CloudWatch** (`cloudwatch`
+> collector, backed by LocalStack). Load the homepage once and open Grafana
+> to see them.
 
 ### SSL certificates
 

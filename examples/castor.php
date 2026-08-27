@@ -33,11 +33,6 @@ function create_default_variables(): array
     return [
         'project_name' => $projectName,
         'root_domain' => "{$projectName}.{$tld}",
-        'extra_domains' => [
-            "www.{$projectName}.{$tld}",
-        ],
-        'php_version' => $_SERVER['DS_PHP_VERSION'] ?? '8.4',
-        'registry' => $_SERVER['DS_REGISTRY'] ?? null,
     ];
 }
 

@@ -19,10 +19,12 @@ stack provisioning Grafana dashboards for every collector:
 Currently supported backends:
 
 * Chain (Dispatches to a list of other collectors)
+* CloudWatch
 * Doctrine DBAL
 * DogStatsD
 * Graphite
 * InfluxDb (version 1)
+* InfluxDb (version 2+)
 * Logger (Psr\Log\LoggerInterface)
 * Null (Dummy that does nothing)
 * OpenTelemetry
@@ -140,6 +142,89 @@ the closest:
 * `gauge()` uses a `Gauge`, tracking relative `+`/`-` adjustments locally
   before recording the resulting absolute value, like the other collectors
 
+### Sending metrics to InfluxDB (version 2+)
+
+The `InfluxDbV2` collector writes points to an
+[InfluxDB 2.x/3.x](https://www.influxdata.com/) bucket through the official
+`influxdata/influxdb-client-php` client. It requires an `InfluxDB2\WriteApi`,
+created from an `InfluxDB2\Client`:
+
+```
+composer require influxdata/influxdb-client-php
+```
+
+```php
+$client = new \InfluxDB2\Client([
+    'url' => 'http://localhost:8086',
+    'token' => 'my-token',
+    'org' => 'my-org',
+    'bucket' => 'my-bucket',
+]);
+
+$collector = new \Beberlei\Metrics\Collector\InfluxDbV2(
+    $client->createWriteApi(),
+    ['dc' => 'west'], // default tags merged into every point
+);
+
+$collector->increment('foo.bar');
+$collector->flush();
+```
+
+It can also be created through the `Factory`:
+
+```php
+$collector = \Beberlei\Metrics\Factory::create('influxdb_v2', [
+    'write_api' => $client->createWriteApi(),
+    'tags' => ['dc' => 'west'], // optional
+]);
+```
+
+Every metric is written as one field, named `value`, on a point whose
+measurement is the metric name. `InfluxDB 3.x` servers accept the same v2
+write API in compatibility mode, so this collector works against both.
+
+### Sending metrics to AWS CloudWatch
+
+The `CloudWatch` collector publishes metric data points through
+[Amazon CloudWatch](https://aws.amazon.com/cloudwatch/)'s `PutMetricData` API,
+using the official AWS SDK for PHP. It requires an `Aws\CloudWatch\CloudWatchClient`:
+
+```
+composer require aws/aws-sdk-php
+```
+
+```php
+$client = new \Aws\CloudWatch\CloudWatchClient([
+    'region' => 'us-east-1',
+    'version' => 'latest',
+]);
+
+$collector = new \Beberlei\Metrics\Collector\CloudWatch(
+    $client,
+    'my_app', // CloudWatch namespace, defaults to "beberlei/metrics"
+    ['dc' => 'west'], // default tags, turned into CloudWatch dimensions
+);
+
+$collector->increment('foo.bar');
+$collector->flush();
+```
+
+It can also be created through the `Factory`:
+
+```php
+$collector = \Beberlei\Metrics\Factory::create('cloudwatch', [
+    'client' => $client,
+    'namespace' => 'my_app', // optional, defaults to "beberlei/metrics"
+    'tags' => ['dc' => 'west'], // optional
+]);
+```
+
+Credentials and region are resolved by the AWS SDK itself (environment
+variables, an IAM role, a shared config file, an explicit `credentials`
+option on the client, ...), the collector does not handle them. `measure()`
+and `increment()`/`decrement()` use the `Count` unit, `timing()` uses
+`Milliseconds`.
+
 ## Configuration
 
 ```php
@@ -169,7 +254,7 @@ beberlei_metrics:
     default: statsd
     collectors:
         influxdb:
-            type: influxdb
+            type: influxdb_v1
             database: metrics
             # host: localhost # option
             # username: username # optional
@@ -178,6 +263,32 @@ beberlei_metrics:
             # If you want to use a custom database service
             # It must be an instance of "InfluxDB\Database"
             # In this case, you can omit de "database" option
+            # service: my.service.id
+            tags: # optional
+                dc: "west"
+                node_instance: "hermes10"
+        influxdb2:
+            type: influxdb_v2
+            token: my-token
+            org: my-org
+            bucket: metrics
+            # host: localhost # default
+            # port: 8086 # default
+            # protocol: http # default
+            # If you want to use a custom write API service
+            # It must be an instance of "InfluxDB2\WriteApi"
+            # In this case, you can omit the "token"/"org"/"bucket" options
+            # service: my.service.id
+            tags: # optional
+                dc: "west"
+                node_instance: "hermes10"
+        cloudwatch:
+            type: cloudwatch
+            region: us-east-1
+            namespace: app_name # optional, defaults to "beberlei/metrics"
+            # If you want to use a custom client service
+            # It must be an instance of "Aws\CloudWatch\CloudWatchClient"
+            # In this case, you can omit the "region" option
             # service: my.service.id
             tags: # optional
                 dc: "west"

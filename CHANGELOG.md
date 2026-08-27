@@ -45,6 +45,10 @@
   * Add a `Chain` collector, dispatching every call to a list of collectors
   * Add an `OpenTelemetry` collector, recording measurements on an
     `OpenTelemetry\API\Metrics\MeterProviderInterface`
+  * Add an `InfluxDbV2` collector, writing points to an InfluxDB 2.x/3.x
+    bucket through `influxdata/influxdb-client-php`
+  * Add a `CloudWatch` collector, publishing metric data through AWS
+    CloudWatch's `PutMetricData` API via `aws/aws-sdk-php`
 * bundle:
   * All collectors has alias for autowiring. Use
     `#[Target('name-of-the-collector')]` to inject a collector
@@ -55,6 +59,12 @@
     by name through the `collectors` option
   * Add support for the `opentelemetry` collector type, referencing a
     `MeterProviderInterface` service through the `service` option
+  * Add support for the `influxdb_v2` collector type, either built from the
+    `token`/`org`/`bucket` options or referencing a pre-configured
+    `InfluxDB2\WriteApi` service through the `service` option
+  * Add support for the `cloudwatch` collector type, either built from the
+    `region` option or referencing a pre-configured
+    `Aws\CloudWatch\CloudWatchClient` service through the `service` option
 * add a symfony application in the `examples` folder will all collectors enabled
   and visualisation with Grafana
 

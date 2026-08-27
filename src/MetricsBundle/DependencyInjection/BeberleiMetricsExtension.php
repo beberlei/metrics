@@ -9,12 +9,15 @@
 
 namespace Beberlei\Bundle\MetricsBundle\DependencyInjection;
 
+use Aws\CloudWatch\CloudWatchClient;
 use Beberlei\Metrics\Collector\Chain;
+use Beberlei\Metrics\Collector\CloudWatch;
 use Beberlei\Metrics\Collector\CollectorInterface;
 use Beberlei\Metrics\Collector\DoctrineDBAL;
 use Beberlei\Metrics\Collector\DogStatsD;
 use Beberlei\Metrics\Collector\Graphite;
 use Beberlei\Metrics\Collector\InfluxDbV1;
+use Beberlei\Metrics\Collector\InfluxDbV2;
 use Beberlei\Metrics\Collector\InMemory;
 use Beberlei\Metrics\Collector\Logger;
 use Beberlei\Metrics\Collector\NullCollector;
@@ -22,6 +25,7 @@ use Beberlei\Metrics\Collector\OpenTelemetry;
 use Beberlei\Metrics\Collector\Prometheus;
 use Beberlei\Metrics\Collector\StatsD;
 use Beberlei\Metrics\Collector\Telegraf;
+use InfluxDB2\WriteApi;
 use OpenTelemetry\API\Metrics\MeterProviderInterface;
 use Prometheus\CollectorRegistry;
 use Prometheus\Storage\InMemory as InMemoryStorage;
@@ -36,10 +40,12 @@ final class BeberleiMetricsExtension extends Extension
 {
     public const TYPES = [
         'chain',
+        'cloudwatch',
         'doctrine_dbal',
         'dogstatsd',
         'graphite',
         'influxdb_v1',
+        'influxdb_v2',
         'logger',
         'memory',
         'null',
@@ -51,10 +57,12 @@ final class BeberleiMetricsExtension extends Extension
 
     private const ABSTRACT_SERVICES = [
         'chain' => Chain::class,
+        'cloudwatch' => CloudWatch::class,
         'doctrine_dbal' => DoctrineDBAL::class,
         'dogstatsd' => DogStatsD::class,
         'graphite' => Graphite::class,
         'influxdb_v1' => InfluxDbV1::class,
+        'influxdb_v2' => InfluxDbV2::class,
         'logger' => Logger::class,
         'memory' => InMemory::class,
         'null' => NullCollector::class,
@@ -120,6 +128,12 @@ final class BeberleiMetricsExtension extends Extension
             ->setFactory([\InfluxDB\Client::class, 'fromDSN'])
         ;
         $container->setDefinition('beberlei_metrics.collector_proto.influxdb_v1.database', $database->setAbstract(true));
+
+        $influxDbV2Client = new Definition(\InfluxDB2\Client::class);
+        $container->setDefinition('beberlei_metrics.collector_proto.influxdb_v2.client', $influxDbV2Client->setAbstract(true));
+
+        $cloudWatchClient = new Definition(CloudWatchClient::class);
+        $container->setDefinition('beberlei_metrics.collector_proto.cloudwatch.client', $cloudWatchClient->setAbstract(true));
     }
 
     /**
@@ -173,6 +187,46 @@ final class BeberleiMetricsExtension extends Extension
 
                 return $definition
                     ->replaceArgument('$database', $database)
+                    ->replaceArgument('$tags', $tags)
+                ;
+            case 'influxdb_v2':
+                $this->requireInstalled(class_exists(\InfluxDB2\Client::class), 'influxdata/influxdb-client-php', 'influxdb_v2');
+
+                if ($config['service']) {
+                    $writeApi = new Reference($config['service']);
+                } else {
+                    $client = new ChildDefinition('beberlei_metrics.collector_proto.influxdb_v2.client');
+                    $client->replaceArgument('$options', [
+                        'url' => \sprintf('%s://%s:%d', $config['protocol'] ?? 'http', $config['host'], $config['port'] ?? 8086),
+                        'token' => $config['token'],
+                        'org' => $config['org'],
+                        'bucket' => $config['bucket'],
+                    ]);
+
+                    $writeApi = new Definition(WriteApi::class);
+                    $writeApi->setFactory([$client, 'createWriteApi']);
+                }
+
+                return $definition
+                    ->replaceArgument('$writeApi', $writeApi)
+                    ->replaceArgument('$tags', $tags)
+                ;
+            case 'cloudwatch':
+                $this->requireInstalled(class_exists(CloudWatchClient::class), 'aws/aws-sdk-php', 'cloudwatch');
+
+                if ($config['service']) {
+                    $client = new Reference($config['service']);
+                } else {
+                    $client = new ChildDefinition('beberlei_metrics.collector_proto.cloudwatch.client');
+                    $client->replaceArgument('$args', [
+                        'region' => $config['region'],
+                        'version' => 'latest',
+                    ]);
+                }
+
+                return $definition
+                    ->replaceArgument('$client', $client)
+                    ->replaceArgument('$namespace', '' === $config['namespace'] ? 'beberlei/metrics' : $config['namespace'])
                     ->replaceArgument('$tags', $tags)
                 ;
             case 'prometheus':

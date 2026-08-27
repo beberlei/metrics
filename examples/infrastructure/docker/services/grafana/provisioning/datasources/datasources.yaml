@@ -54,3 +54,31 @@ datasources:
           version: InfluxQL
           dbName: app
           httpMode: GET
+
+    # Backs the "influxdb_v2" collector.
+    - name: InfluxDB (v2)
+      uid: influxdb2-metrics
+      type: influxdb
+      access: proxy
+      url: http://influxdb2:8086
+      jsonData:
+          version: Flux
+          organization: app
+          defaultBucket: app
+          httpMode: POST
+      secureJsonData:
+          token: app-token
+
+    # Backs the "cloudwatch" collector. Points at LocalStack (see
+    # infrastructure/docker/docker-compose.yml), not real AWS, with fake
+    # credentials matching the ones LocalStack accepts by default.
+    - name: CloudWatch (LocalStack)
+      uid: cloudwatch-metrics
+      type: cloudwatch
+      jsonData:
+          authType: keys
+          defaultRegion: us-east-1
+          endpoint: http://localstack:4566
+      secureJsonData:
+          accessKey: test
+          secretKey: test

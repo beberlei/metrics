@@ -44,10 +44,17 @@ final class Configuration implements ConfigurationInterface
                                 ->end()
                                 // Doctrine DBAL stuff
                                 ->scalarNode('connection')->defaultNull()->end()
-                                // Also used as the instrumentation scope name by OpenTelemetry
+                                // Also used as the instrumentation scope name by OpenTelemetry,
+                                // and as the CloudWatch namespace
                                 ->scalarNode('namespace')->defaultValue('')->end()
-                                // InfluxDB stuff
+                                // InfluxDB v1 stuff
                                 ->scalarNode('database')->defaultValue('')->end()
+                                // InfluxDB v2 stuff
+                                ->scalarNode('token')->defaultValue('')->end()
+                                ->scalarNode('org')->defaultValue('')->end()
+                                ->scalarNode('bucket')->defaultValue('')->end()
+                                // CloudWatch stuff
+                                ->scalarNode('region')->defaultValue('')->end()
                                 // Chain stuff
                                 ->arrayNode('collectors')
                                     ->defaultValue([])
@@ -65,6 +72,14 @@ final class Configuration implements ConfigurationInterface
                             ->validate()
                                 ->ifTrue(static fn ($v): bool => 'opentelemetry' === $v['type'] && !$v['service'])
                                 ->thenInvalid('The "service" option must be set to the service id of a "OpenTelemetry\API\Metrics\MeterProviderInterface" instance to use the OpenTelemetry collector')
+                            ->end()
+                            ->validate()
+                                ->ifTrue(static fn ($v): bool => 'influxdb_v2' === $v['type'] && !$v['service'] && ('' === $v['token'] || '' === $v['org'] || '' === $v['bucket']))
+                                ->thenInvalid('The "token", "org" and "bucket" options are required to use the InfluxDbV2 collector, unless "service" is set to the service id of a pre-configured "InfluxDB2\WriteApi" instance')
+                            ->end()
+                            ->validate()
+                                ->ifTrue(static fn ($v): bool => 'cloudwatch' === $v['type'] && !$v['service'] && '' === $v['region'])
+                                ->thenInvalid('The "region" option is required to use the CloudWatch collector, unless "service" is set to the service id of a pre-configured "Aws\CloudWatch\CloudWatchClient" instance')
                             ->end()
                         ->end()
                     ->end()
