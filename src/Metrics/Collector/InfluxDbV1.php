@@ -54,7 +54,7 @@ final class InfluxDbV1 implements CollectorInterface
             $points[] = new Point(
                 $data[0],
                 $data[1],
-                $this->tags + $data[2],
+                array_merge($this->tags, $data[2]),
             );
         }
 

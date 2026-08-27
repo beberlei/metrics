@@ -5,6 +5,19 @@ beberlei_metrics:
             type: influxdb_v1
             host: influxdb1
             database: app
+        influxdb_v2:
+            type: influxdb_v2
+            host: influxdb2
+            token: app-token
+            org: app
+            bucket: app
+        cloudwatch:
+            type: cloudwatch
+            # Points at LocalStack (see infrastructure/docker/docker-compose.yml
+            # and the AWS_* environment variables on the "frontend" service),
+            # not real AWS.
+            region: us-east-1
+            namespace: app
         prometheus:
             type: prometheus
             host: prometheus

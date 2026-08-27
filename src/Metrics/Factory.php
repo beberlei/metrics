@@ -10,11 +10,13 @@
 namespace Beberlei\Metrics;
 
 use Beberlei\Metrics\Collector\Chain;
+use Beberlei\Metrics\Collector\CloudWatch;
 use Beberlei\Metrics\Collector\CollectorInterface;
 use Beberlei\Metrics\Collector\DoctrineDBAL;
 use Beberlei\Metrics\Collector\DogStatsD;
 use Beberlei\Metrics\Collector\Graphite;
 use Beberlei\Metrics\Collector\InfluxDbV1;
+use Beberlei\Metrics\Collector\InfluxDbV2;
 use Beberlei\Metrics\Collector\Logger;
 use Beberlei\Metrics\Collector\NullCollector;
 use Beberlei\Metrics\Collector\OpenTelemetry;
@@ -53,6 +55,15 @@ final class Factory
             ),
             'influxdb_v1' => new InfluxDbV1(
                 $options['database'] ?? throw new MetricsException('The "database" option is required for the InfluxDbV1 collector.'),
+            ),
+            'influxdb_v2' => new InfluxDbV2(
+                $options['write_api'] ?? throw new MetricsException('The "write_api" option is required for the InfluxDbV2 collector.'),
+                $options['tags'] ?? [],
+            ),
+            'cloudwatch' => new CloudWatch(
+                $options['client'] ?? throw new MetricsException('The "client" option is required for the CloudWatch collector.'),
+                $options['namespace'] ?? 'beberlei/metrics',
+                $options['tags'] ?? [],
             ),
             'null' => new NullCollector(),
             'opentelemetry' => new OpenTelemetry(

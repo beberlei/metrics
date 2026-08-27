@@ -1,0 +1,100 @@
+{
+    "annotations": { "list": [] },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": null,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+        {
+            "title": "About this dashboard",
+            "type": "text",
+            "gridPos": { "h": 4, "w": 24, "x": 0, "y": 0 },
+            "options": {
+                "mode": "markdown",
+                "content": "This dashboard reads from **AWS CloudWatch** (namespace `app`), written to by the `cloudwatch` collector (`Beberlei\\Metrics\\Collector\\CloudWatch`), through the official `aws/aws-sdk-php` client and its `PutMetricData` API. It points at **LocalStack** (see `infrastructure/docker/docker-compose.yml`), which emulates the CloudWatch API locally, not real AWS. Every metric is published as one data point per metric name (e.g. `homepage.visits`). `measure()`/`increment()`/`decrement()` use the `Count` unit, `timing()` uses `Milliseconds`. The `$metric` variable above is populated with the CloudWatch `metrics()` template function, so it lists every metric name ever published to the `app` namespace, including custom ones from the form."
+            }
+        },
+        {
+            "title": "homepage.visits (guaranteed to exist after the first page load)",
+            "type": "timeseries",
+            "gridPos": { "h": 8, "w": 24, "x": 0, "y": 4 },
+            "datasource": { "type": "cloudwatch", "uid": "cloudwatch-metrics" },
+            "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+            "options": {
+                "legend": { "displayMode": "list", "placement": "bottom" },
+                "tooltip": { "mode": "multi" }
+            },
+            "targets": [
+                {
+                    "refId": "A",
+                    "id": "",
+                    "datasource": { "type": "cloudwatch", "uid": "cloudwatch-metrics" },
+                    "region": "us-east-1",
+                    "namespace": "app",
+                    "metricName": "homepage.visits",
+                    "statistic": "Sum",
+                    "dimensions": {},
+                    "matchExact": true,
+                    "queryMode": "Metrics",
+                    "metricQueryType": 0,
+                    "metricEditorMode": 0
+                }
+            ]
+        },
+        {
+            "title": "Explore: $metric",
+            "type": "timeseries",
+            "gridPos": { "h": 9, "w": 24, "x": 0, "y": 12 },
+            "datasource": { "type": "cloudwatch", "uid": "cloudwatch-metrics" },
+            "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+            "options": {
+                "legend": { "displayMode": "list", "placement": "bottom" },
+                "tooltip": { "mode": "multi" }
+            },
+            "targets": [
+                {
+                    "refId": "A",
+                    "id": "",
+                    "datasource": { "type": "cloudwatch", "uid": "cloudwatch-metrics" },
+                    "region": "us-east-1",
+                    "namespace": "app",
+                    "metricName": "$metric",
+                    "statistic": "Sum",
+                    "dimensions": {},
+                    "matchExact": true,
+                    "queryMode": "Metrics",
+                    "metricQueryType": 0,
+                    "metricEditorMode": 0
+                }
+            ]
+        }
+    ],
+    "refresh": "10s",
+    "schemaVersion": 39,
+    "tags": ["metrics-demo", "cloudwatch"],
+    "templating": {
+        "list": [
+            {
+                "name": "metric",
+                "type": "query",
+                "label": "Metric",
+                "datasource": { "type": "cloudwatch", "uid": "cloudwatch-metrics" },
+                "query": "metrics(app, us-east-1)",
+                "refresh": 2,
+                "sort": 1,
+                "includeAll": false,
+                "multi": false,
+                "current": { "text": "homepage.visits", "value": "homepage.visits" }
+            }
+        ]
+    },
+    "time": { "from": "now-1h", "to": "now" },
+    "timepicker": {},
+    "timezone": "",
+    "title": "AWS CloudWatch (cloudwatch collector)",
+    "uid": "cloudwatch-metrics",
+    "version": 1,
+    "weekStart": ""
+}

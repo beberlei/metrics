@@ -19,6 +19,7 @@ volumes:
     grafana-data: {}
     graphite-data: {}
     influxdb-data: {}
+    influxdb2-data: {}
     postgres-data: {}
     prometheus-data: {}
 
@@ -47,6 +48,12 @@ services:
         user: "${USER_ID}:${USER_ID}"
         environment:
             - APP_ENV
+            # Fake credentials, and endpoint override pointing at LocalStack,
+            # so the "cloudwatch" collector talks to it instead of real AWS.
+            # Both are read natively by the AWS SDK for PHP.
+            - AWS_ENDPOINT_URL=http://localstack:4566
+            - AWS_ACCESS_KEY_ID=test
+            - AWS_SECRET_ACCESS_KEY=test
         volumes:
             - "../..:/var/www:cached"
             - "../../.home:/home/app:cached"
@@ -101,6 +108,35 @@ services:
             - INFLUXDB_DB=app
         volumes:
             - influxdb-data:/var/lib/influxdb
+        profiles:
+            - default
+
+    influxdb2:
+        image: influxdb:2.9
+        environment:
+            - DOCKER_INFLUXDB_INIT_MODE=setup
+            - DOCKER_INFLUXDB_INIT_USERNAME=app
+            - DOCKER_INFLUXDB_INIT_PASSWORD=app12345
+            - DOCKER_INFLUXDB_INIT_ORG=app
+            - DOCKER_INFLUXDB_INIT_BUCKET=app
+            - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=app-token
+        volumes:
+            - influxdb2-data:/var/lib/influxdb2
+        profiles:
+            - default
+
+    # Emulates the AWS API locally, so the "cloudwatch" collector (and its
+    # Grafana dashboard) work out of the box, without an AWS account.
+    # Pinned (not "latest"): since LocalStack 2026.3.0 (March 2026), the
+    # image requires a LOCALSTACK_AUTH_TOKEN even for community/free
+    # features. 4.14.0 predates that change and is the first version that
+    # understands the AWS-JSON-protocol PutMetricData requests sent by
+    # current versions of aws/aws-sdk-php (CloudWatch migrated away from
+    # its legacy query/XML protocol in aws-sdk-php 3.370.0).
+    localstack:
+        image: localstack/localstack:4.14.0
+        environment:
+            - SERVICES=cloudwatch
         profiles:
             - default
 

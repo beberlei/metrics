@@ -9,12 +9,15 @@
 
 namespace Beberlei\Bundle\MetricsBundle\Tests\DependencyInjection;
 
+use Aws\CloudWatch\CloudWatchClient;
 use Beberlei\Bundle\MetricsBundle\DependencyInjection\BeberleiMetricsExtension;
 use Beberlei\Metrics\Collector\Chain;
+use Beberlei\Metrics\Collector\CloudWatch;
 use Beberlei\Metrics\Collector\CollectorInterface;
 use Beberlei\Metrics\Collector\DogStatsD;
 use Beberlei\Metrics\Collector\Graphite;
 use Beberlei\Metrics\Collector\InfluxDbV1;
+use Beberlei\Metrics\Collector\InfluxDbV2;
 use Beberlei\Metrics\Collector\InMemory;
 use Beberlei\Metrics\Collector\Logger;
 use Beberlei\Metrics\Collector\NullCollector;
@@ -22,6 +25,7 @@ use Beberlei\Metrics\Collector\OpenTelemetry;
 use Beberlei\Metrics\Collector\Prometheus;
 use Beberlei\Metrics\Collector\StatsD;
 use Beberlei\Metrics\Collector\Telegraf;
+use InfluxDB2\WriteApi;
 use OpenTelemetry\API\Metrics\Noop\NoopMeterProvider;
 use PHPUnit\Framework\TestCase;
 use Prometheus\CollectorRegistry;
@@ -135,6 +139,91 @@ class BeberleiMetricsExtensionTest extends TestCase
         $collector = $container->get('beberlei_metrics.collector.influxdb');
         $this->assertInstanceOf(InfluxDbV1::class, $collector);
         $this->assertEquals($expectedTags, $this->getProperty($collector, 'tags'));
+    }
+
+    public function testWithInfluxDBV2(): void
+    {
+        $container = $this->createContainer(['collectors' => ['influxdb2' => ['type' => 'influxdb_v2', 'token' => 'my-token', 'org' => 'my-org', 'bucket' => 'my-bucket']]], ['beberlei_metrics.collector.influxdb2']);
+
+        $collector = $container->get('beberlei_metrics.collector.influxdb2');
+        $this->assertInstanceOf(InfluxDbV2::class, $collector);
+    }
+
+    public function testWithInfluxDBV2AndWithTags(): void
+    {
+        $expectedTags = ['string_tag' => 'first_value', 'int_tag' => 123];
+
+        $container = $this->createContainer(['collectors' => ['influxdb2' => ['type' => 'influxdb_v2', 'token' => 'my-token', 'org' => 'my-org', 'bucket' => 'my-bucket', 'tags' => $expectedTags]]], ['beberlei_metrics.collector.influxdb2']);
+
+        $collector = $container->get('beberlei_metrics.collector.influxdb2');
+        $this->assertInstanceOf(InfluxDbV2::class, $collector);
+        $this->assertEquals($expectedTags, $this->getProperty($collector, 'tags'));
+    }
+
+    public function testWithInfluxDBV2AndService(): void
+    {
+        $writeApiMock = $this->createStub(WriteApi::class);
+
+        $container = $this->createContainer(['collectors' => ['influxdb2' => ['type' => 'influxdb_v2', 'service' => 'write_api_mock', 'token' => 'x', 'org' => 'x', 'bucket' => 'x']]], ['beberlei_metrics.collector.influxdb2'], ['write_api_mock' => $writeApiMock]);
+
+        $collector = $container->get('beberlei_metrics.collector.influxdb2');
+        $this->assertInstanceOf(InfluxDbV2::class, $collector);
+        $this->assertSame($writeApiMock, $this->getProperty($collector, 'writeApi'));
+    }
+
+    public function testWithInfluxDBV2RequiresTokenOrgAndBucket(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('The "token", "org" and "bucket" options are required to use the InfluxDbV2 collector, unless "service" is set to the service id of a pre-configured "InfluxDB2\WriteApi" instance');
+
+        $this->createContainer(['collectors' => ['influxdb2' => ['type' => 'influxdb_v2']]]);
+    }
+
+    public function testWithCloudWatch(): void
+    {
+        $container = $this->createContainer(['collectors' => ['cloudwatch' => ['type' => 'cloudwatch', 'region' => 'us-east-1']]], ['beberlei_metrics.collector.cloudwatch']);
+
+        $collector = $container->get('beberlei_metrics.collector.cloudwatch');
+        $this->assertInstanceOf(CloudWatch::class, $collector);
+        $this->assertSame('beberlei/metrics', $this->getProperty($collector, 'namespace'));
+    }
+
+    public function testWithCloudWatchAndWithNamespace(): void
+    {
+        $container = $this->createContainer(['collectors' => ['cloudwatch' => ['type' => 'cloudwatch', 'region' => 'us-east-1', 'namespace' => 'my_app']]], ['beberlei_metrics.collector.cloudwatch']);
+
+        $collector = $container->get('beberlei_metrics.collector.cloudwatch');
+        $this->assertInstanceOf(CloudWatch::class, $collector);
+        $this->assertSame('my_app', $this->getProperty($collector, 'namespace'));
+    }
+
+    public function testWithCloudWatchAndWithTags(): void
+    {
+        $expectedTags = ['string_tag' => 'first_value', 'int_tag' => 123];
+
+        $container = $this->createContainer(['collectors' => ['cloudwatch' => ['type' => 'cloudwatch', 'region' => 'us-east-1', 'tags' => $expectedTags]]], ['beberlei_metrics.collector.cloudwatch']);
+
+        $collector = $container->get('beberlei_metrics.collector.cloudwatch');
+        $this->assertEquals($expectedTags, $this->getProperty($collector, 'tags'));
+    }
+
+    public function testWithCloudWatchAndService(): void
+    {
+        $cloudWatchClientMock = $this->createStub(CloudWatchClient::class);
+
+        $container = $this->createContainer(['collectors' => ['cloudwatch' => ['type' => 'cloudwatch', 'service' => 'cloudwatch_client_mock']]], ['beberlei_metrics.collector.cloudwatch'], ['cloudwatch_client_mock' => $cloudWatchClientMock]);
+
+        $collector = $container->get('beberlei_metrics.collector.cloudwatch');
+        $this->assertInstanceOf(CloudWatch::class, $collector);
+        $this->assertSame($cloudWatchClientMock, $this->getProperty($collector, 'client'));
+    }
+
+    public function testWithCloudWatchRequiresARegion(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('The "region" option is required to use the CloudWatch collector, unless "service" is set to the service id of a pre-configured "Aws\CloudWatch\CloudWatchClient" instance');
+
+        $this->createContainer(['collectors' => ['cloudwatch' => ['type' => 'cloudwatch']]]);
     }
 
     public function testWithPrometheus(): void

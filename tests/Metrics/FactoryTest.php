@@ -9,12 +9,15 @@
 
 namespace Beberlei\Metrics\Tests;
 
+use Aws\CloudWatch\CloudWatchClient;
 use Beberlei\Metrics\Collector\Chain;
+use Beberlei\Metrics\Collector\CloudWatch;
 use Beberlei\Metrics\Collector\CollectorInterface;
 use Beberlei\Metrics\Collector\DoctrineDBAL;
 use Beberlei\Metrics\Collector\DogStatsD;
 use Beberlei\Metrics\Collector\Graphite;
 use Beberlei\Metrics\Collector\InfluxDbV1;
+use Beberlei\Metrics\Collector\InfluxDbV2;
 use Beberlei\Metrics\Collector\Logger;
 use Beberlei\Metrics\Collector\NullCollector;
 use Beberlei\Metrics\Collector\OpenTelemetry;
@@ -24,6 +27,7 @@ use Beberlei\Metrics\Factory;
 use Beberlei\Metrics\MetricsException;
 use Doctrine\DBAL\Connection;
 use InfluxDB\Database;
+use InfluxDB2\WriteApi;
 use OpenTelemetry\API\Metrics\MeterProviderInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -66,6 +70,10 @@ class FactoryTest extends TestCase
         yield [Logger::class, 'logger', ['logger' => new NullLogger()]];
         yield [NullCollector::class, 'null', []];
         yield [InfluxDbV1::class, 'influxdb_v1', ['database' => $stub(Database::class)]];
+        yield [InfluxDbV2::class, 'influxdb_v2', ['write_api' => $stub(WriteApi::class)]];
+        yield [InfluxDbV2::class, 'influxdb_v2', ['write_api' => $stub(WriteApi::class), 'tags' => ['dc' => 'west']]];
+        yield [CloudWatch::class, 'cloudwatch', ['client' => $stub(CloudWatchClient::class)]];
+        yield [CloudWatch::class, 'cloudwatch', ['client' => $stub(CloudWatchClient::class), 'namespace' => 'my_app', 'tags' => ['dc' => 'west']]];
         yield [Prometheus::class, 'prometheus', ['collector_registry' => $stub(CollectorRegistry::class)]];
         yield [Prometheus::class, 'prometheus', ['collector_registry' => $stub(CollectorRegistry::class), 'namespace' => 'some_namespace']];
         yield [OpenTelemetry::class, 'opentelemetry', ['meter_provider' => $stub(MeterProviderInterface::class)]];
@@ -101,6 +109,8 @@ class FactoryTest extends TestCase
         yield ['The "connection" option is required for the Doctrine DBAL collector.', 'doctrine_dbal'];
         yield ['The "logger" option is required for the Logger collector.', 'logger'];
         yield ['The "database" option is required for the InfluxDbV1 collector.', 'influxdb_v1'];
+        yield ['The "write_api" option is required for the InfluxDbV2 collector.', 'influxdb_v2'];
+        yield ['The "client" option is required for the CloudWatch collector.', 'cloudwatch'];
         yield ['The "collector_registry" option is required for the Prometheus collector.', 'prometheus'];
         yield ['The "meter_provider" option is required for the OpenTelemetry collector.', 'opentelemetry'];
     }

@@ -10,10 +10,12 @@
 namespace App\Metrics;
 
 use Beberlei\Metrics\Collector\Chain;
+use Beberlei\Metrics\Collector\CloudWatch;
 use Beberlei\Metrics\Collector\DoctrineDBAL;
 use Beberlei\Metrics\Collector\DogStatsD;
 use Beberlei\Metrics\Collector\Graphite;
 use Beberlei\Metrics\Collector\InfluxDbV1;
+use Beberlei\Metrics\Collector\InfluxDbV2;
 use Beberlei\Metrics\Collector\InMemory;
 use Beberlei\Metrics\Collector\Logger;
 use Beberlei\Metrics\Collector\NullCollector;
@@ -90,6 +92,20 @@ final class ProcessorCatalog
             'description' => 'Writes points to an InfluxDB 1.x time-series database, one measurement per metric name.',
             'gaugeable' => false,
             'dashboardUid' => 'influxdb-metrics',
+        ],
+        'influxdb_v2' => [
+            'label' => 'InfluxDB (v2)',
+            'class' => InfluxDbV2::class,
+            'description' => 'Writes points to an InfluxDB 2.x bucket via the official influxdata/influxdb-client-php client.',
+            'gaugeable' => false,
+            'dashboardUid' => 'influxdb2-metrics',
+        ],
+        'cloudwatch' => [
+            'label' => 'AWS CloudWatch',
+            'class' => CloudWatch::class,
+            'description' => 'Publishes metric data through PutMetricData. Points at LocalStack here, not real AWS.',
+            'gaugeable' => false,
+            'dashboardUid' => 'cloudwatch-metrics',
         ],
         'logger' => [
             'label' => 'Logger',

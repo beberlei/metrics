@@ -11,11 +11,13 @@
     ],
     "require": {
         "php": ">=8.4",
+        "aws/aws-sdk-php": "^3.339",
         "beberlei/metrics": "*@dev",
         "doctrine/dbal": "^4",
         "doctrine/doctrine-bundle": "^3.3",
         "doctrine/doctrine-migrations-bundle": "^4.0",
         "doctrine/orm": "^3.0",
+        "influxdata/influxdb-client-php": "^3.9",
         "influxdb/influxdb-php": "^1.15",
         "open-telemetry/api": "^1.10",
         "open-telemetry/exporter-otlp": "^1.4",

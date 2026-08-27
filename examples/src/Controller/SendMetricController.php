@@ -44,6 +44,8 @@ class SendMetricController extends AbstractController
             'dogstatsd' => new Autowire(service: 'beberlei_metrics.collector.dogstatsd'),
             'chain' => new Autowire(service: 'beberlei_metrics.collector.chain'),
             'influxdb_v1' => new Autowire(service: 'beberlei_metrics.collector.influxdb_v1'),
+            'influxdb_v2' => new Autowire(service: 'beberlei_metrics.collector.influxdb_v2'),
+            'cloudwatch' => new Autowire(service: 'beberlei_metrics.collector.cloudwatch'),
             'logger' => new Autowire(service: 'beberlei_metrics.collector.logger'),
             'memory' => new Autowire(service: 'beberlei_metrics.collector.memory'),
             'null' => new Autowire(service: 'beberlei_metrics.collector.null'),
