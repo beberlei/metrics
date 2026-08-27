@@ -11,6 +11,11 @@ It also ships with a Symfony Bundle. **This is not a library for displaying metr
 > [UPGRADE guide](UPGRADE.md) first: it documents every breaking change and how
 > to migrate your code.
 
+A full [demo application](examples/README.md) is available, with a Docker
+stack provisioning Grafana dashboards for every collector:
+
+[![Demo application homepage](media/home.png)](examples/README.md)
+
 Currently supported backends:
 
 * Chain (Dispatches to a list of other collectors)

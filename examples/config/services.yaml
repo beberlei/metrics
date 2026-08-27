@@ -17,3 +17,6 @@ services:
             $storageAdapter: !service { class: Prometheus\Storage\APCng }
             $registerDefaultMetrics: false
     Prometheus\RenderTextFormat: ~
+
+    OpenTelemetry\API\Metrics\MeterProviderInterface:
+        factory: ['App\Metrics\OpenTelemetryMeterProviderFactory', 'create']
