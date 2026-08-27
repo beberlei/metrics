@@ -22,6 +22,8 @@
     "require-dev": {
         "doctrine/dbal": "^3.9 || ^4.0",
         "influxdb/influxdb-php": "^1.15",
+        "open-telemetry/api": "^1.1",
+        "open-telemetry/sdk": "^1.2.4",
         "phpunit/phpunit": "^13",
         "promphp/prometheus_client_php": "^2.10",
         "symfony/framework-bundle": "^6.4 || ^7.4 || ^8.0"
@@ -44,6 +46,7 @@
     "suggest": {
         "doctrine/dbal": "For Doctrine DBAL integration",
         "influxdb/influxdb-php": "For InfluxDB integration",
+        "open-telemetry/api": "For OpenTelemetry integration",
         "symfony/framework-bundle": "For Symfony integration",
         "promphp/prometheus_client_php": "For Prometheus integration"
     },

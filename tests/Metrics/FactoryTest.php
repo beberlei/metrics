@@ -17,12 +17,14 @@ use Beberlei\Metrics\Collector\Graphite;
 use Beberlei\Metrics\Collector\InfluxDbV1;
 use Beberlei\Metrics\Collector\Logger;
 use Beberlei\Metrics\Collector\NullCollector;
+use Beberlei\Metrics\Collector\OpenTelemetry;
 use Beberlei\Metrics\Collector\Prometheus;
 use Beberlei\Metrics\Collector\StatsD;
 use Beberlei\Metrics\Factory;
 use Beberlei\Metrics\MetricsException;
 use Doctrine\DBAL\Connection;
 use InfluxDB\Database;
+use OpenTelemetry\API\Metrics\MeterProviderInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Prometheus\CollectorRegistry;
@@ -66,6 +68,8 @@ class FactoryTest extends TestCase
         yield [InfluxDbV1::class, 'influxdb_v1', ['database' => $stub(Database::class)]];
         yield [Prometheus::class, 'prometheus', ['collector_registry' => $stub(CollectorRegistry::class)]];
         yield [Prometheus::class, 'prometheus', ['collector_registry' => $stub(CollectorRegistry::class), 'namespace' => 'some_namespace']];
+        yield [OpenTelemetry::class, 'opentelemetry', ['meter_provider' => $stub(MeterProviderInterface::class)]];
+        yield [OpenTelemetry::class, 'opentelemetry', ['meter_provider' => $stub(MeterProviderInterface::class), 'name' => 'my_app', 'tags' => ['dc' => 'west']]];
     }
 
     #[DataProvider('getCreateThrowExceptionIfOptionsAreInvalidTests')]
@@ -83,7 +87,8 @@ class FactoryTest extends TestCase
 
     public static function getCreateThrowExceptionIfOptionsAreInvalidTests(): iterable
     {
-        yield ['The "collectors" option is required for the Chain collector.', 'chain'];
+        yield ['The "collectors" option must not be empty for the Chain collector.', 'chain'];
+        yield ['The "collectors" option must not be empty for the Chain collector.', 'chain', ['collectors' => []]];
         yield ['You must specify a host if you specify a port.', 'statsd', ['port' => '1234']];
         yield ['You must specify a host and a port if you specify a prefix.', 'statsd', ['prefix' => 'prefix']];
         yield ['You must specify a host and a port if you specify a prefix.', 'statsd', ['port' => '1234', 'prefix' => 'prefix']];
@@ -97,5 +102,6 @@ class FactoryTest extends TestCase
         yield ['The "logger" option is required for the Logger collector.', 'logger'];
         yield ['The "database" option is required for the InfluxDbV1 collector.', 'influxdb_v1'];
         yield ['The "collector_registry" option is required for the Prometheus collector.', 'prometheus'];
+        yield ['The "meter_provider" option is required for the OpenTelemetry collector.', 'opentelemetry'];
     }
 }

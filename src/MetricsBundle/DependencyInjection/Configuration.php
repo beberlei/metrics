@@ -44,6 +44,7 @@ final class Configuration implements ConfigurationInterface
                                 ->end()
                                 // Doctrine DBAL stuff
                                 ->scalarNode('connection')->defaultNull()->end()
+                                // Also used as the instrumentation scope name by OpenTelemetry
                                 ->scalarNode('namespace')->defaultValue('')->end()
                                 // InfluxDB stuff
                                 ->scalarNode('database')->defaultValue('')->end()
@@ -54,12 +55,16 @@ final class Configuration implements ConfigurationInterface
                                 ->end()
                             ->end()
                             ->validate()
-                                ->ifTrue(static fn ($v): bool => 'influxdb_v1' === $v['type'] && empty($v['database']))
+                                ->ifTrue(static fn ($v): bool => 'influxdb_v1' === $v['type'] && '' === $v['database'])
                                 ->thenInvalid('The "database" has to be specified to use InfluxDB')
                             ->end()
                             ->validate()
-                                ->ifTrue(static fn ($v): bool => 'chain' === $v['type'] && empty($v['collectors']))
+                                ->ifTrue(static fn ($v): bool => 'chain' === $v['type'] && [] === $v['collectors'])
                                 ->thenInvalid('The "collectors" option must not be empty to use the chain collector')
+                            ->end()
+                            ->validate()
+                                ->ifTrue(static fn ($v): bool => 'opentelemetry' === $v['type'] && !$v['service'])
+                                ->thenInvalid('The "service" option must be set to the service id of a "OpenTelemetry\API\Metrics\MeterProviderInterface" instance to use the OpenTelemetry collector')
                             ->end()
                         ->end()
                     ->end()
