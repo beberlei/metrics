@@ -118,22 +118,6 @@ final class BeberleiMetricsExtension extends Extension
         $logger = $container->getDefinition('beberlei_metrics.collector_proto.logger');
         $logger->setArgument('$logger', new Reference('logger'));
         $logger->addTag('monolog.logger', ['channel' => 'beberlei_metrics']);
-
-        $registry = new Definition(CollectorRegistry::class)
-            ->setArgument('$storageAdapter', new Definition(InMemoryStorage::class))
-        ;
-        $container->setDefinition('beberlei_metrics.collector_proto.prometheus.registry', $registry->setAbstract(true));
-
-        $database = new Definition(\InfluxDB\Database::class)
-            ->setFactory([\InfluxDB\Client::class, 'fromDSN'])
-        ;
-        $container->setDefinition('beberlei_metrics.collector_proto.influxdb_v1.database', $database->setAbstract(true));
-
-        $influxDbV2Client = new Definition(\InfluxDB2\Client::class);
-        $container->setDefinition('beberlei_metrics.collector_proto.influxdb_v2.client', $influxDbV2Client->setAbstract(true));
-
-        $cloudWatchClient = new Definition(CloudWatchClient::class);
-        $container->setDefinition('beberlei_metrics.collector_proto.cloudwatch.client', $cloudWatchClient->setAbstract(true));
     }
 
     /**
@@ -174,15 +158,17 @@ final class BeberleiMetricsExtension extends Extension
                 if ($config['service']) {
                     $database = new Reference($config['service']);
                 } else {
-                    $database = new ChildDefinition('beberlei_metrics.collector_proto.influxdb_v1.database');
-                    $database->replaceArgument('$dsn', \sprintf(
-                        'influxdb://%s:%s@%s:%s/%s',
-                        $config['username'],
-                        $config['password'],
-                        $config['host'],
-                        $config['port'] ?? 8086,
-                        $config['database'],
-                    ));
+                    $database = new Definition(\InfluxDB\Database::class)
+                        ->setFactory([\InfluxDB\Client::class, 'fromDSN'])
+                        ->setArgument('$dsn', \sprintf(
+                            'influxdb://%s:%s@%s:%s/%s',
+                            $config['username'],
+                            $config['password'],
+                            $config['host'],
+                            $config['port'] ?? 8086,
+                            $config['database'],
+                        ))
+                    ;
                 }
 
                 return $definition
@@ -195,8 +181,8 @@ final class BeberleiMetricsExtension extends Extension
                 if ($config['service']) {
                     $writeApi = new Reference($config['service']);
                 } else {
-                    $client = new ChildDefinition('beberlei_metrics.collector_proto.influxdb_v2.client');
-                    $client->replaceArgument('$options', [
+                    $client = new Definition(\InfluxDB2\Client::class);
+                    $client->setArgument('$options', [
                         'url' => \sprintf('%s://%s:%d', $config['protocol'] ?? 'http', $config['host'], $config['port'] ?? 8086),
                         'token' => $config['token'],
                         'org' => $config['org'],
@@ -217,8 +203,8 @@ final class BeberleiMetricsExtension extends Extension
                 if ($config['service']) {
                     $client = new Reference($config['service']);
                 } else {
-                    $client = new ChildDefinition('beberlei_metrics.collector_proto.cloudwatch.client');
-                    $client->replaceArgument('$args', [
+                    $client = new Definition(CloudWatchClient::class);
+                    $client->setArgument('$args', [
                         'region' => $config['region'],
                         'version' => 'latest',
                     ]);
@@ -237,7 +223,8 @@ final class BeberleiMetricsExtension extends Extension
                 } else {
                     $container->setDefinition(
                         $registryId = 'beberlei_metrics.collector.' . ($config['name'] ?? $type) . '.prometheus.registry',
-                        new ChildDefinition('beberlei_metrics.collector_proto.prometheus.registry'),
+                        new Definition(CollectorRegistry::class)
+                            ->setArgument('$storageAdapter', new Definition(InMemoryStorage::class)),
                     );
 
                     if (!$container->hasAlias(CollectorRegistry::class)) {
