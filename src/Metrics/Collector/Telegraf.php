@@ -18,6 +18,8 @@ use Beberlei\Metrics\Utils\Box;
  */
 final class Telegraf implements CollectorInterface, GaugeableCollectorInterface
 {
+    private const float SOCKET_TIMEOUT_SECONDS = 0.05;
+
     /** @var list<string> */
     private array $data = [];
     /** @var array<string, mixed> */
@@ -87,18 +89,25 @@ final class Telegraf implements CollectorInterface, GaugeableCollectorInterface
 
     private function doFlush(): void
     {
-        $fp = fsockopen('udp://' . $this->host, $this->port, $errno, $errstr, 1.0);
+        $data = $this->data;
+        $this->data = [];
 
-        if (!$fp) {
+        $socket = stream_socket_client(
+            'udp://' . $this->host . ':' . $this->port,
+            $errorCode,
+            $errorMessage,
+            self::SOCKET_TIMEOUT_SECONDS,
+        );
+
+        if (false === $socket) {
             return;
         }
 
-        foreach ($this->data as $line) {
-            fwrite($fp, $this->prefix . $line);
+        stream_set_blocking($socket, false);
+        foreach ($data as $line) {
+            fwrite($socket, $this->prefix . $line);
         }
 
-        fclose($fp);
-
-        $this->data = [];
+        fclose($socket);
     }
 }
