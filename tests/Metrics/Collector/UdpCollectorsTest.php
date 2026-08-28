@@ -66,6 +66,16 @@ final class UdpCollectorsTest extends TestCase
         ], $payloads);
     }
 
+    public function testTelegrafDropsBufferedMetricsWhenOpeningTheSocketFails(): void
+    {
+        $collector = new Telegraf("invalid\0host");
+        $collector->increment('request.count');
+
+        $collector->flush();
+
+        self::assertSame([], new \ReflectionProperty($collector, 'data')->getValue($collector));
+    }
+
     public function testStatsDEmitsPreciseTimings(): void
     {
         $payloads = $this->capture(static function (int $port): void {
