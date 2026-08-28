@@ -68,7 +68,7 @@ final class OpenTelemetry implements CollectorInterface, GaugeableCollectorInter
         Box::box(fn () => $this->upDownCounter($variable)->add(-1, $this->attributes($tags)));
     }
 
-    public function timing(string $variable, int $time, array $tags = []): void
+    public function timing(string $variable, int|float $time, array $tags = []): void
     {
         Box::box(fn () => $this->histogram($variable)->record($time, $this->attributes($tags)));
     }

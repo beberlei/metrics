@@ -38,7 +38,7 @@ final class DogStatsD implements CollectorInterface, GaugeableCollectorInterface
         $this->data[] = $variable . ':-1|c' . $this->buildTagString($tags);
     }
 
-    public function timing(string $variable, int $time, array $tags = []): void
+    public function timing(string $variable, int|float $time, array $tags = []): void
     {
         $this->data[] = \sprintf('%s:%s|ms%s', $variable, $time, $this->buildTagString($tags));
     }

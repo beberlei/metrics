@@ -26,7 +26,7 @@ final class StatsD implements CollectorInterface, GaugeableCollectorInterface
     ) {
     }
 
-    public function timing(string $variable, int $time, array $tags = []): void
+    public function timing(string $variable, int|float $time, array $tags = []): void
     {
         $this->data[] = \sprintf('%s:%s|ms', $variable, $time);
     }

@@ -14,7 +14,7 @@ use Beberlei\Metrics\Utils\Box;
 
 final class CloudWatch implements CollectorInterface
 {
-    /** @var list<array{string, int, string, array<string, mixed>}> */
+    /** @var list<array{string, int|float, string, array<string, mixed>}> */
     private array $data = [];
 
     /**
@@ -42,7 +42,7 @@ final class CloudWatch implements CollectorInterface
         $this->data[] = [$variable, -1, 'Count', $tags];
     }
 
-    public function timing(string $variable, int $time, array $tags = []): void
+    public function timing(string $variable, int|float $time, array $tags = []): void
     {
         $this->data[] = [$variable, $time, 'Milliseconds', $tags];
     }

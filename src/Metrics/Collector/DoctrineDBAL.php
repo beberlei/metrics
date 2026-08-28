@@ -11,6 +11,7 @@ namespace Beberlei\Metrics\Collector;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
+use Doctrine\DBAL\Types\Types;
 
 /**
  * Sends statistics to a relational database.
@@ -19,7 +20,7 @@ use Doctrine\DBAL\ParameterType;
  * named `metrics` with columns:
  *
  * - metric VARCHAR(255)
- * - measurement INTEGER
+ * - measurement DOUBLE PRECISION
  * - created DATETIME
  *
  * The Primary key can either be a surrogate (id) or
@@ -27,7 +28,7 @@ use Doctrine\DBAL\ParameterType;
  */
 final class DoctrineDBAL implements CollectorInterface
 {
-    /** @var list<array{string, int, string}> */
+    /** @var list<array{string, int|float, string}> */
     private array $data = [];
 
     public function __construct(
@@ -50,7 +51,7 @@ final class DoctrineDBAL implements CollectorInterface
         $this->data[] = [$variable, -1, date('Y-m-d H:i:s')];
     }
 
-    public function timing(string $variable, int $time, array $tags = []): void
+    public function timing(string $variable, int|float $time, array $tags = []): void
     {
         $this->data[] = [$variable, $time, date('Y-m-d H:i:s')];
     }
@@ -68,7 +69,7 @@ final class DoctrineDBAL implements CollectorInterface
 
             foreach ($this->data as $measurement) {
                 $stmt->bindValue(1, $measurement[0]);
-                $stmt->bindValue(2, $measurement[1], ParameterType::INTEGER);
+                $stmt->bindValue(2, $measurement[1], \is_float($measurement[1]) ? Types::FLOAT : ParameterType::INTEGER);
                 $stmt->bindValue(3, $measurement[2], ParameterType::STRING);
                 $stmt->executeStatement();
             }

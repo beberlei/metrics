@@ -21,7 +21,7 @@ final class InMemory implements CollectorInterface, GaugeableCollectorInterface
     /** @var int[] */
     private array $gaugeData = [];
 
-    /** @var int[] */
+    /** @var array<string, int|float> */
     private array $timingData = [];
 
     public function measure(string $variable, int $value, array $tags = []): void
@@ -40,7 +40,7 @@ final class InMemory implements CollectorInterface, GaugeableCollectorInterface
         $this->measure($variable, -1);
     }
 
-    public function timing(string $variable, int $time, array $tags = []): void
+    public function timing(string $variable, int|float $time, array $tags = []): void
     {
         $this->timingData[$variable] ??= 0;
         $this->timingData[$variable] = $time;
@@ -79,7 +79,7 @@ final class InMemory implements CollectorInterface, GaugeableCollectorInterface
         return $this->gaugeData[$variable] ?? 0;
     }
 
-    public function getTiming(string $variable): int
+    public function getTiming(string $variable): int|float
     {
         return $this->timingData[$variable] ?? 0;
     }

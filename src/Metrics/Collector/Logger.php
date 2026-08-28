@@ -33,7 +33,7 @@ final class Logger implements CollectorInterface, GaugeableCollectorInterface
         $this->logger->debug('decrement:' . $variable);
     }
 
-    public function timing(string $variable, int $time, array $tags = []): void
+    public function timing(string $variable, int|float $time, array $tags = []): void
     {
         $this->logger->debug(\sprintf('timing:%s:%s', $variable, $time));
     }

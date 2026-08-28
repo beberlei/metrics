@@ -37,7 +37,7 @@ final class Chain implements CollectorInterface, GaugeableCollectorInterface
         $this->dispatch(static fn (CollectorInterface $collector) => $collector->decrement($variable, $tags));
     }
 
-    public function timing(string $variable, int $time, array $tags = []): void
+    public function timing(string $variable, int|float $time, array $tags = []): void
     {
         $this->dispatch(static fn (CollectorInterface $collector) => $collector->timing($variable, $time, $tags));
     }

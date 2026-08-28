@@ -19,7 +19,7 @@ final class NullCollector implements CollectorInterface, GaugeableCollectorInter
     {
     }
 
-    public function timing(string $variable, int $time, array $tags = []): void
+    public function timing(string $variable, int|float $time, array $tags = []): void
     {
     }
 

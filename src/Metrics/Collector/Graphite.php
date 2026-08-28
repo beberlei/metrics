@@ -41,7 +41,7 @@ final class Graphite implements CollectorInterface
         $this->push($variable, -1);
     }
 
-    public function timing(string $variable, int $time, array $tags = []): void
+    public function timing(string $variable, int|float $time, array $tags = []): void
     {
         $this->push($variable, $time);
     }

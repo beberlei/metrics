@@ -35,10 +35,10 @@ interface CollectorInterface
     /**
      * Records a timing.
      *
-     * @param int                  $time The duration of the timing in milliseconds
+     * @param int|float            $time The duration of the timing in milliseconds
      * @param array<string, mixed> $tags
      */
-    public function timing(string $variable, int $time, array $tags = []): void;
+    public function timing(string $variable, int|float $time, array $tags = []): void;
 
     /**
      * Sends the metrics to the adapter backend.

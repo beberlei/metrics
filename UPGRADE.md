@@ -29,7 +29,7 @@ to migrate your code. Read it carefully before upgrading.
 * [Factory: renamed types and options](#factory-renamed-types-and-options)
 * [Symfony bundle: configuration changes](#symfony-bundle-configuration-changes)
 * [Symfony bundle: service ids and aliases](#symfony-bundle-service-ids-and-aliases)
-* [DoctrineDBAL: stored date format](#doctrinedbal-stored-date-format)
+* [DoctrineDBAL: schema and stored date format](#doctrinedbal-schema-and-stored-date-format)
 
 ### Removed collectors: Zabbix and Librato
 
@@ -143,7 +143,7 @@ interface CollectorInterface
     public function measure(string $variable, int $value, array $tags = []): void;
     public function increment(string $variable, array $tags = []): void;
     public function decrement(string $variable, array $tags = []): void;
-    public function timing(string $variable, int $time, array $tags = []): void;
+    public function timing(string $variable, int|float $time, array $tags = []): void;
     public function flush(): void;
 }
 
@@ -155,8 +155,8 @@ interface GaugeableCollectorInterface
 
 Notable signature changes:
 
-* All parameters are strictly typed (`string`, `int`). Passing e.g. a float to
-  `timing()` is now a `TypeError`.
+* Parameters are strictly typed. `timing()` accepts integer or floating-point
+  milliseconds so sub-millisecond precision is preserved.
 * All methods return `void` instead of the collected value.
 * `gauge()` accepts `string|int`: pass an integer to set the gauge, or a string
   starting with `+`/`-` to increment/decrement it (same behaviour as 2.x).
@@ -355,11 +355,16 @@ final readonly class MyService
 }
 ```
 
-### DoctrineDBAL: stored date format
+### DoctrineDBAL: schema and stored date format
 
 The `created` column value changed from `Y-m-d` (date only) to
 `Y-m-d H:i:s` (full datetime). If you built queries or reports on the date
 granularity, adapt them (e.g. `DATE(created)`).
+
+The `measurement` column must now accept floating-point values because
+`timing()` preserves fractional milliseconds. Migrate an existing `INTEGER`
+column to `DOUBLE PRECISION` (or the equivalent type for your database).
+Counter measurements remain integers.
 
 The supported `doctrine/dbal` versions are now `^3.9 || ^4.0` (2.x supported
 `^2.0`). DBAL deprecations have been fixed, and a rollback failure during
