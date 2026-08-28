@@ -54,13 +54,15 @@ You can measure stats:
 $collector->increment('foo.bar');
 $collector->decrement('foo.bar');
 
-$start = microtime(true);
-$diff  = microtime(true) - $start;
-$collector->timing('foo.bar', $diff);
+$start = hrtime(true);
+$milliseconds = (hrtime(true) - $start) / 1_000_000;
+$collector->timing('foo.bar', $milliseconds);
 
 $value = 1234;
 $collector->measure('foo.bar', $value);
 ```
+
+Timings are expressed in milliseconds and accept integers or floats.
 
 All backends defer sending and aggregate all information, make sure to call
 flush:
@@ -88,6 +90,32 @@ $collector->flush();
 It also implements `GaugeableCollectorInterface`: `gauge()` calls are only
 forwarded to the chained collectors that support gauges, the others are
 silently skipped.
+
+### Sending Influx StatsD tags through Telegraf
+
+The transport remains StatsD over UDP. The `Telegraf` collector emits the
+advanced Influx StatsD dialect, `metric,key=value:value|type`, for receivers
+such as Telegraf. Constructor tags are defaults for every measurement;
+per-call tags are merged over them. Names and values are URL-encoded using
+RFC 3986.
+
+```php
+$collector = new \Beberlei\Metrics\Collector\Telegraf(
+    tags: ['environment' => 'production'],
+);
+
+$collector->timing('http.request_duration', 12.345, [
+    'path' => 'player/home fr',
+    'status' => 200,
+    'method' => 'GET',
+]);
+```
+
+This emits:
+
+```text
+http.request_duration,environment=production,path=player%2Fhome%20fr,status=200,method=GET:12.345|ms
+```
 
 ### Sending metrics through OpenTelemetry
 
@@ -322,6 +350,14 @@ beberlei_metrics:
             # host: localhost # default
             # port: 8125 # default
             # prefix: '' # default
+        telegraf:
+            type: telegraf
+            # Influx StatsD over UDP, suitable for Telegraf receivers
+            # host: localhost # default
+            # port: 8125 # default
+            # prefix: '' # default
+            tags: # optional defaults, overridden by per-call tags
+                environment: production
         dbal:
             type: doctrine_dbal
             # Use another connection, by default it uses the default connection

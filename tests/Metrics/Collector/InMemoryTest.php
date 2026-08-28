@@ -51,12 +51,12 @@ class InMemoryTest extends TestCase
 
     public function testTiming(): void
     {
-        $this->collector->timing(self::VARIABLE_A, 123);
+        $this->collector->timing(self::VARIABLE_A, 123.456);
 
         $this->collector->timing(self::VARIABLE_B, 111);
         $this->collector->timing(self::VARIABLE_B, 112);
 
-        $this->assertEquals(123, $this->collector->getTiming(self::VARIABLE_A));
+        $this->assertSame(123.456, $this->collector->getTiming(self::VARIABLE_A));
         $this->assertEquals(112, $this->collector->getTiming(self::VARIABLE_B));
     }
 

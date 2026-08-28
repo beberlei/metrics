@@ -119,7 +119,7 @@ class BeberleiMetricsExtensionTest extends TestCase
         $this->assertSame(1234, $this->getProperty($collector, 'port'));
         $this->assertSame('application.com.symfony.', $this->getProperty($collector, 'prefix'));
 
-        $this->assertEquals(',string_tag=first_value,int_tag=123', $this->getProperty($collector, 'tags'));
+        $this->assertSame($expectedTags, $this->getProperty($collector, 'tags'));
     }
 
     public function testWithInfluxDB(): void

@@ -16,7 +16,7 @@ use InfluxDB2\WriteApi;
 
 final class InfluxDbV2 implements CollectorInterface
 {
-    /** @var list<array{string, int, array<string, mixed>}> */
+    /** @var list<array{string, int|float, array<string, mixed>}> */
     private array $data = [];
 
     /**
@@ -43,7 +43,7 @@ final class InfluxDbV2 implements CollectorInterface
         $this->data[] = [$variable, -1, $tags];
     }
 
-    public function timing(string $variable, int $time, array $tags = []): void
+    public function timing(string $variable, int|float $time, array $tags = []): void
     {
         $this->data[] = [$variable, $time, $tags];
     }

@@ -22,10 +22,13 @@
   type (use `InMemory` / `NullCollector`, they support tags natively)
 * All methods of `CollectorInterface` are now strictly typed, return `void` and
   accept an additional `$tags` argument (BC break for custom implementations)
+* `CollectorInterface::timing()` accepts `int|float` milliseconds; custom
+  implementations must widen their parameter type accordingly
 * Remove the `beberlei_metrics.collector` service alias (inject
   `CollectorInterface` or use `#[Target('name')]` instead)
 * DoctrineDBAL: store a full datetime (`Y-m-d H:i:s`) in the `created` column
-  instead of a date only (`Y-m-d`)
+  instead of a date only (`Y-m-d`), and require a floating-point-compatible
+  `measurement` column for precise timings
 * Drop support for zabbix collector
 * Drop support for librato collector
 * Rename InfluxDB collector to InfluxDbV1
@@ -49,6 +52,9 @@
     bucket through `influxdata/influxdb-client-php`
   * Add a `CloudWatch` collector, publishing metric data through AWS
     CloudWatch's `PutMetricData` API via `aws/aws-sdk-php`
+  * Preserve fractional milliseconds in `timing()` across all collectors
+  * Telegraf: emit the Influx StatsD dialect with RFC 3986-encoded per-call
+    tags merged over constructor defaults for every metric type
 * bundle:
   * All collectors has alias for autowiring. Use
     `#[Target('name-of-the-collector')]` to inject a collector

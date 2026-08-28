@@ -16,7 +16,7 @@ final class Prometheus implements CollectorInterface, GaugeableCollectorInterfac
     /** @var list<array{variable: string, value: int, tags: array<string, mixed>}> */
     private array $counters = [];
 
-    /** @var list<array{variable: string, value: string|int, tags: array<string, mixed>}> */
+    /** @var list<array{variable: string, value: string|int|float, tags: array<string, mixed>}> */
     private array $gauges = [];
 
     public function __construct(
@@ -42,9 +42,9 @@ final class Prometheus implements CollectorInterface, GaugeableCollectorInterfac
         $this->counters[] = ['variable' => $variable, 'value' => -1, 'tags' => $tags];
     }
 
-    public function timing(string $variable, int $time, array $tags = []): void
+    public function timing(string $variable, int|float $time, array $tags = []): void
     {
-        $this->gauge($variable, $time, $tags);
+        $this->gauges[] = ['variable' => $variable, 'value' => $time, 'tags' => $tags];
     }
 
     public function gauge(string $variable, string|int $value, array $tags = []): void
