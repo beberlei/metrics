@@ -324,6 +324,19 @@ class BeberleiMetricsExtensionTest extends TestCase
         $this->assertInstanceOf(Prometheus::class, $collector);
     }
 
+    public function testUnusedOptionalCollectorInfrastructureIsNotRegistered(): void
+    {
+        $container = new ContainerBuilder();
+        new BeberleiMetricsExtension()->load([
+            ['collectors' => ['telegraf' => ['type' => 'telegraf']]],
+        ], $container);
+
+        $this->assertFalse($container->hasDefinition('beberlei_metrics.collector_proto.prometheus.registry'));
+        $this->assertFalse($container->hasDefinition('beberlei_metrics.collector_proto.influxdb_v1.database'));
+        $this->assertFalse($container->hasDefinition('beberlei_metrics.collector_proto.influxdb_v2.client'));
+        $this->assertFalse($container->hasDefinition('beberlei_metrics.collector_proto.cloudwatch.client'));
+    }
+
     public function testWithChain(): void
     {
         $container = $this->createContainer(
