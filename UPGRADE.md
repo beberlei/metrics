@@ -22,7 +22,7 @@ to migrate your code. Read it carefully before upgrading.
 * [Removed collectors: Zabbix and Librato](#removed-collectors-zabbix-and-librato)
 * [Renamed interfaces: `Collector` and `GaugeableCollector`](#renamed-interfaces-collector-and-gaugeablecollector)
 * [Removed interfaces and classes](#removed-interfaces-and-classes)
-* [`CollectorInterface` methods are strictly typed and accept `$tags`](#collectorminterface-methods-are-strictly-typed-and-accept-tags)
+* [`CollectorInterface` methods are strictly typed and accept `$tags`](#collectorinterface-methods-are-strictly-typed-and-accept-tags)
 * [All collector classes and `Factory` are now `final`](#all-collector-classes-and-factory-are-now-final)
 * [InfluxDB collector renamed to `InfluxDbV1`, new dependency](#influxdb-collector-renamed-to-influxdbv1-new-dependency)
 * [Prometheus dependency changed](#prometheus-dependency-changed)
@@ -103,7 +103,7 @@ The following classes and interfaces were removed without replacement:
 
 * `Collector\TaggableCollector`: tags are no longer set with `setTags()`.
   They are passed either in the collector constructor or per-call (see
-  [below](#collectorminterface-methods-are-strictly-typed-and-accept-tags)).
+  [below](#collectorinterface-methods-are-strictly-typed-and-accept-tags)).
 * `Collector\Null`: deprecated alias of `NullCollector`. Use
   `Beberlei\Metrics\Collector\NullCollector` instead.
 * `Collector\InlineTaggableGaugeableCollector` and
@@ -164,8 +164,9 @@ Notable signature changes:
 ### All collector classes and `Factory` are now `final`
 
 Every collector class (`StatsD`, `DogStatsD`, `Telegraf`, `Graphite`,
-`InfluxDbV1`, `Prometheus`, `DoctrineDBAL`, `Logger`, `InMemory`,
-`NullCollector`) as well as `Beberlei\Metrics\Factory` are now `final`.
+`InfluxDbV1`, `InfluxDbV2`, `Prometheus`, `DoctrineDBAL`, `Logger`, `InMemory`,
+`NullCollector`, `Chain`, `OpenTelemetry`, `CloudWatch`) as well as
+`Beberlei\Metrics\Factory` are now `final`.
 Extending them is no longer possible: implement `CollectorInterface` instead.
 
 Additionally, `Factory` changed from an (instantiable) `abstract` class to a
@@ -264,8 +265,9 @@ were removed or renamed:
 | `collectors.*.type: null_inlinetaggable` | `type: null`                                 |
 
 The `type` key is now validated against a strict list of allowed values:
-`doctrine_dbal`, `dogstatsd`, `graphite`, `influxdb_v1`, `logger`, `memory`,
-`null`, `prometheus`, `statsd`, `telegraf`.
+`chain`, `cloudwatch`, `doctrine_dbal`, `dogstatsd`, `graphite`, `influxdb_v1`,
+`influxdb_v2`, `logger`, `memory`, `null`, `opentelemetry`, `prometheus`,
+`statsd`, `telegraf`.
 
 Other behavioural changes:
 

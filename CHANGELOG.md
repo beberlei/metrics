@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v3.0.0 (unreleased)
+## v3.0.0 (2026-09-09)
 
 ### Breaking changes
 
@@ -56,7 +56,7 @@
   * Telegraf: emit the Influx StatsD dialect with RFC 3986-encoded per-call
     tags merged over constructor defaults for every metric type
 * bundle:
-  * All collectors has alias for autowiring. Use
+  * All collectors have an alias for autowiring. Use
     `#[Target('name-of-the-collector')]` to inject a collector
   * All collectors are tagged with `kernel.reset` to reset their state
   * All collectors are tagged with
@@ -71,7 +71,7 @@
   * Add support for the `cloudwatch` collector type, either built from the
     `region` option or referencing a pre-configured
     `Aws\CloudWatch\CloudWatchClient` service through the `service` option
-* add a symfony application in the `examples` folder will all collectors enabled
+* add a symfony application in the `examples` folder with all collectors enabled
   and visualisation with Grafana
 
 ### Minor changes

@@ -253,13 +253,6 @@ option on the client, ...), the collector does not handle them. `measure()`
 and `increment()`/`decrement()` use the `Count` unit, `timing()` uses
 `Milliseconds`.
 
-## Configuration
-
-```php
-
-$null = \Beberlei\Metrics\Factory::create('null');
-```
-
 ## Symfony Bundle Integration
 
 Register Bundle in bundles.php
