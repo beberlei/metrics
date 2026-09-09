@@ -1,0 +1,46 @@
+version: 2
+updates:
+    - package-ecosystem: 'github-actions'
+      directory: '/'
+      schedule:
+          interval: 'monthly'
+      groups:
+          github-actions:
+              patterns:
+                  - '*'
+          github-actions-security:
+              applies-to: security-updates
+              patterns:
+                  - '*'
+      cooldown:
+          default-days: 7
+
+    - package-ecosystem: 'composer'
+      directories:
+          - '/'
+          - '/tools/*'
+          - '/examples'
+          - '/examples/tools/*'
+      schedule:
+          interval: 'monthly'
+      groups:
+          composer:
+              patterns:
+                  - '*'
+          composer-security:
+              applies-to: security-updates
+              patterns:
+                  - '*'
+      cooldown:
+          default-days: 7
+
+    - package-ecosystem: 'docker'
+      directory: '/examples/infrastructure/docker/services/*'
+      schedule:
+          interval: 'monthly'
+      groups:
+          docker:
+              patterns:
+                  - '*'
+      cooldown:
+          default-days: 7
