@@ -11,6 +11,7 @@ a local development environment.
 A Docker environment is provided and requires you to have these tools available:
 
  * Docker
+ * Bash
  * [Castor](https://github.com/jolicode/castor#installation)
 
 #### Castor
@@ -139,7 +140,7 @@ A Grafana dashboard per backend:
 
 HTTPS is supported out of the box. SSL certificates are not versioned and will
 be generated the first time you start the infrastructure (`castor start`) or if
-you run `castor infra:generate-certificates`.
+you run `castor docker:generate-certificates`.
 
 If you have `mkcert` installed on your computer, it will be used to generate
 locally trusted certificates. See [`mkcert` documentation](https://github.com/FiloSottile/mkcert#installation)
@@ -150,9 +151,9 @@ If you don't have `mkcert`, then self-signed certificates will instead be
 generated with openssl. You can configure [infrastructure/docker/services/router/openssl.cnf](infrastructure/docker/services/router/openssl.cnf)
 to tweak certificates.
 
-You can run `castor infra:generate-certificates --force` to recreate new certificates
+You can run `castor docker:generate-certificates --force` to recreate new certificates
 if some were already generated. Remember to restart the infrastructure to make
-use of the new certificates with `castor up` or `castor start`.
+use of the new certificates with `castor build && castor up` or `castor start`.
 
 ### Builder
 

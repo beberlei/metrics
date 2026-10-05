@@ -99,6 +99,18 @@ jobs:
             - name: Run Tests
               run: vendor/bin/phpunit
 
+    application-dockerfile:
+        name: Example application (Dockerfile)
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v5
+
+            - name: Check php/Dockerfile
+              uses: hadolint/hadolint-action@v3.5.0
+              with:
+                  dockerfile: examples/infrastructure/docker/services/php/Dockerfile
+
     application:
         name: Example application
         runs-on: ubuntu-latest
@@ -112,6 +124,18 @@ jobs:
             - name: Start the stack
               working-directory: examples
               run: castor start
+
+            - name: Check PHP coding standards
+              working-directory: examples
+              run: castor qa:cs --dry-run
+
+            - name: Check Twig coding standards
+              working-directory: examples
+              run: castor qa:twig-cs --dry-run
+
+            - name: Run PHPStan
+              working-directory: examples
+              run: castor qa:phpstan
 
             - name: Run the functional tests
               working-directory: examples

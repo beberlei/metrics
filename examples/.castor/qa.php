@@ -16,9 +16,10 @@ function all(): int
 {
     $cs = cs();
     $phpstan = phpstan();
+    $twigCs = twigCs();
     $phpunit = phpunit();
 
-    return max($cs, $phpstan, $phpunit);
+    return max($cs, $phpstan, $twigCs, $phpunit);
 }
 
 #[AsTask(description: 'Installs tooling')]
@@ -28,6 +29,7 @@ function install(): void
 
     docker_compose_run(['composer', 'install', '-o'], workDir: '/var/www/tools/php-cs-fixer');
     docker_compose_run(['composer', 'install', '-o'], workDir: '/var/www/tools/phpstan');
+    docker_compose_run(['composer', 'install', '-o'], workDir: '/var/www/tools/twig-cs-fixer');
 }
 
 #[AsTask(description: 'Updates tooling')]
@@ -37,6 +39,7 @@ function update(): void
 
     docker_compose_run(['composer', 'update', '-o'], workDir: '/var/www/tools/php-cs-fixer');
     docker_compose_run(['composer', 'update', '-o'], workDir: '/var/www/tools/phpstan');
+    docker_compose_run(['composer', 'update', '-o'], workDir: '/var/www/tools/twig-cs-fixer');
 }
 
 /**
@@ -65,12 +68,46 @@ function phpstan(
 
     io()->section('Running PHPStan...');
 
-    $command = ['tools/phpstan/vendor/bin/phpstan', 'analyse', '--memory-limit=-1'];
+    $command = ['phpstan', 'analyse', '--memory-limit=-1', '-v'];
     if ($baseline) {
         $command = [...$command, '--generate-baseline', '--allow-empty-baseline'];
     }
 
     return docker_exit_code($command, workDir: '/var/www');
+}
+
+#[AsTask(description: 'Runs Security audit')]
+function securityAudit(): int
+{
+    $basePath = variable('root_dir');
+
+    if (is_file("{$basePath}/composer.lock")) {
+        io()->text('Running Composer audit...');
+
+        $exitCode = docker_exit_code(['composer', 'audit']);
+
+        if (0 !== $exitCode) {
+            return $exitCode;
+        }
+    }
+
+    if (is_file("{$basePath}/yarn.lock")) {
+        io()->text('Running Yarn audit...');
+
+        $exitCode = docker_exit_code(['yarn', 'audit']);
+
+        if (0 !== $exitCode) {
+            return $exitCode;
+        }
+    }
+
+    if (is_file("{$basePath}/package-lock.json")) {
+        io()->text('Running NPM audit...');
+
+        return docker_exit_code(['npm', 'audit']);
+    }
+
+    return 0;
 }
 
 #[AsTask(description: 'Fixes Coding Style', aliases: ['cs'])]
@@ -83,8 +120,24 @@ function cs(bool $dryRun = false): int
     io()->section('Running PHP CS Fixer...');
 
     if ($dryRun) {
-        return docker_exit_code(['tools/php-cs-fixer/vendor/bin/php-cs-fixer', 'fix', '--dry-run', '--diff'], workDir: '/var/www');
+        return docker_exit_code(['php-cs-fixer', 'fix', '--dry-run', '--diff'], workDir: '/var/www');
     }
 
-    return docker_exit_code(['tools/php-cs-fixer/vendor/bin/php-cs-fixer', 'fix', '-v'], workDir: '/var/www');
+    return docker_exit_code(['php-cs-fixer', 'fix', '-v'], workDir: '/var/www');
+}
+
+#[AsTask(description: 'Fixes Twig Coding Style', aliases: ['twig-cs'])]
+function twigCs(bool $dryRun = false): int
+{
+    if (!is_dir(variable('root_dir') . '/tools/twig-cs-fixer/vendor')) {
+        install();
+    }
+
+    io()->section('Running Twig CS Fixer...');
+
+    if ($dryRun) {
+        return docker_exit_code(['twig-cs-fixer'], workDir: '/var/www');
+    }
+
+    return docker_exit_code(['twig-cs-fixer', '--fix'], workDir: '/var/www');
 }
