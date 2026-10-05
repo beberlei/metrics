@@ -25,6 +25,7 @@ parameters:
                 php_version: string,
                 docker_compose_files: list<string>,
                 docker_compose_run_environment: array<string, string>,
+                docker_compose_run_service: string,
                 macos: bool,
                 power_shell: bool,
                 user_id: int,

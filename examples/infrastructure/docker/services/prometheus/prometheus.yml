@@ -11,4 +11,4 @@ scrape_configs:
   - job_name: "app"
     metrics_path: /prometheus
     static_configs:
-      - targets: ["frontend"]
+      - targets: ["frontend:8080"]
