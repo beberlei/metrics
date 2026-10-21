@@ -12,7 +12,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
-              uses: actions/checkout@v5
+              uses: actions/checkout@v7
 
             - name: Setup PHP, with composer and extensions
               uses: shivammathur/setup-php@v2
@@ -20,7 +20,7 @@ jobs:
                   php-version: "8.4"
                   extensions: mbstring, xml
 
-            - uses: actions/cache@v4
+            - uses: actions/cache@v6
               with:
                   path: tools/php-cs-fixer/vendor
                   key: php-cs-fixer-${{ github.sha }}
@@ -37,7 +37,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
-              uses: actions/checkout@v5
+              uses: actions/checkout@v7
 
             - name: Setup PHP, with composer and extensions
               uses: shivammathur/setup-php@v2
@@ -45,7 +45,7 @@ jobs:
                   php-version: "8.4"
                   extensions: mbstring, xml
 
-            - uses: actions/cache@v4
+            - uses: actions/cache@v6
               with:
                   path: tools/phpstan/vendor
                   key: phpstan-${{ github.sha }}
@@ -79,7 +79,7 @@ jobs:
                       name: "(Symfony 7.4)"
         steps:
             - name: Checkout
-              uses: actions/checkout@v5
+              uses: actions/checkout@v7
 
             - name: Setup PHP, with composer and extensions
               uses: shivammathur/setup-php@v2
@@ -104,7 +104,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
-              uses: actions/checkout@v5
+              uses: actions/checkout@v7
 
             - name: Check php/Dockerfile
               uses: hadolint/hadolint-action@v3.5.0
@@ -116,10 +116,10 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
-              uses: actions/checkout@v5
+              uses: actions/checkout@v7
 
             - name: Setup castor
-              uses: castor-php/setup-castor@v1.0.0
+              uses: castor-php/setup-castor@v1.1.0
 
             - name: Start the stack
               working-directory: examples
