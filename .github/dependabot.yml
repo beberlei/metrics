@@ -35,11 +35,17 @@ updates:
           default-days: 7
 
     - package-ecosystem: 'docker'
-      directory: '/examples/infrastructure/docker/services/*'
+      directories:
+          - '/examples/infrastructure/docker/services/php'
+          - '/examples/infrastructure/docker/services/router'
       schedule:
           interval: 'monthly'
       groups:
           docker:
+              patterns:
+                  - '*'
+          docker-security:
+              applies-to: security-updates
               patterns:
                   - '*'
       cooldown:
