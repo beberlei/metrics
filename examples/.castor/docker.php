@@ -488,6 +488,12 @@ function docker_compose(array $subCommand, ?Context $c = null, array $profiles =
     $c ??= context();
     $profiles = $profiles ?: ['default'];
 
+    // Without a terminal (CI, pipes, AI agents...), a PTY would give the command a
+    // terminal nobody types in: a prompt (composer, bin/console...) would wait forever
+    if (!$c->supportsInteraction()) {
+        $c = $c->withPty(false);
+    }
+
     $c = $c->withEnvironment(get_compose_environment($c));
 
     // Allow to shift the ports on the host, e.g. when the default ones are already used.
