@@ -488,12 +488,6 @@ function docker_compose(array $subCommand, ?Context $c = null, array $profiles =
     $c ??= context();
     $profiles = $profiles ?: ['default'];
 
-    // Without a terminal (CI, pipes, AI agents...), a PTY would give the command a
-    // terminal nobody types in: a prompt (composer, bin/console...) would wait forever
-    if (!$c->supportsInteraction()) {
-        $c = $c->withPty(false);
-    }
-
     $c = $c->withEnvironment(get_compose_environment($c));
 
     // Allow to shift the ports on the host, e.g. when the default ones are already used.
@@ -579,7 +573,9 @@ function docker_compose_run(
 
     if (0 === \count($params)) {
         $params = ['bash'];
-        $c = $c->toInteractive();
+        // A CTRL+C belongs to the shell, and must not stop the task: even when the shell exits with
+        // the code of its last command, 130 after a CTRL+C at the prompt
+        $c = $c->toInteractive()->withTrappedSignals();
     } else {
         $params = array_map(escapeshellarg(...), $params);
     }
@@ -608,7 +604,8 @@ function docker_compose_exec(
 
     if (0 === \count($params)) {
         $params = ['bash'];
-        $context = $context->toInteractive();
+        // See docker_compose_run()
+        $context = $context->toInteractive()->withTrappedSignals();
     } else {
         $params = array_map(escapeshellarg(...), $params);
     }
@@ -686,7 +683,6 @@ function push(
 
     // Additional build contexts may live outside of the compose files directory (e.g. the
     // repository root): grant bake the read access explicitly, or it asks for it interactively
-    // (and waits forever in the CI, castor running it with a pty)
     $command = ['docker', 'buildx', 'bake', '--allow=fs.read=' . variable('root_dir')];
 
     foreach ($c['docker_compose_files'] as $file) {
