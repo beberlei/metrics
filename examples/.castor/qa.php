@@ -11,12 +11,12 @@ use function Castor\variable;
 use function docker\docker_compose_run;
 use function docker\docker_exit_code;
 
-#[AsTask(description: 'Runs all QA tasks')]
+#[AsTask(description: 'Runs all QA tasks', aliases: ['qa'])]
 function all(): int
 {
     $cs = cs();
     $phpstan = phpstan();
-    $twigCs = twigCs();
+    $twigCs = twig_cs();
     $phpunit = phpunit();
 
     return max($cs, $phpstan, $twigCs, $phpunit);
@@ -77,7 +77,7 @@ function phpstan(
 }
 
 #[AsTask(description: 'Runs Security audit')]
-function securityAudit(): int
+function security_audit(): int
 {
     $basePath = variable('root_dir');
 
@@ -127,7 +127,7 @@ function cs(bool $dryRun = false): int
 }
 
 #[AsTask(description: 'Fixes Twig Coding Style', aliases: ['twig-cs'])]
-function twigCs(bool $dryRun = false): int
+function twig_cs(bool $dryRun = false): int
 {
     if (!is_dir(variable('root_dir') . '/tools/twig-cs-fixer/vendor')) {
         install();
